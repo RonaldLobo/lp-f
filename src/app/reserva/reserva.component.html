@@ -1,0 +1,290 @@
+<div class="header-space">
+</div>
+<div class="title reserva">
+  <h5>Reserve su cita</h5>
+</div>
+
+<tabset [justified]="true">  
+  <tab>
+    <template tabHeading>
+      <i class="fa fa-home" aria-hidden="true" #barberia></i>
+    </template>
+    <template [ngIf]="!authService.isAppUnica && !authService.isAdminSucursalUser()">
+      <div class="col-12">
+        <div class="col-12 card">
+          <span class="header-barberia">Provincia:</span><br>
+          <div class="row">
+            <div class="form-group col-12">
+              <select class="form-control" id="provincia" (change)="provinciaChanged($event.target.value)">
+                <option *ngFor="let provincia of provincias;let i = index" [value]="i">{{provincia}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="col-12 card">
+          <span class="header-barberia">Canton:</span><br>
+          <div class="row">
+            <div class="form-group col-12">
+              <select class="form-control" id="canton" (change)="cantonChanged($event.target.value)">
+                <option *ngFor="let canton of cantonesDisplay" [value]="canton.id">{{canton.canton}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="col-12 card">
+          <span class="header-barberia">Nombre</span><br>
+          <div class="row" *ngIf="barberias.length > 0">
+            <div class="form-group col-12">
+              <input placeholder="Nombre de su barberia" [(ngModel)]="selectedLocal" [typeahead]="barberias" class="form-control" (typeaheadOnSelect)="localSelect($event)" typeaheadOptionField="descripcion">
+            </div>
+            <div class="form-group col-12">
+              <select class="styled-select blue semi-square" id="sucursales" (change)="localSelectUnica($event.target.value)" [ngModel]="selectedLocalId" style="height: 34px;">
+                <option *ngFor="let barberia of barberias;" [value]="barberia.id">{{barberia.descripcion}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row" *ngIf="barberias.length == 0">
+            <div class="form-group col-12">
+              No hay barberias disponibles en su cantón.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="col-12 card">
+          <iframe
+            height="220"
+            frameborder="0" style="border:0"
+            [src]="url" allowfullscreen class="map col-12">
+          </iframe>
+        </div>
+      </div>
+      <div class="col-12 next">
+        <button type="button" class="btn btn-primary" (click)="goTo('barber')" [disabled]="!validLocal">
+          Ir a siguiente
+        </button>
+      </div>
+    </template>
+    <template [ngIf]="authService.isAppUnica || authService.isAdminSucursalUser()">
+      <div class="col-12">
+        <div class="col-12 card">
+          <span class="header-barberia">Sucursales:</span><br>
+          <div class="row">
+            <div class="form-group col-12">
+              <select class="styled-select blue semi-square" id="sucursales" (change)="localSelectUnica($event.target.value)" style="height: 34px;">
+                <option *ngFor="let barberia of barberias;" [value]="barberia.id">{{barberia.descripcion}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 next">
+        <button type="button" class="btn btn-primary" (click)="goTo('barber')" [disabled]="!validLocal">
+          Ir a siguiente
+        </button>
+      </div>
+    </template>
+  </tab>
+  <tab>
+    <template tabHeading>
+      <i class="fa fa-user" aria-hidden="true" #barber></i>
+    </template>
+    <div class="col-12">
+      <div class="col-12 card">
+        <p class="item-action">Seleccione la persona que quiere para su servicio:</p>
+        <app-barberos (selectBarberDone)="selectBarberDone($event)" [barberiaSelected]="reservacion.local.id" [isRegularUser]="authService.isRegularUser()"></app-barberos>
+
+        <div class="col-12 next">
+          <button type="button" class="btn btn-primary" (click)="goTo('date')" [disabled]="!validBarber">
+            Ir a siguiente
+          </button>
+        </div>
+      </div>
+    </div>
+  </tab>
+  <tab>
+    <template tabHeading>
+      <i class="fa fa-calendar" aria-hidden="true" #date></i>
+    </template>
+    <div class="col-12">
+      <div class="col-12 card date" [class.active]="escojeFecha">
+        <p class="item-action">Seleccione la fecha que desea para su servicio</p>
+        <p>Fecha: {{dateSelected | date: 'dd/MM/yyyy'}}</p>
+        <app-calendario (dateSelectedChange)="dateSelectedChange($event)"></app-calendario>
+      </div>
+      <div class="col-12 card date" [class.active]="!escojeFecha">
+        <p style="overflow: hidden;"><span style="float: left;">Fecha: {{dateSelected | date: 'dd/MM/yyyy'}}</span> <span style="float: right;"><span class="volver" (click)="escojeFecha=true"> Volver al calendario<i class="fa fa-arrow-left go-back-date" aria-hidden="true" ></i></span></span></p>
+        <p *ngIf="reservacion.servicio">Horarios para citas disponibles este dia:</p>
+        <p *ngIf="!reservacion.servicio">Por Favor seleccione un barbero y un servicio primero</p>
+        <p *ngIf="authService.isAdminSucursalUser()">
+          <span class="reservada"><span class="ball"></span> Reservada </span>
+          <span class="pausada"><span class="ball"></span> En pausa </span>
+          <span class="active"><span class="ball"></span> Seleccionada </span>
+        </p>
+        <ul class="reservas row">
+          <ng-container *ngFor="let reserva of camposLibres">
+            <li (click)="(!reserva.reservada && !reserva.pausada && selectReserva(reserva)) ||(authService.isAdminSucursalUser() && reserva.pausada)" class="col-4" *ngIf="(!reserva.reservada && !reserva.pausada) || authService.isAdminSucursalUser()">
+              <div [class.active]="selectedReserva==reserva" [class.reservada]="reserva.reservada" [class.pausada]="reserva.pausada">
+                <p>{{reserva.hora | date:'shortTime'}}</p>
+              </div>
+            </li>
+          </ng-container>
+        </ul>
+        <div class="col-12 next">
+          <button type="button" class="btn btn-primary" (click)="goTo('confirmar')" [disabled]="!validReserva">
+            Ir a siguiente
+          </button>
+        </div>
+      </div>
+    </div>
+  </tab>
+  <tab>
+    <template tabHeading>
+      <i class="fa fa-check" aria-hidden="true" #confirmar></i>
+    </template>
+    <div class="col-12">
+      <div class="col-12 card">
+        <p class="item-action">Por favor confirme su reserva</p>
+        <ul class="confirmar-items">
+          <li><span>Barberia : </span><span *ngIf="reservacion.local">{{reservacion.local.descripcion}}</span></li>
+          <li><span>Barbero : </span><span *ngIf="reservacion.barbero">{{reservacion.barbero.nombre}}</span></li>
+          <li><span>Servicio : </span><span *ngIf="reservacion.servicio">{{reservacion.servicio.descripcion}}</span></li>
+          <li><span>Duración : </span><span *ngIf="reservacion.servicio">{{reservacion.servicio.duracion}} Minutos</span></li>
+          <li><span>Fecha : </span><span *ngIf="reservacion.fecha">{{reservacion.fecha | date: 'mediumDate'}}</span></li>
+          <li><span>Hora : </span><span *ngIf="reservacion.hora">{{reservacion.hora.hora | date:'shortTime'}}</span></li>
+          <li><span>Precio : </span><span *ngIf="reservacion.servicio">{{reservacion.servicio.precio}}</span></li>
+          <li *ngIf="authService.isAdminSucursalUser()"><span>Cliente : </span><span *ngIf="reservacion.usuarioCita">{{reservacion.usuarioCita.nombre}} {{reservacion.usuarioCita.apellido1}}</span></li>
+        </ul>
+        <div *ngIf="!authService.isAdminSucursalUser() && authService.loggedUser && authService.loggedUser.telefono.length == 0">
+          Su usuario no tiene número de teléfono registrado, por favor agregue uno para poder hacer su reserva.
+          <div class="col-8 telefonos">
+            <div class="row">
+              <div class="col-12 nuevo-numero">
+                  <input type="number" [(ngModel)]="nuevoTelefono" [class.error-input]="validatorService.hasError('telefono',usuarioErrores)"> <span class="small-action" (click)="addTelefonoUpdate()"> + </span>
+              </div>
+              <div class="col-12 contact-item" *ngFor="let telefono of nuevoUsuario.telefono">
+                  <span class="telefono-display">{{telefono.telefono}} </span>
+                  <span class="small-action" (click)="removeTelefonoUpdate(telefono)"> - </span> 
+              </div>
+            </div>
+          </div>
+        </div>
+        <p *ngIf="!validReservaTotal" class="error">
+          Por Favor complete los datos para la reserva!
+        </p>
+        <div *ngIf="authService.isAdminSucursalUser()">
+          <p>Digite el nombre del cliente para el cual quiere agregar esta cita o de click en Nuevo Cliente para agregar uno nuevo:</p>
+          <input class="auto-usuario" type="text" name="" placeholder="Nombre Apellidos" [(ngModel)]="buscaUsuario" (ngModelChange)="buscaUsuarioChanged()">
+          <ul>
+            <li *ngFor="let usuario of usuarioCita"> 
+              <span class="usuarios" (click)="seleccionaUsuarioCita(usuario)" [class.active]="reservacion.usuarioCita && usuario.id == reservacion.usuarioCita.id">{{usuario.nombre}} {{usuario.apellido1}} {{usuario.apellido2}} | <span *ngIf="usuario.telefono.length > 0">{{usuario.telefono[0].telefono}}</span>
+              </span>
+            </li>
+          </ul>
+          <button type="button" class="btn btn-primary" style="margin-bottom: 30px;" (click)="nuevoUsuarioDisplay = !nuevoUsuarioDisplay">
+            Nuevo Cliente 
+            <span *ngIf="!nuevoUsuarioDisplay">></span>
+            <span *ngIf="nuevoUsuarioDisplay"><</span>
+          </button>
+          <div *ngIf="nuevoUsuarioDisplay">
+            <div class="row login">
+              <div class="col-4">
+                <label>Usuario<span class="required" [class.reqerror]="validatorService.hasError('usuario',usuarioErrores)">*</span></label>
+              </div>
+              <div class="col-8">
+                <input type="text" name="usuario" [(ngModel)]="nuevoUsuario.usuario" 
+                 [class.error-input]="validatorService.hasError('usuario',usuarioErrores)" placeholder="juan1990">
+              </div>
+              <div class="col-4">
+                <label>Nombre<span class="required" [class.reqerror]="validatorService.hasError('nombre',usuarioErrores)">*</span></label>
+              </div>
+              <div class="col-8">
+                <input type="text" name="nombre" [(ngModel)]="nuevoUsuario.nombre" [class.error-input]="validatorService.hasError('nombre',usuarioErrores)" placeholder="Juan">
+              </div>
+              <div class="col-4">
+                <label>Apellido 1<span class="required" [class.reqerror]="validatorService.hasError('apellido1',usuarioErrores)">*</span></label>
+              </div>
+              <div class="col-8">
+                <input type="text" name="primerApellido" [(ngModel)]="nuevoUsuario.apellido1" [class.error-input]="validatorService.hasError('apellido1',usuarioErrores)" placeholder="Perez">
+              </div>
+              <div class="col-4">
+                <label>Apellido 2</label>
+              </div>
+              <div class="col-8">
+                <input type="text" name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
+              </div>
+              <div class="col-4">
+                <label>Correo<span class="required" [class.reqerror]="validatorService.hasError('correo',usuarioErrores)">*</span></label>
+              </div>
+              <div class="col-8 correos">
+                <div class="row">
+                   <div class="col-12 nuevo-numero">
+                                <input type="text" [(ngModel)]="nuevoCorreo" [class.error-input]="validatorService.hasError('correo',usuarioErrores)"> <span class="small-action" (click)="addCorreo()"> + </span>
+                            </div>
+                            <div class="col-12 correo-display contact-item" *ngFor="let correo of nuevoUsuario.correo">
+                                <span class="display">{{correo.correo}} </span>
+                                <span class="small-action" (click)="removeCorreo(correo)"> - </span> 
+                            </div>
+                           
+                        </div>
+              </div>
+              <div class="col-4">
+                <label>Telefono<span class="required" [class.reqerror]="validatorService.hasError('telefono',usuarioErrores)">*</span></label>
+              </div>
+              <div class="col-8 telefonos">
+                <div class="row">
+                            <div class="col-12 nuevo-numero">
+                                <input type="number" [(ngModel)]="nuevoTelefono" [class.error-input]="validatorService.hasError('telefono',usuarioErrores)"> <span class="small-action" (click)="addTelefono()"> + </span>
+                            </div>
+                            <div class="col-12 contact-item" *ngFor="let telefono of nuevoUsuario.telefono">
+                                <span class="telefono-display">{{telefono.telefono}} </span>
+                                <span class="small-action" (click)="removeTelefono(telefono)"> - </span> 
+                            </div>
+                        </div>
+              </div>
+              <div class="col-12 entrar">
+                <button type="button" class="btn btn-primary" (click)="newUser()">
+                  Registrar
+                </button>
+              </div>
+              <div class="col-12" *ngIf="nuevoUsuarioError" style="color:red;">
+                {{authService.errorDisplay}}
+              </div>
+              <div class="col-12" *ngIf="validationError" style="color:red;">
+                {{validationErrorMsg}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 next">
+          <button type="button" class="btn btn-primary" (click)="confirmarReserva(template)" [disabled]="!validReservaTotal">
+            Confirmar!
+          </button>
+        </div>
+      </div>
+    </div>
+  </tab>
+</tabset>
+<div class="cargando" *ngIf="cargando">
+  <div>
+    <img src="assets/images/m2.png">
+    Cargando...
+  </div>
+</div>
+
+
+<template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Ingresar</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <login-view (action)="hide()"  (label)="updateAction()"></login-view>
+    </div>
+</template>

@@ -1,0 +1,298 @@
+<div class="header-space">
+</div>
+
+<div class="container">
+    <div class="row">
+    	<div clas="col-12">
+    		<div class="module white-back static row">
+    			<div class="title reserva col-12">
+    			  <h5>Configuraciones</h5>
+    			</div>
+    			<div class="col-xs-12 col-md-6 item" *ngIf="authService.isAdminUser() || authService.isAdminSucursalUser()">
+    				<div class="row">
+    					<div class="col-4">
+    						<p class="heading">Barberias:</p>
+    					</div>
+    					<div class="col-8">
+    						<select class="styled-select blue semi-square" (change)="changeSucursal($event.target.value)">
+                                <option *ngFor="let sucursal of sucursales" [value]='sucursal.id'>{{sucursal.descripcion}}</option>
+    						</select>
+                            <!-- <option value="1">Tapia's / San Ramon</option> -->
+    					</div>
+    					<div class="col-12 actions">
+    						<button type="button" class="btn btn-primary" (click)="nuevaBarberia={};accion='agregar';openModal(barberia)" *ngIf="authService.isAdminUser()">Agregar</button>
+    						<button type="button" class="btn btn-success" (click)="actualizaSucursalSelected();accion='ver';openModal(barberia)">Ver</button>
+    						<button type="button" class="btn btn-info" (click)="actualizaSucursalSelected();accion='modificar';openModal(barberia)">Modificar</button>
+    						<button type="button" class="btn btn-danger" (click)="actualizaSucursalSelected();accion='borrar';openModal(barberia)" *ngIf="authService.isAdminUser()">Borrar</button>
+    					</div>
+    				</div>
+    			</div>
+    			<div class="col-xs-12 col-md-6 item" *ngIf="authService.isAdminUser() || authService.isAdminSucursalUser()">
+    				<div class="row">
+    					<div class="col-4">
+    						<p class="heading">Barberos:</p>
+    					</div>
+    					<div class="col-8">
+    						<select class="styled-select blue semi-square"(change)="changeBarbero($event.target.value)">
+                                <option *ngFor="let barbero of barberos" [value]='barbero.id'>{{barbero.nombre}} {{barbero.primerApellido}}</option>
+    						</select>
+    					</div>
+    					<div class="col-12 actions">
+                            <span>
+    						  <button type="button" class="btn btn-primary" (click)="nuevoBarbero={};barberoAdmistrador = false;accion='agregar';openModal(barbero)">Agregar</button>
+                                
+                            </span>
+                            <span *ngIf="nuevoBarbero.id">
+        						<button type="button" class="btn btn-success" (click)="actualizaBarberoSelected();accion='ver';openModal(barbero);barberoAdmistrador = (nuevoBarbero.rol.indexOf('A') != -1);">Ver</button>
+        						<button type="button" class="btn btn-info" (click)="actualizaBarberoSelected();accion='modificar';openModal(barbero);barberoAdmistrador = (nuevoBarbero.rol.indexOf('A') != -1);">Modificar</button>
+        						<button type="button" class="btn btn-danger" (click)="actualizaBarberoSelected();accion='borrar';openModal(barbero);barberoAdmistrador = (nuevoBarbero.rol.indexOf('A') != -1);">Borrar</button>
+                                <button type="button" class="btn btn-info" (click)="impersonar()">Impersonar</button>
+                            </span>
+    					</div>
+    				</div>
+    			</div>
+    			<div class="col-xs-12 col-md-6 item" *ngIf="authService.isBarberoUser()">
+    				<div class="row">
+    					<div class="col-4">
+    						<p class="heading">Servicios:</p>
+    					</div>
+    					<div class="col-8">
+                            <select class="styled-select blue semi-square" (change)="changeServicio($event.target.value)">
+                                <option *ngFor="let servicio of nuevoBarbero.servicios" [value]='servicio.id'>{{servicio.descripcion}}</option>
+                            </select>
+    					</div>
+    					<div class="col-12 actions">
+                            <span>
+    						  <button type="button" class="btn btn-primary" (click)="nuevoServicio={};accion='agregar';openModal(servicio)">Agregar</button>
+                            </span>
+                            <span *ngIf="nuevoBarbero.id">
+        						<button type="button" class="btn btn-success" (click)="actualizaServicioSelected();accion='ver';openModal(servicio)">Ver</button>
+        						<button type="button" class="btn btn-info" (click)="actualizaServicioSelected();accion='modificar';openModal(servicio)">Modificar</button>
+        						<button type="button" class="btn btn-danger" (click)="actualizaServicioSelected();accion='borrar';openModal(servicio)">Borrar</button>
+                            </span>
+    					</div>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+</div>
+
+<div class="cargando" *ngIf="cargando">
+  <div>
+    <img src="assets/images/m2.png">
+    Cargando...
+  </div>
+</div>
+
+<template #barberia>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><span class="accion">{{accion}}</span> Sucursal</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+        	<div class="col-4">
+        		Nombre:
+        	</div>
+        	<div class="col-8">
+        		<input type="text" name="barberia" [(ngModel)]="nuevaBarberia.descripcion" [class.error]="validatorService.hasError('descripcion',barberiaErrores)">
+        	</div>
+        	<div class="col-4">
+        		Señas:
+        	</div>
+        	<div class="col-8">
+        		<input type="text" name="ubicacion" [(ngModel)]="nuevaBarberia.detalleDireccion" [class.error]="validatorService.hasError('detalleDireccion',barberiaErrores)">
+        	</div>
+        	<div class="col-4">
+        		Provincia:
+        	</div>
+        	<div class="col-8">
+        		<!-- <input type="text" name="" [ngModel]="nuevaBarberia.provincia"> -->
+                <select class="form-control" id="provincia" [ngModel]="selectedProvincia" (change)="provinciaChanged($event.target.value)">
+                    <option *ngFor="let provincia of provincias;let i = index" [value]="i">{{provincia}}</option>
+                </select>
+        	</div>
+        	<div class="col-4">
+        		Canton:
+        	</div>
+        	<div class="col-8">
+        		<!-- <input type="text" name="" [(ngModel)]="nuevaBarberia.canton"> -->
+                <select class="form-control" id="provincia" [(ngModel)]="nuevaBarberia.idCanton">
+                    <option *ngFor="let canton of cantonesDisplay" [value]="canton.id">{{canton.canton}}</option>
+                </select>
+        	</div>
+            <div class="col-4">
+                Telefono:
+            </div>
+            <div class="col-8 telefonos">
+                <div class="row">
+                    <div class="col-12 nuevo-numero">
+                        <input type="number" [(ngModel)]="nuevoTelefono" [class.error]="validatorService.hasError('telefono',barberiaErrores)"> <span class="small-action" (click)="addTelefonoBarberia()"> + </span>
+                    </div>
+                    <div class="col-12 contact-item" *ngFor="let telefono of nuevaBarberia.telefono">
+                        <span class="telefono-display">{{telefono.telefono}} </span>
+                        <span class="small-action" (click)="removeTelefonoBarberia(telefono)"> - </span> 
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                Correo:
+            </div>
+            <div class="col-8 correos">
+                <div class="row">
+                    <div class="col-12 nuevo-numero">
+                        <input type="text" [(ngModel)]="nuevoCorreo" [class.error]="validatorService.hasError('correo',barberiaErrores)"> <span class="small-action" (click)="addCorreoBarberia()"> + </span>
+                    </div>
+                    <div class="col-12 correo-display contact-item" *ngFor="let correo of nuevaBarberia.correo">
+                        <span class="display">{{correo.correo}} </span>
+                        <span class="small-action" (click)="removeCorreoBarberia(correo)"> - </span> 
+                    </div> 
+                </div>
+            </div>
+        	<div class="col-12" style="margin-top: 15px;text-align: center;">
+        		<button type="button" class="btn btn-primary" (click)="AgregarBarberia()" *ngIf="accion=='agregar'">Agregar</button>
+        		<button type="button" class="btn btn-info" (click)="ModificarBarberia()" *ngIf="accion=='modificar'">Modificar</button>
+        		<button type="button" class="btn btn-danger" (click)="EliminarBarberia()" *ngIf="accion=='borrar'">Borrar</button>
+        	</div>
+        </div>
+    </div>
+</template>
+
+<template #barbero>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><span class="accion">{{accion}}</span>  Barbero</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+        	<div class="col-4">
+        		Usuario:
+        	</div>
+        	<div class="col-8">
+        		<input type="text" name="barberia" [(ngModel)]="nuevoBarbero.usuario" [class.error]="validatorService.hasError('usuario',barberoErrores)" [disabled]="accion=='modificar'">
+        	</div>
+        	<div class="col-4">
+        		Nombre:
+        	</div>
+        	<div class="col-8">
+        		<input type="text" name="ubicacion" [(ngModel)]="nuevoBarbero.nombre" [class.error]="validatorService.hasError('nombre',barberoErrores)">
+        	</div>
+        	<div class="col-4">
+        		Apellido 1:
+        	</div>
+        	<div class="col-8">
+        		<input type="text" name="" [(ngModel)]="nuevoBarbero.apellido1" [class.error]="validatorService.hasError('apellido1',barberoErrores)">
+        	</div>
+            <div class="col-4">
+                Apellido 2:
+            </div>
+            <div class="col-8">
+                <input type="text" name="" [(ngModel)]="nuevoBarbero.apellido2" [class.error]="validatorService.hasError('apellido2',barberoErrores)">
+            </div>
+        	<div class="col-4">
+        		Telefono:
+        	</div>
+        	<div class="col-8 telefonos">
+                <div class="row">
+                    <div class="col-12 nuevo-numero">
+                        <input type="number" [(ngModel)]="nuevoTelefono" [class.error]="validatorService.hasError('telefono',barberoErrores)"> <span class="small-action" (click)="addTelefono()"> + </span>
+                    </div>
+                    <div class="col-12 contact-item" *ngFor="let telefono of nuevoBarbero.telefono">
+                        <span class="telefono-display">{{telefono.telefono}} </span>
+                        <span class="small-action" (click)="removeTelefono(telefono)"> - </span> 
+                    </div>
+                </div>
+        	</div>
+        	<div class="col-4">
+        		Correo:
+        	</div>
+        	<div class="col-8 correos">
+                <div class="row">
+                    <div class="col-12 nuevo-numero">
+                        <input type="text" [(ngModel)]="nuevoCorreo" [class.error]="validatorService.hasError('correo',barberoErrores)"> <span class="small-action" (click)="addCorreo()"> + </span>
+                    </div>
+                    <div class="col-12 correo-display contact-item" *ngFor="let correo of nuevoBarbero.correo">
+                        <span class="display">{{correo.correo}} </span>
+                        <span class="small-action" (click)="removeCorreo(correo)"> - </span> 
+                    </div>
+                </div>
+        	</div>
+            <div class="col-4">
+                Tiempo Barbero:
+            </div>
+            <div class="col-8">
+                <select [(ngModel)]="nuevoBarbero.tiempoBarbero" [class.error]="validatorService.hasError('tiempoBarbero',barberoErrores)">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="60">60</option>
+                </select>
+            </div>
+            <div class="col-4">
+                Es Administrador:
+            </div>
+            <div class="col-8">
+                <input type="checkbox" [(ngModel)]="barberoAdmistrador">
+            </div>
+        	<div class="col-12" style="margin-top: 15px;text-align: center;">
+        		<button type="button" class="btn btn-primary" (click)="AgregarBarbero()" *ngIf="accion=='agregar'">Agregar</button>
+        		<button type="button" class="btn btn-info" (click)="ModificarBarbero()" *ngIf="accion=='modificar'">Modificar</button>
+        		<button type="button" class="btn btn-danger" (click)="EliminarBarbero()" *ngIf="accion=='borrar'">Borrar</button>
+        	</div>
+            <div class="col-12" style="color:red;">
+                {{errorDisplay}}
+            </div>
+        </div>
+    </div>
+</template>
+
+<template #servicio>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><span class="accion">{{accion}}</span>  Servicio</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+        	<div class="col-4">
+        		Nombre:
+        	</div>
+        	<div class="col-8">
+        		<input type="text" name="barberia" [(ngModel)]="nuevoServicio.descripcion" [class.error]="validatorService.hasError('nombre',servicioErrores)">
+        	</div>
+            <div class="col-4">
+                Es el servicio Dinamico(El precio y la duración dependen del servicio):
+            </div>
+            <div class="col-8">
+                <input type="checkbox" [(ngModel)]="nuevoServicio.esDinamico">
+            </div>
+            <div *ngIf="!nuevoServicio.esDinamico" class="row col-12">
+            	<div class="col-4">
+            		Duración:
+            	</div>
+            	<div class="col-8">
+                    <select [(ngModel)]="nuevoServicio.duracion">
+                        <option *ngFor="let opcion of opcionesDuracion" >{{opcion}}</option>
+                    </select>
+            	</div>
+            	<div class="col-4">
+            		Precio:
+            	</div>
+            	<div class="col-8">
+            		<input type="number" name="" [(ngModel)]="nuevoServicio.precio" [class.error]="validatorService.hasError('precio',servicioErrores)">
+            	</div>
+            </div>
+        	<div class="col-12" style="margin-top: 15px;text-align: center;">
+        		<button type="button" class="btn btn-primary" (click)="AgregarServicio()" *ngIf="accion=='agregar'">Agregar</button>
+        		<button type="button" class="btn btn-info" (click)="ModificarServicio()" *ngIf="accion=='modificar'">Modificar</button>
+        		<button type="button" class="btn btn-danger" (click)="EliminarServicio()" *ngIf="accion=='borrar'">Borrar</button>
+        	</div>
+        </div>
+    </div>
+</template>

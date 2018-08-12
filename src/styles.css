@@ -1,0 +1,403 @@
+
+/* You can add global styles to this file, and also import other style files */
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+
+body {
+  margin-bottom: 60px;
+}
+.starter-template {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+body{
+	background-image: url(assets/images/bg.svg);
+	background-repeat: repeat;
+}
+
+
+h4 {
+    font-size: 22px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Oswald", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    position: relative;
+    padding: 0 0 10px 0;
+    font-weight: normal;
+    line-height: 1.2em;
+    color: #242424;
+}
+
+.navbar {
+    position: fixed !important;
+    z-index:20;
+    width: 100%;
+}
+
+
+/*home carousel*/
+.right.carousel-control, .left.carousel-control {
+    display: none;
+}
+
+.carousel-caption{
+	text-shadow: 2px 1px 1px rgba(150, 150, 150, 0.86);
+}
+
+.carousel-caption p{
+	border: 2px solid white;
+    border-radius: 1px;
+    display: inline-block;
+    /*background: url(assets/images/barberpole.jpg);*/
+    background-color: black;
+    padding: 3px 16px;
+    text-shadow: none;
+    /*background-size: contain;*/
+}
+
+.carousel-caption p a{
+	text-decoration: none;
+	color: white;
+    font-size: 23px;
+}
+
+.carousel-caption p a:hover{
+	text-decoration: underline;
+}
+
+@media (max-width: 768px){
+	.module, .widget {
+	    margin-bottom: 30px;
+	}
+}
+
+@media (max-width: 980px){
+	.module {
+	    margin-bottom: 60px;
+	}
+}
+
+.grey-back, .white-back {
+    background-color: #ffffff;
+    box-shadow: 0px 3px 0 #f0f1f3;
+    padding: 20px;
+    position: relative;
+    display: block;
+}
+
+.static {
+    position: relative;
+    margin-top: 30px;
+    bottom: 0;
+    display: block;
+    height: 100%;
+}
+
+.module-title {
+    margin-bottom: 30px;
+    display: block;
+    position: relative;
+    border-bottom: 2px solid #f7f8fa;
+}
+
+.module-title h4 {
+    font-size: 28px;
+    padding-bottom: 0;
+    font-family: 'BebasNeue';
+}
+
+.module-separator {
+    background-color: #242424;
+    display: block;
+    height: 2px;
+    margin: 10px 0 -2px;
+    position: relative;
+    width: 40px;
+}
+
+.module p {
+    padding-bottom: 5px;
+}
+
+.lead, blockquote {
+    font-size: 16px;
+    line-height: 32px;
+    font-family: 'Droid Serif', Georgia, "Times New Roman", serif;
+    font-weight: normal;
+    font-style: italic;
+    position: relative;
+    width: auto;
+}
+
+.lead {
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.4;
+}
+
+.info {
+    margin-top: 20px;
+    display: inline-table;
+    position: relative;
+}
+
+.info i{
+	font-size: 20px;
+	padding: 5px;
+	width: 30px;
+}
+
+.gallery{
+	margin-top: 50px;
+}
+
+.modal-open .fade{
+	opacity: 0.9 !important;
+}
+
+.modal-dialog {
+	margin-top: 178px !important;
+}
+
+.img-modal{
+	padding: 5px !important;
+}
+
+.header-space{
+	padding-top: 56px;
+}
+
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+    color: #0d47a1 !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    background-color: transparent !important;
+    border-bottom: 3px solid blue;
+    border-bottom-color: #0d47a1 !important;
+}
+
+.tab-container .nav-tabs {
+    background-color: #2196f3 !important;
+}
+
+.tab-container .nav-link{
+    padding-top: 1px !important;
+    padding-bottom: 1px !important;
+    font-size: 32px;
+}
+
+.login .tab-container .nav-link{
+    font-size: 14px;
+}
+
+.login .tab-content{
+    padding-top: 15px;
+}
+
+.nav-tabs .nav-link {
+    color: white;
+}
+
+.header-barberia{
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.dropdown-menu{
+    display: block !important;
+}
+
+.dropdown-menu li a{
+    color: black !important;
+}
+
+.calendario table{
+    width: 100%;
+    table-layout: fixed;
+}
+
+.mat-slider-horizontal {
+  width: 94%;
+}
+
+.mat-slider-vertical {
+  height: 300px;
+}
+
+.mat-accent .mat-slider-thumb, .mat-accent .mat-slider-thumb-label, .mat-accent .mat-slider-track-fill {
+    background-color: #31b0d5 !important;
+}
+
+.mat-slider-thumb-label-text{
+    color: white !important;
+}
+
+.cargando{
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    z-index: 100;
+    background: rgba(0,0,0,0.8);
+    text-align: center;
+    color: white;
+    padding-top: 216px;
+}
+
+.cargando img{
+    width: 81px;
+    border-radius: 41px;
+    -webkit-animation:spin 4s linear infinite;
+    -moz-animation:spin 4s linear infinite;
+    animation:spin 4s linear infinite;
+}
+
+.cargando div{
+  position: fixed;
+  margin:  0 auto;
+  width: 100%;
+}
+
+modal-container .modal-dialog , .modal-dialog {
+    margin-top: 67px !important;
+}
+
+
+/*style select*/
+
+.styled-select {
+   background: url(http://i62.tinypic.com/15xvbd5.png) no-repeat 96% 0;
+   height: 29px;
+   overflow: hidden;
+   width: 100%;
+}
+
+.styled-select select {
+   background: transparent;
+   border: none;
+   font-size: 14px;
+   height: 29px;
+   padding: 5px; /* If you add too much padding here, the options won't show in IE */
+   width: 268px;
+}
+
+.styled-select.slate {
+   background: url(http://i62.tinypic.com/2e3ybe1.jpg) no-repeat right center;
+   height: 34px;
+   width: 240px;
+}
+
+.styled-select.slate select {
+   border: 1px solid #ccc;
+   font-size: 16px;
+   height: 34px;
+   width: 268px;
+}
+
+.correos{
+  margin-top: 15px;
+}
+
+/* -------------------- Rounded Corners */
+.rounded {
+   -webkit-border-radius: 20px;
+   -moz-border-radius: 20px;
+   border-radius: 20px;
+}
+
+.semi-square {
+   -webkit-border-radius: 5px;
+   -moz-border-radius: 5px;
+   border-radius: 5px;
+}
+
+/* -------------------- Colors: Background */
+.slate   { background-color: #ddd; }
+.green   { background-color: #779126; }
+.blue    { background-color: #3b8ec2; }
+.yellow  { background-color: #eec111; }
+.black   { background-color: #000; }
+
+/* -------------------- Colors: Text */
+.slate select   { color: #000; }
+.green select   { color: #fff; }
+.blue select    { color: #fff; }
+.yellow select  { color: #000; }
+.black select   { color: #fff; }
+
+/*
+bs-datepicker-container{
+    left: 0px !important;
+    width: 100%;
+    text-align: center;
+    background-color: rgba(0,0,0,0.8);
+    padding-top: 10px;
+}*/
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+
+.clickable{
+  cursor: pointer;
+}

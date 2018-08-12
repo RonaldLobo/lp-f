@@ -1,0 +1,117 @@
+<div class="login">
+	<tabset [justified]="true" class="login">  
+		<tab>
+		  	<template tabHeading>
+		      Ingresar
+		    </template>
+			<div class="row login">
+				<div class="col-6 user-input">
+					<label>Usuario</label>
+				</div>
+				<div class="col-6 user-input">
+					<input type="text" name="usuario" [(ngModel)]="usuario.usuario" placeholder="usuario">
+				</div>
+				<div class="col-6">
+					<label>Clave</label>
+				</div>
+				<div class="col-6">
+					<input type="password" name="clave" [(ngModel)]="usuario.contrasenna">
+				</div>
+				<div class="col-12 entrar">
+					<button type="button" class="btn btn-primary" (click)="logUser()">
+						Entrar
+					</button>
+					<button type="button" class="btn btn-primary" (click)="loginWithFacebook()" style="
+    padding-top: 0px;
+    padding-bottom: 6px;
+">Entrar con <i class="fa fa-facebook-official" style="font-size:28px"></i></button>
+				</div>
+				<div class="col-12" *ngIf="error" style="color:red;">
+					Por favor revise su información de Usuario
+				</div>
+			</div>
+		</tab>
+		<tab>
+		  	<template tabHeading>
+		      Nuevo Usuario
+		    </template>
+			<div class="row login">
+				<div class="col-4">
+					<label>Usuario<span class="required" [class.reqerror]="validatorService.hasError('usuario',usuarioErrores)">*</span></label>
+				</div>
+				<div class="col-8">
+					<input type="text" name="usuario" [(ngModel)]="usuario.usuario" 
+					 [class.error]="validatorService.hasError('usuario',usuarioErrores)" placeholder="juan1990">
+				</div>
+				<div class="col-4">
+					<label>Clave<span class="required" [class.reqerror]="validatorService.hasError('contrasenna',usuarioErrores)">*</span></label>
+				</div>
+				<div class="col-8">
+					<input type="password" name="clave" [(ngModel)]="usuario.contrasenna" [class.error]="validatorService.hasError('contrasenna',usuarioErrores)" placeholder="miclave">
+				</div>
+				<div class="col-4">
+					<label>Nombre<span class="required" [class.reqerror]="validatorService.hasError('nombre',usuarioErrores)">*</span></label>
+				</div>
+				<div class="col-8">
+					<input type="text" name="nombre" [(ngModel)]="usuario.nombre" [class.error]="validatorService.hasError('nombre',usuarioErrores)" placeholder="Juan">
+				</div>
+				<div class="col-4">
+					<label>Apellido 1<span class="required" [class.reqerror]="validatorService.hasError('apellido1',usuarioErrores)">*</span></label>
+				</div>
+				<div class="col-8">
+					<input type="text" name="primerApellido" [(ngModel)]="usuario.apellido1" [class.error]="validatorService.hasError('apellido1',usuarioErrores)" placeholder="Perez">
+				</div>
+				<div class="col-4">
+					<label>Apellido 2</label>
+				</div>
+				<div class="col-8">
+					<input type="text" name="segundoApellido" [(ngModel)]="usuario.apellido2" [class.error]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
+				</div>
+				<div class="col-4">
+					<label>Correo<span class="required" [class.reqerror]="validatorService.hasError('correo',usuarioErrores)">*</span></label>
+				</div>
+				<div class="col-8 correos">
+					<div class="row">
+					   <div class="col-12 nuevo-numero">
+	                        <input type="text" [(ngModel)]="nuevoCorreo" [class.error]="validatorService.hasError('correo',usuarioErrores)"> <span class="small-action" (click)="addCorreo()"> + </span>
+	                    </div>
+	                    <div class="col-12 correo-display contact-item" *ngFor="let correo of usuario.correo">
+	                        <span class="display">{{correo.correo}} </span>
+	                        <span class="small-action" (click)="removeCorreo(correo)"> - </span> 
+	                    </div>
+	                   
+	                </div>
+				</div>
+				<div class="col-4">
+					<label>Telefono<span class="required" [class.reqerror]="validatorService.hasError('telefono',usuarioErrores)">*</span></label>
+				</div>
+				<div class="col-8 telefonos">
+					<div class="row">
+	                    <div class="col-12 nuevo-numero">
+	                        <input type="number" [(ngModel)]="nuevoTelefono" [class.error]="validatorService.hasError('telefono',usuarioErrores)"> <span class="small-action" (click)="addTelefono()"> + </span>
+	                    </div>
+	                    <div class="col-12 contact-item" *ngFor="let telefono of usuario.telefono">
+	                        <span class="telefono-display">{{telefono.telefono}} </span>
+	                        <span class="small-action" (click)="removeTelefono(telefono)"> - </span> 
+	                    </div>
+	                </div>
+				</div>
+				<div class="col-12 entrar">
+					<button type="button" class="btn btn-primary" (click)="newUser()">
+						Registrar
+					</button>
+					<button type="button" class="btn btn-primary" (click)="loginWithFacebook()" style="
+    padding-top: 0px;
+    padding-bottom: 6px;
+">Registrar con <i class="fa fa-facebook-official" style="font-size:28px"></i></button>
+				</div>
+				<div class="col-12" *ngIf="error" style="color:red;">
+					{{authService.errorDisplay}}
+				</div>
+				<div class="col-12" *ngIf="validationError" style="color:red;">
+					{{validationErrorMsg}}
+				</div>
+			</div>
+		</tab>
+	</tabset>
+</div>

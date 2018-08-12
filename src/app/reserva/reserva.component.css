@@ -1,0 +1,267 @@
+.item-action{
+	font-weight: bold;
+}
+
+select.styled-select{
+	appearance: none;
+	padding-left: 7px;
+}
+
+.confirmar-items li span:first-child{
+	width: 90px;
+    display: inline-block;
+}
+
+.title{
+	text-align: center;
+	width: 100%;
+	margin-top: 14px;
+}
+
+.reserva{
+	background-color: #2196f3 !important;
+	margin-top: 0px;
+	padding-top: 14px;
+	display: none;
+}
+
+.reserva h5{
+	margin-bottom: 0px;
+}
+
+.tab-pane > div{
+	margin-top: 10px;
+}
+
+.map{
+	width: 100%;
+	height: 208px;
+}
+
+.next{
+	text-align: center;
+	margin: 28px 0;
+}
+
+.next button{
+	width: 50%;
+    font-size: 24px;
+}
+
+.date{
+	display: none;
+}
+
+.date.active{
+	display: inline-block;
+}
+
+.reservas li div{
+	background-color: white;
+	display: inline-block;
+	border: 1px solid black;
+	text-align: center;
+	width: 100%;
+	border-radius: 5px;
+	margin-bottom: 5px;	
+	padding-top: 4px;
+	box-shadow: 3px 4px 2px -2px grey;
+}
+
+.reservas li div p{
+	margin-bottom: 6px;
+}
+
+.reservas li div.reservada{
+	background-color: firebrick;
+	color: white;
+}
+
+
+.go-back-date{
+	color: #2196f3;
+    font-size: 21px;
+    padding-top: 1px;
+    margin-left: 5px;
+}
+
+.error{
+	color: red;
+}
+
+.next button{
+	position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+.volver{
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.usuarios{
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.usuarios.active{
+	color: #2196f3;
+}
+
+.login input{
+	width: 100%;
+  border: 1px solid;
+}
+
+.required{
+  color: black;
+  font-size: 16px;
+}
+.required.reqerror{
+  color: red;
+}
+
+.entrar{
+	margin-top: 25px;
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+.tab-container .nav-link {
+    padding-top: 1px !important;
+    padding-bottom: 1px !important;
+    font-size: 14px !important;
+}
+
+.error-input{
+	border: 1px solid red !important;
+}
+
+.user-input{
+  margin-bottom: 15px;
+}
+
+
+.nuevo-numero input{
+	width: 80% !important;
+}
+
+.small-action{
+	display: inline-block;
+    width: 25px;
+    height: 26px;
+    border: 1px solid black;
+    border-radius: 14px;
+    text-align: center;
+    font-size: 17px;
+    color: red;
+}
+
+.telefono-display{
+	width: 80%;
+	display: inline-block;
+}
+
+.correo-display .small-action{
+	width: 50px;
+}
+
+.correo-display .display{
+	width: 100%;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.nuevo-numero input{
+   width: 80% !important;
+}
+
+.small-action{
+   display: inline-block;
+    width: 25px;
+    height: 26px;
+    border: 1px solid black;
+    border-radius: 14px;
+    text-align: center;
+    font-size: 17px;
+    color: red;
+    margin: 2px;
+}
+
+.telefono-display{
+   width: 80%;
+   display: inline-block;
+}
+
+.correo-display .small-action{
+   /*width: 50px;*/
+}
+
+.correo-display .display{
+   width: 80%;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contact-item .telefono-display, .contact-item .display{
+   border-bottom: 1px solid black;
+}
+
+.contact-item,.telefonos,.correos,.nuevo-numero{
+   margin-bottom: 0px !important;
+}
+
+.telefonos{
+  margin-top: 15px;
+}
+
+.nuevo-usuario{
+	text-decoration: underline;
+}
+
+.auto-usuario{
+	border: 1px solid black;
+}
+
+.reservas li div.reservada{
+	background-color: red;
+}
+
+.ball{
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border: 1px solid black;
+	border-radius: 10px;
+}
+span.reservada, span.pausada, span.active{
+	white-space: nowrap;
+}
+
+span.reservada .ball{
+	background-color: red;
+}
+
+.reservas li div.pausada{
+	background-color: orange;
+}
+
+span.pausada .ball{
+	background-color: orange;
+}
+
+.reservas li div.active{
+	background-color: lightseagreen;
+}
+
+span.active .ball{
+	background-color: lightseagreen;
+}
+
+
+

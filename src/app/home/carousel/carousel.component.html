@@ -1,0 +1,23 @@
+<carousel [interval]="myInterval">
+  <slide>
+    <img src="assets/images/barber1.jpg" alt="First slide">
+    <div class="carousel-caption">
+      <h3>Siempre el mejor servicio</h3>
+      <p *ngIf="authService.isAdminUser() == false"><a href="#/reserva">Reservar</a></p>
+    </div>
+  </slide>
+  <slide>
+    <img src="assets/images/barber2.jpg" alt="Second slide">
+    <div class="carousel-caption">
+      <h3>Atentos a las nuevas tendencias</h3>
+      <p *ngIf="authService.isAdminUser() == false"><a href="#/reserva">Reservar</a></p>
+    </div>
+  </slide>
+  <slide>
+    <img src="assets/images/barber3.jpg" alt="Third slide">
+    <div class="carousel-caption">
+      <h3>Haciendo clientes felices</h3>
+      <p *ngIf="authService.isAdminUser() == false"><a href="#/reserva">Reservar</a></p>
+    </div>
+  </slide>
+</carousel>

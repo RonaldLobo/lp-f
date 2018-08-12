@@ -1,0 +1,45 @@
+<ul>
+	<li *ngFor="let barbero of barberos" (click)="selectedServicio = '';selectBarber(barbero);" class="barberos" [class.active]="selectedBarber==barbero">
+		<div class="icon-barbero">
+			<img src="https://graph.facebook.com/{{barbero.usuario}}/picture?type=large" *ngIf="isFB(barbero.usuario)">
+			<!-- <img src="assets/images/barbero-icon.png" *ngIf="(barbero.img == null) && (barbero.sexo == 'M')"> -->
+			<!-- <img src="assets/images/barbera-icon.png" *ngIf="(barbero.img == null) && (barbero.sexo == 'F')"> -->
+			<img src="assets/images/barbero-icon.png" *ngIf="!isFB(barbero.usuario)">
+		</div>
+		<p>{{barbero.nombre}}</p>
+	</li>
+	<p *ngIf="barberos.length == 0 && obteniendoBarberos == false" class="error">
+		Lo sentimos pero el local seleccionado aún no cuenta con servidores!
+	</p>
+	<p *ngIf="obteniendoBarberos" class="error">
+		Cargando Barberos...
+	</p>
+</ul>
+<div *ngIf="selectedBarber">
+	<p>Seleccione el servicio que desea de {{selectedBarber.nombre}}:</p>
+	<ul class="row justify-content-center">
+		<li *ngFor="let servicio of selectedBarber.servicios" (click)="!servicio.esDinamico && selectServicio(servicio,false)" class="card servicio-card" [class.active]="selectedServicio==servicio">
+			<p>{{servicio.descripcion}}</p>
+			<div *ngIf="servicio.esDinamico && !isRegularUser">
+				<p>Precio: <input type="number" name="" [(ngModel)]="servicio.precioDinamico" style="width: 100px;"></p>
+				<p>Duración: 
+				<select [(ngModel)]="servicio.duracionDinamica" style="width: 100px;">
+					<option *ngFor="let tiempo of tiempos" [ngValue]="tiempo">{{convertMinsToHrsMins(tiempo)}}</option>
+				</select>
+				</p>
+				<p>Descripción: <input type="text" name="" [(ngModel)]="servicio.descripcionDinamica" style="width: 100px;"></p>
+				<button class="btn btn-primary" (click)="selectServicio(servicio,true)">Listo</button>
+			</div>
+			<div *ngIf="servicio.esDinamico && isRegularUser">
+				Comuniquese con la Barbería para este servicio.<br>Tel: {{selectedBarber.telefono[0].telefono}}
+			</div>
+			<div *ngIf="!servicio.esDinamico">
+				<p>{{servicio.precio}} Colones</p>
+				<p>{{servicio.duracion}} Minutos</p>
+			</div>
+		</li>
+		<p *ngIf="selectedBarber.servicios && selectedBarber.servicios.length == 0" class="error">
+			Lo sentimos pero la persona seleccionada aún no tiene servicios registrados!
+		</p>
+	</ul>
+</div>

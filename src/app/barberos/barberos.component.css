@@ -1,0 +1,73 @@
+ul{
+	text-align: center;
+}
+
+.barberos{
+	width: 80px;
+    height: 103px;
+    margin-right: 10px;
+    display: inline-block;
+    text-align: center;
+}
+
+.error{
+    color: orange;
+    text-decoration: underline;
+}
+
+.barberos.active .icon-barbero{
+	border-color: green;
+    border-width: 2px;
+}
+
+.icon-barbero{
+	width: 80px;
+    height: 80px;
+    border-radius: 39px;
+    border: 1px solid black;
+    overflow: hidden;
+    background: white;
+}
+
+.icon-barbero img{
+	width: 80px;
+	height: 80px;
+}
+
+.icon-barbero:hover {
+	animation: pop 0.3s linear 1;
+}
+
+.card:hover {
+	animation: pop 0.3s linear 1;
+}
+
+@keyframes pop {
+	50%  {transform: scale(1.2);}
+}
+
+.card {
+    width: 120px;
+    margin-left: 4px;
+    margin-bottom: 4px;
+    display: inline-block;
+    border-color: black;
+    box-shadow: 3px 4px 2px -2px grey;
+}
+
+.card.active{
+	border-color: green;
+    border-width: 2px;
+}
+
+.servicio-card{
+    padding: 3px;
+}
+
+.servicio-card p{
+    word-wrap: break-word;
+}
+
+.no-display{
+    display: none;
+}

@@ -1,0 +1,90 @@
+<div class="home container">
+	<div class="row">
+		<carousel-custom></carousel-custom>
+	</div>
+	<div class="row" *ngIf="!authService.isAppUnica">
+		<div class="col-12">
+			<div class="module white-back static">
+				<div class="module-title">
+					<h4>Bienvenido <span *ngIf="authService.isUserLogged()">{{authService.loggedUser.nombre}}</span> a {{authService.nombreBarberia}} </h4>
+					<span class="module-separator"></span>
+				</div>
+				<p class="lead">La red de barberias mas grande del Pais.</p>
+				<p>Solo seleccione "Reservar" y escoja la barbería de su preferencia.</p>
+				<p>Con cientos de clientes  y barberias satisfechos que pueden dar fe de nuestra calidad.</p>
+				<div class="row">
+					<div class="col-12">
+						<div class="info wow fadeInUp" style="visibility: visible; animation-duration: 1s; animation-delay: 0.3s; animation-name: fadeInUp;">
+							<p><i class="fa fa-scissors" aria-hidden="true"></i>Cobertura nacional</p>
+						</div>
+					</div>
+					<div class="col-12">
+						<div class="info wow fadeInUp" style="visibility: visible; animation-duration: 1s; animation-delay: 0.5s; animation-name: fadeInUp;">
+							<p><i class="fa fa-camera-retro" aria-hidden="true"></i>Disponible 24/7</p>
+						</div>
+					</div>
+					<div class="col-12">
+						<div class="info wow fadeInUp" style="visibility: visible; animation-duration: 1s; animation-delay: 0.7s; animation-name: fadeInUp;">
+							<p><i class="fa fa-lightbulb-o" aria-hidden="true"></i>Siempre trabajando para mejorar nuestros servicios.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row" *ngIf="authService.isAppUnica">
+		<div class="col-12">
+			<div class="module white-back static">
+				<div class="module-title">
+					<h4>Bienvenido <span *ngIf="authService.isUserLogged()">{{authService.loggedUser.nombre}}</span> a {{authService.nombreBarberia}} </h4>
+					<span class="module-separator"></span>
+				</div>
+				<p class="lead">La Barberia abrio a inicio del 2012, nos especializamos en cortes de cabello y barba, Gracias por elegirnos!</p>
+				<p>Con miles de clientes satisfechos que pueden dar fe de nuestra calidad.</p>
+				<div class="row">
+					<div class="col-12">
+						<div class="info wow fadeInUp" style="visibility: visible; animation-duration: 1s; animation-delay: 0.3s; animation-name: fadeInUp;">
+							<p><i class="fa fa-scissors" aria-hidden="true"></i>Cortes de muchos estilos.</p>
+						</div>
+					</div>
+					<div class="col-12">
+						<div class="info wow fadeInUp" style="visibility: visible; animation-duration: 1s; animation-delay: 0.5s; animation-name: fadeInUp;">
+							<p><i class="fa fa-camera-retro" aria-hidden="true"></i>Un ambiene ameno para el corte de su cabello y barba.</p>
+						</div>
+					</div>
+					<div class="col-12">
+						<div class="info wow fadeInUp" style="visibility: visible; animation-duration: 1s; animation-delay: 0.7s; animation-name: fadeInUp;">
+							<p><i class="fa fa-lightbulb-o" aria-hidden="true"></i>Siempre en entrenamiento para llegar a ser aun mejores.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row gallery">
+		<div class="col-12 wow fadeInUp" style="visibility: visible; animation-name: fadeInUp;">
+			<div class="module white-back">
+				<div class="module-title">
+					<h4>Beard &amp; Hair Styles</h4>
+					<span class="module-separator"></span>
+				</div>
+				<div class="mini-gallery clearfix">
+					<div class="col-12">
+						<div class="row" style="margin-bottom: 16px;">
+							<img-modal name="hair1" class="col-3 img-modal"></img-modal>
+							<img-modal name="hair2" class="col-3 img-modal"></img-modal>
+							<img-modal name="hair3" class="col-3 img-modal"></img-modal>
+							<img-modal name="hair4" class="col-3 img-modal"></img-modal>
+						</div>
+						<div class="row">
+							<img-modal name="hair5" class="col-3 img-modal"></img-modal>
+							<img-modal name="hair6" class="col-3 img-modal"></img-modal>
+							<img-modal name="hair7" class="col-3 img-modal"></img-modal>
+							<img-modal name="hair8" class="col-3 img-modal"></img-modal>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

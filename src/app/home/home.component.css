@@ -1,0 +1,12 @@
+.home .header{
+	font-size: 19px;
+    font-weight: 700;
+    height: 120px;
+    padding-top: 38px;
+    line-height: 26px;
+    letter-spacing: 0.2px;
+}
+
+.mini-gallery .row a{
+	padding: 11px 2px;
+}
