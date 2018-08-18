@@ -7,6 +7,7 @@ import { Usuario } from "../models/usuario";
 import { Telefono } from '../models/telefono';
 import { Correo } from '../models/correo';
 import { DataService } from '../services/data.service';
+import * as _ from "lodash";
 
 @Component({
   selector: 'app-usuarios',
@@ -26,6 +27,9 @@ export class UsuariosComponent implements OnInit {
 	public validationErrorMsg: string = '';
 	public nuevoUsuarioDisplay: boolean = false;
 	public nuevoUsuarioError: boolean = false;
+	public buscaUsuario:string = "";
+	public usuarioCita: any = [];
+	public encontroUsuario: boolean = false;
 
   constructor(private router:Router,private dataService:DataService, public authService:AuthService, public validatorService:ValidatorService) { }
 
@@ -97,5 +101,50 @@ export class UsuariosComponent implements OnInit {
 		    return el.correo !== correo.correo;
 		});
 	}
+
+	public updateUser(){
+		this.usuarioErrores = this.validatorService.validaUsuario(this.nuevoUsuario, false);
+		console.log(this.usuarioErrores);
+		if(this.usuarioErrores.length == 0){
+			this.dataService.post('/usuario/?method=put', {'usuario':this.nuevoUsuario})
+	            .then(response => {
+	            	alert('Información actualizada');
+	            	this.cargando = false;
+	                this.nuevoUsuario = new Usuario();
+	                this.encontroUsuario = false;
+	                this.buscaUsuario = '';
+	            },
+	            error => {
+	            	this.cargando = false;
+	        });
+        }
+	}
+
+	public buscaUsuarioChanged = _.debounce(function() {
+		this.encontroUsuario = false;
+		this.nuevoUsuario =  new Usuario();
+		if(this.buscaUsuario.length >= 3){
+		    this.cargando = true;
+		    this.dataService.get('/usuario/?nombre='+this.buscaUsuario)
+	        .then(response => {
+	            console.log('success usuarios',response);
+	            this.usuarioCita = response.usuario;
+				this.cargando = false;
+	        },
+	        error => {
+	        })
+	    } else if(!this.buscaUsuario){
+	    	this.usuarioCita = [];
+	    }
+	}, 400);
+
+	public seleccionaUsuarioCita(usuario){
+		this.nuevoUsuario = usuario;
+		this.encontroUsuario=true;
+		this.usuarioCita = [];
+		console.log(usuario);
+	}
+
+
 
 }

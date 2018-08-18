@@ -1,7 +1,7 @@
 import { Component, OnInit, Input,Output,EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import 'moment/locale/es';  
-
+import { AuthService } from '../services/auth.service';
 
 @Component({
 	selector: 'app-calendario',
@@ -27,10 +27,14 @@ export class CalendarioComponent implements OnInit {
 	};
 	private opened: boolean = false;
 
-	public constructor() {
+	public constructor(private authService:AuthService) {
 		(this.tomorrow = new Date()).setDate(this.tomorrow.getDate() + 1);
 		(this.afterTomorrow = new Date()).setDate(this.tomorrow.getDate() + 2);
-		(this.minDate = new Date()).setDate(this.minDate.getDate());
+		if(this.authService.isAdminSucursalUser()){
+			(this.minDate = null);
+		} else {
+			(this.minDate = new Date()).setDate(this.minDate.getDate());
+		}
 		(this.dateDisabled = []);
 		this.events = [
 		{date: this.tomorrow, status: 'full'},

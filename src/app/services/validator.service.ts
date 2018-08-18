@@ -7,7 +7,7 @@ export class ValidatorService {
     constructor() {
     }
 
-    public validaUsuario(usuario){
+    public validaUsuario(usuario, requiereContrasenna = true){
     	var errors = [];
     	if(!this.isNotNull(usuario.nombre)){
     		errors.push({
@@ -21,7 +21,7 @@ export class ValidatorService {
     			desc:'Por favor ingrese un usuario'
     		});
     	}
-    	if(!this.isNotNull(usuario.contrasenna)){
+    	if(!this.isNotNull(usuario.contrasenna) && requiereContrasenna){
     		errors.push({
     			error:'contrasenna',
     			desc:'Por favor ingrese una clave'

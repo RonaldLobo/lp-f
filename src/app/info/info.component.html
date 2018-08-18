@@ -7,104 +7,6 @@
 			<div class="title reserva col-12">
 			  <h5>Información</h5>
 			</div>
-			<div class="col-xs-12 col-md-6 item" *ngIf="authService.isRegularUser()">
-				<div class="row">
-					<div class="col-5 clickable" (click)="displayCitas = !displayCitas">
-						<p class="heading">Citas <span *ngIf="!displayCitas">></span> <span *ngIf="displayCitas"><</span></p>
-					</div>
-					<div class="col-12" *ngIf="displayCitas">
-						<ul class="reservas row">
-							<li *ngFor="let cita of reservas" class="col-12 col-md-6">
-								<div (click)="obtieneInfo(cita);selectedCita = Object.assign({}, cita);openModal(citaModal)">
-									{{cita.dia}} - {{convierteTiempo(cita.horaInicial)}}
-								</div>
-							</li>
-							<p *ngIf="cargandoCitas" class="col-12">
-								Cargando citas...
-							</p>
-							<p *ngIf="reservas.length == 0" class="col-12">
-								No tiene citas.
-							</p>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="col-xs-12 col-md-6 item" *ngIf="(authService.isBarberoUser() && authService.isAdminUser()) || authService.isBarberoUser()">
-				<div class="row">
-					<div class="col-5 clickable" (click)="displayCitas = !displayCitas">
-						<p class="heading">Citas <span *ngIf="!displayCitas">></span> <span *ngIf="displayCitas"><</span></p>
-					</div>
-				</div>
-				<div class="row date" *ngIf="displayCitas">
-					<div class="col-2 centered-content clickable" (click)="changeDate('less')">
-						<
-					</div>
-					<div class="col-8 centered-content underline">
-						{{selectedDate | date}}
-					</div>
-					<div class="col-2 centered-content clickable" (click)="changeDate('more')">
-						>
-					</div>
-				</div>
-				<div class="row" *ngIf="displayCitas">
-					<div class="col-12">
-						<ul class="reservas row">
-							<li *ngFor="let cita of reservas" class="col-4 cita">
-								<div (click)="obtieneInfo(cita);selectedCita = Object.assign({}, cita);openModal(citaModal)">
-									{{convierteTiempo(cita.horaInicial)}}
-								</div>
-							</li>
-							<p *ngIf="cargandoCitas" class="col-12">
-								Cargando citas...
-							</p>
-							<p *ngIf="reservas.length == 0" class="col-12">
-								No tiene citas para el día seleccionado.
-							</p>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<!-- display citas barberia -->
-			<div class="col-xs-12 col-md-6 item" *ngIf="authService.isAdminSucursalUser()">
-				<div class="row">
-					<div class="col-5 clickable" (click)="displayCitasBarberia = !displayCitasBarberia">
-						<p class="heading">Citas Barberia<span *ngIf="!displayCitasBarberia">></span> <span *ngIf="displayCitasBarberia"><</span></p>
-					</div>
-				</div>
-				<div class="row date" *ngIf="displayCitasBarberia">
-					<div class="col-2 centered-content clickable" (click)="changeDateBarberia('less')">
-						<
-					</div>
-					<div class="col-8 centered-content underline">
-						{{selectedDateBarberia | date}}
-					</div>
-					<div class="col-2 centered-content clickable" (click)="changeDateBarberia('more')">
-						>
-					</div>
-				</div>
-				<div class="row justify-content-center" *ngIf="displayCitasBarberia">
-					<div class="col-10">
-						<ul class="reservas row">
-							<li *ngFor="let barberoCita of barberosCitasSucursal" class="col-12 barbero-cita">
-								<p> Barbero: {{barberoCita.barbero.nombre}} {{barberoCita.barbero.apellido1}}
-								<ul class="reservas row">
-									<li *ngFor="let cita of barberoCita.citas" class="col-4 cita">
-										<div (click)="obtieneInfo(cita);selectedCita = Object.assign({}, cita);openModal(citaModal)">
-											{{convierteTiempo(cita.horaInicial)}}
-										</div>
-									</li>
-									<p *ngIf="barberoCita.citas.length == 0" class="col-12">
-										No tiene citas registradas para este día.
-									</p>
-								</ul>
-							</li>
-							<p *ngIf="obteniendoBarberos" class="col-12">
-								Obteniendo citas...
-							</p>
-						</ul>
-					</div>
-				</div>
-			</div>
 			<!-- fin display citas barberia -->
 			<div class="col-xs-12 col-md-6 item pausas" *ngIf="authService.isBarberoUser()">
 				<div class="row">
@@ -331,7 +233,7 @@
 					</div>
 				</div>
 			</div> -->
-			<div class="col-xs-12 col-md-6 item" *ngIf="(authService.isBarberoUser() && authService.isAdminUser()) || authService.isBarberoUser() || authService.isAdminSucursalUser()">
+			<!-- <div class="col-xs-12 col-md-6 item" *ngIf="(authService.isBarberoUser() && authService.isAdminUser()) || authService.isBarberoUser() || authService.isAdminSucursalUser()">
 				<div class="row">
 					<div class="col-5" (click)="displayResumen = !displayResumen">
 						<p class="heading">Resumen <span *ngIf="!displayResumen">></span> <span *ngIf="displayResumen"><</span></p>
@@ -372,7 +274,7 @@
 						{{ganancias}}
 					</div>
 				</div>
-			</div>
+			</div> -->
 
 
 		</div>

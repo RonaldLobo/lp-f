@@ -168,7 +168,7 @@ export class ReservaComponent implements OnInit {
 			console.log(today.getMinutes() > Number(this.modificaHoraToTime(horarioInicio).substring(2, 4)));
 			console.log(today.getHours() , Number(this.modificaHoraToTime(horarioInicio).substring(0, 2)));
 			console.log(today.getMinutes() , Number(this.modificaHoraToTime(horarioInicio).substring(2, 4)));
-			if(this.dateSelected.getFullYear()+this.dateSelected.getMonth()+this.dateSelected.getDate() == today.getFullYear()+today.getMonth()+today.getDate() && 
+			if(!this.authService.isAdminSucursalUser() && this.dateSelected.getFullYear()+this.dateSelected.getMonth()+this.dateSelected.getDate() == today.getFullYear()+today.getMonth()+today.getDate() && 
 				(today.getHours() >= Number(this.modificaHoraToTime(horarioInicio).substring(0, 2)) && 
 					today.getMinutes() > Number(this.modificaHoraToTime(horarioInicio).substring(2, 4)))){
 				console.log('entra');

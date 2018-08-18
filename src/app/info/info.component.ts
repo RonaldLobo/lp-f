@@ -144,40 +144,40 @@ export class InfoComponent implements OnInit {
 		            },
 		            error => {
 		            });
-		        that.cargandoCitas = true;
-		        that.dataService.get('/reserva/?idUsuarioBarbero='+that.authService.loggedUser.id+'&fecha='+that.selectedDate.getFullYear()+'-'+that.zerofill(that.selectedDate.getMonth(),1)+'-'+that.zerofill(that.selectedDate.getDate(),0))
-		            .then(response => {
-		                that.reservas = that.updateTimeToHora(response.reserva);
-		                that.cargandoCitas = false;
-		            },
-		            error => {
-		            });
-		        setInterval(function(){ 
-		        	that.dataService.get('/reserva/?idUsuarioBarbero='+that.authService.loggedUser.id+'&fecha='+that.selectedDate.getFullYear()+'-'+that.zerofill(that.selectedDate.getMonth(),1)+'-'+that.zerofill(that.selectedDate.getDate(),0))
-		            .then(response => {
-		                that.reservas = that.updateTimeToHora(response.reserva);
-		                that.cargandoCitas = false;
-		            },
-		            error => {
-		            });
-		        }, 30000);
+		        // that.cargandoCitas = true;
+		        // that.dataService.get('/reserva/?idUsuarioBarbero='+that.authService.loggedUser.id+'&fecha='+that.selectedDate.getFullYear()+'-'+that.zerofill(that.selectedDate.getMonth(),1)+'-'+that.zerofill(that.selectedDate.getDate(),0))
+		        //     .then(response => {
+		        //         that.reservas = that.updateTimeToHora(response.reserva);
+		        //         that.cargandoCitas = false;
+		        //     },
+		        //     error => {
+		        //     });
+		        // setInterval(function(){ 
+		        // 	that.dataService.get('/reserva/?idUsuarioBarbero='+that.authService.loggedUser.id+'&fecha='+that.selectedDate.getFullYear()+'-'+that.zerofill(that.selectedDate.getMonth(),1)+'-'+that.zerofill(that.selectedDate.getDate(),0))
+		        //     .then(response => {
+		        //         that.reservas = that.updateTimeToHora(response.reserva);
+		        //         that.cargandoCitas = false;
+		        //     },
+		        //     error => {
+		        //     });
+		        // }, 30000);
 			}
-			if(!that.authService.isBarberoUser() && !that.authService.isAdminUser()){
-				that.cargandoCitas = true;
-				that.dataService.get('/reserva/?idUsuarioReserva='+that.authService.loggedUser.id)
-		            .then(response => {
-		                that.reservas = that.updateTimeToHora(response.reserva);
-		                that.cargandoCitas = false;
-		            },
-		            error => {
-		            });
-		    }
-		    if(that.authService.isAdminSucursalUser()){
-		    	that.obtieneCitasBarberia(that);
-		    	setInterval(function(){ 
-		        	that.obtieneCitasBarberia(that);
-		        }, 30000);
-		    }
+			// if(!that.authService.isBarberoUser() && !that.authService.isAdminUser()){
+			// 	that.cargandoCitas = true;
+			// 	that.dataService.get('/reserva/?idUsuarioReserva='+that.authService.loggedUser.id)
+		 //            .then(response => {
+		 //                that.reservas = that.updateTimeToHora(response.reserva);
+		 //                that.cargandoCitas = false;
+		 //            },
+		 //            error => {
+		 //            });
+		 //    }
+		 //    if(that.authService.isAdminSucursalUser()){
+		    	// that.obtieneCitasBarberia(that);
+		    	// setInterval(function(){ 
+		     //    	that.obtieneCitasBarberia(that);
+		     //    }, 30000);
+		    // }
 
 		},time);
 	}

@@ -42,6 +42,9 @@ import { BarberosComponent } from './barberos/barberos.component';
 import { UsuariosComponent } from './usuarios/usuarios.component';
 
 
+import { CitasComponent } from './citas/citas.component';
+
+
 
 
 export const ROUTES: Routes = [
@@ -65,6 +68,10 @@ export const ROUTES: Routes = [
     { 
         path: 'clientes',
         component: UsuariosComponent
+    },
+    { 
+        path: 'citas',
+        component: CitasComponent
     },
     { 
         path: '**', 
@@ -96,7 +103,8 @@ import { WindowRefService } from './services/window.service';
     ConfiguracionComponent,
     InfoComponent,
     CalendarioInputComponent,
-    UsuariosComponent
+    UsuariosComponent,
+    CitasComponent
   ],
   imports: [
     RouterModule.forRoot(

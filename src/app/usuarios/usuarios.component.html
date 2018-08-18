@@ -6,8 +6,24 @@
 	<div clas="col-12">
 		<div class="module white-back static row">
 			<div class="title reserva col-12">
-			  <h5>Agregar Cliente</h5>
+			  <h5>Clientes</h5>
 			</div>
+			<div class="row col-12 separador">
+				<div class="col-4">
+					<label>Buscar Clientes</label>
+				</div>
+				<div class="col-8">
+					 <input class="auto-usuario" type="text" name="" placeholder="Nombre Apellidos" [(ngModel)]="buscaUsuario" (ngModelChange)="buscaUsuarioChanged()">
+			          <ul>
+			            <li *ngFor="let usuario of usuarioCita"> 
+			              <span class="usuarios" (click)="seleccionaUsuarioCita(usuario)">{{usuario.nombre}} {{usuario.apellido1}} {{usuario.apellido2}} | <span *ngIf="usuario.telefono.length > 0">{{usuario.telefono[0].telefono}}</span>
+			              </span>
+			            </li>
+			          </ul>
+				</div>
+
+			</div>
+
 			<div class="row col-12">
 				<div class="col-4">
 					<label>Usuario<span class="required" [class.reqerror]="validatorService.hasError('usuario',usuarioErrores)">*</span></label>
@@ -34,6 +50,12 @@
 				<div class="col-8">
 					<input type="text" name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
 				</div>
+				<!-- <div class="col-4">
+					<label>Fecha Nacimiento</label>
+				</div>
+				<div class="col-8">
+					<input type="text" name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
+				</div> -->
 				<div class="col-4">
 					<label>Correo<span class="required" [class.reqerror]="validatorService.hasError('correo',usuarioErrores)">*</span></label>
 				</div>
@@ -63,11 +85,20 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-12 entrar">
-					<button type="button" class="btn btn-primary" (click)="newUser()">
+				<div class="col-2 entrar">
+					<button type="button" *ngIf="encontroUsuario == false" class="btn btn-primary" (click)="newUser()">
 						Registrar
 					</button>
+					<button type="button" *ngIf="encontroUsuario" class="btn btn-primary" (click)="updateUser()">
+						Modificar
+					</button>
 				</div>
+				<!-- <div class="col-10 entrar">
+					<button type="button" *ngIf="encontroUsuario" class="btn btn-danger" (click)="newUser()">
+						Eliminar
+					</button>
+				</div> -->
+					
 				<div class="col-12" *ngIf="nuevoUsuarioError" style="color:red;">
 					{{authService.errorDisplay}}
 				</div>
