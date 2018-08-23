@@ -17,6 +17,7 @@ import { CalendarioInputComponent } from './calendario-input/calendario-input.co
 
 import { AuthService } from './services/auth.service';
 import { DataService } from './services/data.service';
+import { FacturaService } from './services/factura.service';
 import { ValidatorService } from './services/validator.service';
 import { FacebookLoginService } from './services/facebook-login.service';
 import { PushNotificationsService } from './services/push-notification.service';
@@ -136,6 +137,7 @@ import { WindowRefService } from './services/window.service';
       // { provide: LOCALE_ID, useValue: "es-es" },
       WindowRefService,
       AuthService,
+      FacturaService,
       DataService,
       ValidatorService,
       FacebookLoginService,
