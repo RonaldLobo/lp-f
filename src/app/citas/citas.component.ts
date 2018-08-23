@@ -10,6 +10,7 @@ import { Telefono } from '../models/telefono';
 import { Correo } from '../models/correo';
 
 
+
 @Component({
   selector: 'app-citas',
   templateUrl: './citas.component.html',
@@ -40,7 +41,7 @@ export class CitasComponent implements OnInit {
 
 	public selectedBarbero: number;
 
-	public cargando:boolean = false;
+	public cargando:boolean = true;
 	public mostrarModificar:boolean = false;
 
 	public nuevoUsuario:Usuario = new Usuario();
@@ -52,6 +53,10 @@ export class CitasComponent implements OnInit {
 
 	public validationErrorMsg: string = '';	
 	public selectedCita:any={};
+	public selectedDateNoFormat: string = '';
+	public today= new Date();	
+	public facturaHacienda : any = {};
+
 
     constructor(private modalService: BsModalService,public authService:AuthService, private validatorService:ValidatorService,private dataService:DataService, private windowRef: WindowRefService) {}
 
@@ -84,7 +89,7 @@ export class CitasComponent implements OnInit {
 		            });
 		    }
 		    if(that.authService.isAdminSucursalUser()){
-		    	that.obtieneCitasBarberia(that);
+		    	//that.obtieneCitasBarberia(that);
 		    }
 
 		},time);
@@ -160,7 +165,21 @@ export class CitasComponent implements OnInit {
 	            });
 	}
 
-	public changeDateBarberia(option){
+	public changeDateBarberia(fecha){
+
+	
+		if(this.selectedDateNoFormat != fecha ){
+			let newDate = new Date(fecha);
+			newDate.setDate(newDate.getDate() + 1);
+			this.selectedDateBarberia = newDate	;
+			this.selectedDateNoFormat = fecha;
+			this.obtieneCitasBarberia(this);
+		}
+	        
+	}
+
+
+	public changeDateBarberia1(option){
 		if(option === "more"){
 			let newDate = new Date(this.selectedDateBarberia.getTime());
 			newDate.setDate(newDate.getDate() + 1);
@@ -373,10 +392,6 @@ export class CitasComponent implements OnInit {
 	            	alert('Información actualizada');
 	            	this.cargando = false;
 	            	console.log(response);
-	               // this.mostrarModificar = false;
-	             //   this.obtenerInfoUsuario(this.nuevoUsuario.id);
-	               // this.encontroUsuario = false;
-	               // this.buscaUsuario = '';
 	            },
 	            error => {
 	            	this.cargando = false;
@@ -399,5 +414,77 @@ export class CitasComponent implements OnInit {
 
 
 
+// CedulaJuridica, NombreNegocio, Distrito, Barrio
+	public facturacionHacienda(){
+		let fechaActual = new Date();
+		this.facturaHacienda.factura.fecha = fechaActual.toString();
+		this.facturaHacienda.factura.nombreComercial = fechaActual.toString(); //nombre barberia
+		this.facturaHacienda.factura.situacion = 'normal';
 
+		this.facturaHacienda.factura.emisor.nombre = 'normal';// nombre del negocio
+		this.facturaHacienda.factura.emisor.tipoId = '02';
+		this.facturaHacienda.factura.emisor.id = '02';//cedula juridic
+		this.facturaHacienda.factura.emisor.provincia = '2';//cedula juridica
+		this.facturaHacienda.factura.emisor.canton = '02';//cedula juridica
+		this.facturaHacienda.factura.emisor.distrito = '02';//cedula juridica
+		this.facturaHacienda.factura.emisor.barrio = '02';//cedula juridica
+		this.facturaHacienda.factura.emisor.senas = '02';//cedula juridica
+		this.facturaHacienda.factura.emisor.codigoPaisTel = '506';
+		this.facturaHacienda.factura.emisor.tel = '02';//cedula juridica
+		this.facturaHacienda.factura.emisor.codigoPaisFax = '';
+		this.facturaHacienda.factura.emisor.fax = '';
+		this.facturaHacienda.factura.emisor.email = '02';//cedula juridica
+
+		this.facturaHacienda.factura.receptor.nombre = '02';//cedula juridica -- cliente
+		this.facturaHacienda.factura.receptor.tipoId = '01';
+		this.facturaHacienda.factura.receptor.id = '02';//cedula juridica
+		this.facturaHacienda.factura.receptor.provincia = '02';//cedula juridica
+		this.facturaHacienda.factura.receptor.canton = '02';//cedula juridica
+		this.facturaHacienda.factura.receptor.distrito = '02';//cedula juridica
+		this.facturaHacienda.factura.receptor.barrio = '02';//cedula juridica
+		this.facturaHacienda.factura.receptor.senas = '02';//cedula juridica
+		this.facturaHacienda.factura.receptor.codigoPaisTel = '506';
+		this.facturaHacienda.factura.receptor.tel = '02';//cedula juridica
+		this.facturaHacienda.factura.receptor.codigoPaisFax = '';
+		this.facturaHacienda.factura.receptor.fax = '';
+		this.facturaHacienda.factura.receptor.email = '';//cedula juridica
+
+		this.facturaHacienda.factura.condicionVenta = '01';
+		this.facturaHacienda.factura.plazoCredito = '0';
+		this.facturaHacienda.factura.medioPago = '01';
+		this.facturaHacienda.factura.codMoneda = 'CRC';
+		this.facturaHacienda.factura.tipoCambio = '1';
+		this.facturaHacienda.factura.totalServGravados = '0';
+		this.facturaHacienda.factura.totalServExentos = 'normal';//total del servicio
+		this.facturaHacienda.factura.totalMercGravada = '0';
+		this.facturaHacienda.factura.totalMercExenta = '0';
+		this.facturaHacienda.factura.totalGravados = '0';
+		this.facturaHacienda.factura.totalExentos = 'normal';//total del servicio
+		this.facturaHacienda.factura.totalVentas = 'normal';//total del servicio
+		this.facturaHacienda.factura.totalDescuentos = '0';
+		this.facturaHacienda.factura.totalVentasNeta = 'normal';//total del servicio
+		this.facturaHacienda.factura.totalImpuestos = 'normal';
+		this.facturaHacienda.factura.totalComprobante = 'normal';//total del servicio
+		this.facturaHacienda.factura.otros = 'Gracias.';
+
+
+		this.facturaHacienda.factura.detalles['1'].cantidad = 'Gracias.';
+		this.facturaHacienda.factura.detalles.unidadMedida = 'Sp.';
+		this.facturaHacienda.factura.detalles.detalle = 'Gracias.';
+		this.facturaHacienda.factura.detalles.precioUnitario = 'Gracias.';
+		this.facturaHacienda.factura.detalles.montoTotal = 'Gracias.';
+		this.facturaHacienda.factura.detalles.subtotal = 'Gracias.';
+		this.facturaHacienda.factura.detalles.montoTotalLinea = 'Gracias.';
+
+
+		this.facturaHacienda.factura.omitirReceptor = 'Gracias.';
+
+
+		this.facturaHacienda.cliente.id = 'Gracias.';
+	}
+	
+
+
+
+ 
 }

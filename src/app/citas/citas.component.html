@@ -36,14 +36,12 @@
 					</div>
 				</div>
 				<div class="row date" *ngIf="displayCitas">
-					<div class="col-2 centered-content clickable" (click)="changeDate('less')">
-						<
+					<div class="col-2 centered-content clickable" >
 					</div>
-					<div class="col-8 centered-content underline">
-						{{selectedDate | date}}
+					<div class="col-8 centered-content ">
+						<calendario-input [daterecive]="today" (dateSelectedChange)="changeDateBarberia($event)"></calendario-input>
 					</div>
-					<div class="col-2 centered-content clickable" (click)="changeDate('more')">
-						>
+					<div class="col-2 centered-content clickable" >
 					</div>
 				</div>
 				<div class="row" *ngIf="displayCitas">
@@ -72,14 +70,14 @@
 					</div>
 				</div>
 				<div class="row date" *ngIf="displayCitasBarberia">
-					<div class="col-2 centered-content clickable" (click)="changeDateBarberia('less')">
-						<
+					<div class="col-2 centered-content clickable" >
+						
 					</div>
-					<div class="col-8 centered-content underline">
-						{{selectedDateBarberia | date}}
+					<div class="col-8 centered-content ">
+						<calendario-input [daterecive]="today" (dateSelectedChange)="changeDateBarberia($event)"></calendario-input>
 					</div>
-					<div class="col-2 centered-content clickable" (click)="changeDateBarberia('more')">
-						>
+					<div class="col-2 centered-content clickable">
+						
 					</div>
 				</div>
 				<div class="row justify-content-center" *ngIf="displayCitasBarberia">
@@ -143,7 +141,7 @@
 						Ganancias por citas:
 					</div>
 					<div class="col-6">
-						{{ganancias}}
+						{{ganancias | number:'.2-2'}}
 					</div>
 				</div>
 			</div>

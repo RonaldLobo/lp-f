@@ -22,6 +22,7 @@ export class UsuariosComponent implements OnInit {
 	public usuarioErrores : any = [];
 	public nuevoTelefono: number;
 	public nuevoCorreo:string;
+	public fecha : Date = new Date();
 	public error:boolean = false;
 	public validationError: boolean = false;
 	public validationErrorMsg: string = '';
@@ -30,6 +31,7 @@ export class UsuariosComponent implements OnInit {
 	public buscaUsuario:string = "";
 	public usuarioCita: any = [];
 	public encontroUsuario: boolean = false;
+	public selectedDateNoFormat: string = '';
 
   constructor(private router:Router,private dataService:DataService, public authService:AuthService, public validatorService:ValidatorService) { }
 
@@ -105,6 +107,7 @@ export class UsuariosComponent implements OnInit {
 	public updateUser(){
 		this.usuarioErrores = this.validatorService.validaUsuario(this.nuevoUsuario, false);
 		console.log(this.usuarioErrores);
+		console.log('kim ',this.nuevoUsuario.fechaNacimiento);
 		if(this.usuarioErrores.length == 0){
 			this.dataService.post('/usuario/?method=put', {'usuario':this.nuevoUsuario})
 	            .then(response => {
@@ -113,6 +116,7 @@ export class UsuariosComponent implements OnInit {
 	                this.nuevoUsuario = new Usuario();
 	                this.encontroUsuario = false;
 	                this.buscaUsuario = '';
+	                this.fecha = new Date();
 	            },
 	            error => {
 	            	this.cargando = false;
@@ -142,9 +146,42 @@ export class UsuariosComponent implements OnInit {
 		this.nuevoUsuario = usuario;
 		this.encontroUsuario=true;
 		this.usuarioCita = [];
+		this.fecha= new Date(this.nuevoUsuario.fechaNacimiento);
 		console.log(usuario);
 	}
 
+	public zerofill(i,add) {
+		i = i + add;
+    	return ((i < 10 ? '0' : '') + i);
+	}
 
+  	public fechaChanges(param){
+  		console.log(this.fecha);
+  		//let newDate = new Date(this.fecha);
+		//newDate.setDate(newDate.getDate() + 1);
+		//this.fecha = newDate;
+  		var date = this.fecha.getFullYear()+'-'+this.zerofill(this.fecha.getMonth(),1)+'-'+this.zerofill(this.fecha.getDate() ,0);
+  		if(date != param){
+			this.fecha = new Date(param);
+			console.log('kim',this.fecha);
+		}
+		
+	}
+
+	public deleteUser(){
+		this.dataService.post('/usuario/?method=delete&idUsuario='+this.nuevoUsuario.id+'&idSucursal='+this.nuevoUsuario.idSucursal,{})
+            .then(response => {
+            	alert('Información Eliminada');
+            	this.cargando = false;
+                this.nuevoUsuario = new Usuario();
+                this.encontroUsuario = false;
+                this.buscaUsuario = '';
+            },
+            error => {
+            	alert('Información Eliminada');
+            	this.cargando = false;
+        });
+        
+	}
 
 }

@@ -17,6 +17,7 @@ export class Usuario {
     estado: number;
     idSucursal: number;
     horarios: any[];
+    fechaNacimiento: Date;
 
     constructor(){
     	this.id = 0;
@@ -34,6 +35,7 @@ export class Usuario {
         this.tiempoBarbero = 20;
         this.servicios = [];
         this.horarios = [];
+        this.fechaNacimiento = new Date();
     }
 
 }

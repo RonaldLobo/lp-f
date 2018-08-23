@@ -1,14 +1,29 @@
-import { Component,Output,EventEmitter } from '@angular/core';
+import { Component,Output,Input,EventEmitter, OnChanges } from '@angular/core';
  
 @Component({
   selector: 'calendario-input',
   templateUrl: './calendario-input.component.html'
 })
-export class CalendarioInputComponent {
+export class CalendarioInputComponent implements OnChanges{
   minDate = new Date(2017, 5, 10);
   maxDate = new Date(2018, 9, 15);
   @Output() dateSelectedChange = new EventEmitter<any>();
+  @Input() daterecive : any;
+
   _bsValue: Date;
+
+  constructor(){
+      
+  }
+
+  ngOnChanges(changes){
+    console.log('date',changes);
+    if(changes.daterecive){
+      this.bsValue = new Date(changes.daterecive.currentValue);
+    }
+  }
+
+
   get bsValue(): Date {
     return this._bsValue;
   }
@@ -32,5 +47,7 @@ export class CalendarioInputComponent {
       return ((i < 10 ? '0' : '') + i);
   }
  
+
+
   log(v: any) {console.log(v);}
 }

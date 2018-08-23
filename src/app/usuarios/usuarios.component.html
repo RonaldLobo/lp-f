@@ -50,12 +50,13 @@
 				<div class="col-8">
 					<input type="text" name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
 				</div>
-				<!-- <div class="col-4">
+				
+				<div class="col-4">
 					<label>Fecha Nacimiento</label>
 				</div>
 				<div class="col-8">
-					<input type="text" name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
-				</div> -->
+					<calendario-input name="fechaNacimiento"  [daterecive]="fecha"  (dateSelectedChange)="fechaChanges($event)"></calendario-input>
+				</div>
 				<div class="col-4">
 					<label>Correo<span class="required" [class.reqerror]="validatorService.hasError('correo',usuarioErrores)">*</span></label>
 				</div>
@@ -93,11 +94,11 @@
 						Modificar
 					</button>
 				</div>
-				<!-- <div class="col-10 entrar">
-					<button type="button" *ngIf="encontroUsuario" class="btn btn-danger" (click)="newUser()">
+				<div class="col-10 entrar">
+					<button type="button" *ngIf="encontroUsuario" class="btn btn-danger" (click)="deleteUser()">
 						Eliminar
 					</button>
-				</div> -->
+				</div>
 					
 				<div class="col-12" *ngIf="nuevoUsuarioError" style="color:red;">
 					{{authService.errorDisplay}}

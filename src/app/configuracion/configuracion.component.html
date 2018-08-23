@@ -100,6 +100,23 @@
         	<div class="col-8">
         		<input type="text" name="barberia" [(ngModel)]="nuevaBarberia.descripcion" [class.error]="validatorService.hasError('descripcion',barberiaErrores)">
         	</div>
+
+
+            <div class="col-4">
+                Nombre Negocio:
+            </div>
+            <div class="col-8">
+               <input type="text" name="nombreNegocio" [(ngModel)]="nuevaBarberia.nombreNegocio" [class.error]="validatorService.hasError('nombreNegocio',barberiaErrores)">
+            </div>
+            <div class="col-4">
+                Cedula Juridica:
+            </div>
+            <div class="col-8">
+                <input type="text" name="cedulaJuridica" [(ngModel)]="nuevaBarberia.cedulaJuridica" [class.error]="validatorService.hasError('cedulaJuridica',barberiaErrores)">
+            </div>
+
+
+
         	<div class="col-4">
         		Señas:
         	</div>
@@ -119,11 +136,22 @@
         		Canton:
         	</div>
         	<div class="col-8">
-        		<!-- <input type="text" name="" [(ngModel)]="nuevaBarberia.canton"> -->
-                <select class="form-control" id="provincia" [(ngModel)]="nuevaBarberia.idCanton">
+        	     <select class="form-control" id="provincia" [(ngModel)]="nuevaBarberia.idCanton">
                     <option *ngFor="let canton of cantonesDisplay" [value]="canton.id">{{canton.canton}}</option>
                 </select>
         	</div>
+            <div class="col-4">
+                Distrito:
+            </div>
+            <div class="col-8">
+                <input type="text" name="distrito" [(ngModel)]="nuevaBarberia.distrito" [class.error]="validatorService.hasError('distrito',barberiaErrores)">
+            </div>
+            <div class="col-4">
+                Barrio:
+            </div>
+            <div class="col-8">
+                <input type="text" name="barrio" [(ngModel)]="nuevaBarberia.barrio" [class.error]="validatorService.hasError('barrio',barberiaErrores)">
+            </div>
             <div class="col-4">
                 Telefono:
             </div>
