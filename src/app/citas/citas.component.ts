@@ -1,6 +1,7 @@
 import { Component, OnInit ,TemplateRef} from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { DataService } from '../services/data.service';
+import { FacturaService } from '../services/factura.service';
 import { WindowRefService } from '../services/window.service';
 import { ValidatorService } from '../services/validator.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -58,7 +59,14 @@ export class CitasComponent implements OnInit {
 	public facturaHacienda : any = {};
 
 
-    constructor(private modalService: BsModalService,public authService:AuthService, private validatorService:ValidatorService,private dataService:DataService, private windowRef: WindowRefService) {}
+    constructor(
+    		private modalService: BsModalService,
+    		public authService:AuthService, 
+    		private validatorService:ValidatorService,
+    		private dataService:DataService, 
+    		private windowRef: WindowRefService, 
+    		private facturaService:FacturaService
+    ) {}
 
     ngOnInit() {
 		if(window.screen.width > 900){
@@ -386,17 +394,87 @@ export class CitasComponent implements OnInit {
 	}
 
 	public updateReserva(){
-			this.selectedCita.estadoFactura = 'P';
-			this.dataService.post('/reserva/?method=put', {'reserva':this.selectedCita})
-	            .then(response => {
-	            	alert('Información actualizada');
-	            	this.cargando = false;
-	            	console.log(response);
-	            },
-	            error => {
-	            	this.cargando = false;
-					this.selectedCita.estadoFactura = 'R';
-	        });
+			this.facturaService.post('',{
+	"factura": {
+		"fecha":"2018-08-22T21:30:21.000Z",
+		"nombreComercial":"Ronald Lobo Barrantes",
+		"situacion": "normal",
+		"emisor":{
+			"nombre":"Ronald Lobo Barrantes",
+			"tipoId":"01",
+			"id":"206780037",
+			"provincia":"2",
+			"canton":"02",
+			"distrito":"01",
+			"barrio":"01",
+			"senas":"Cond Valle Esmeralda",
+			"codigoPaisTel":"506",
+			"tel":"87051854",
+			"codigoPaisFax":"",
+			"fax":"",
+			"email":"ronald.lb2@gmail.com"
+		},
+		"receptor":{
+			"nombre":"Ronald Lobo Barrantes",
+			"tipoId":"01",
+			"id":"206780037",
+			"provincia":"2",
+			"canton":"02",
+			"distrito":"01",
+			"barrio":"01",
+			"senas":"Cond Valle Esmeralda",
+			"codigoPaisTel":"506",
+			"tel":"87051854",
+			"codigoPaisFax":"",
+			"fax":"",
+			"email":"ronald.lb2@gmail.com"
+		},
+		"condicionVenta":"01",
+		"plazoCredito":"0",
+		"medioPago":"01",
+		"codMoneda":"CRC",
+		"tipoCambio":"1",
+		"totalServGravados":"0",
+		"totalServExentos":"8000",
+		"totalMercGravada":"0",
+		"totalMercExenta":"0",
+		"totalGravados":"0",
+		"totalExentos":"8000",
+		"totalVentas":"8000",
+		"totalDescuentos":"0",
+		"totalVentasNeta":"8000",
+		"totalImpuestos":"0",
+		"totalComprobante":"8000",
+		"otros":"Gracias.",
+		"detalles":{
+			"1": 
+				{
+					"cantidad":"1",
+					"unidadMedida":"Sp",
+					"detalle":"Corte de pelo y Barba",
+					"precioUnitario":"8000",
+					"montoTotal":"8000",
+					"subtotal":"8000",
+					"montoTotalLinea":"8000"
+				}
+			},
+		"omitirReceptor":"false"
+	},
+	"cliente":{
+		"id":"5b79d789cd22f43682adeada"
+	}
+});
+			// this.selectedCita.estadoFactura = 'P';
+			// this.dataService.post('/reserva/?method=put', {'reserva':this.selectedCita})
+	  //           .then(response => {
+	  //           	alert('Información actualizada');
+	  //           	this.cargando = false;
+	  //           	console.log(response);
+	  //           },
+	  //           error => {
+	  //           	this.cargando = false;
+			// 		this.selectedCita.estadoFactura = 'R';
+	  //       });
 	}
 
 	public eliminarCita(){
@@ -416,8 +494,7 @@ export class CitasComponent implements OnInit {
 
 // CedulaJuridica, NombreNegocio, Distrito, Barrio
 	public facturacionHacienda(){
-		let fechaActual = new Date();
-		this.facturaHacienda.factura.fecha = fechaActual.toString();
+		this.facturaHacienda.factura.fecha = new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString();
 		this.facturaHacienda.factura.nombreComercial = fechaActual.toString(); //nombre barberia
 		this.facturaHacienda.factura.situacion = 'normal';
 
