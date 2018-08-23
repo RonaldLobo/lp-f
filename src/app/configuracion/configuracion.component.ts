@@ -386,6 +386,11 @@ export class ConfiguracionComponent implements OnInit {
 		if(this.barberiaErrores.length == 0){
 			console.log('modificar Barberia',this.nuevaBarberia);
 			this.cargando = true;
+			//this.nuevaBarberia.descripcion = this.nuevaBarberia.descripcion.replace("'","\'");
+			//this.nuevaBarberia.nombreNegocio = this.nuevaBarberia.nombreNegocio.replace("'","\'");
+
+			this.nuevaBarberia.descripcion = this.nuevaBarberia.descripcion.replace("'","\'");
+
 			this.dataService.post('/sucursal/?method=PUT', {"sucursal":this.nuevaBarberia})
             .then(response => {
                 let url = '/sucursal/?idBarberia='+this.authService.idBarberia;
