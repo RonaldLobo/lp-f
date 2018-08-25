@@ -28,6 +28,7 @@ export class CitasComponent implements OnInit {
 
 	public cargandoCitas: boolean = false;
 	public reservas: any = [];
+	public sucursal: any = [];
 	public selectedDate : any = new Date();
 	public displayCitasBarberia : boolean = true;
 	public selectedDateBarberia : any = new Date();
@@ -174,8 +175,6 @@ export class CitasComponent implements OnInit {
 	}
 
 	public changeDateBarberia(fecha){
-
-	
 		if(this.selectedDateNoFormat != fecha ){
 			let newDate = new Date(fecha);
 			newDate.setDate(newDate.getDate() + 1);
@@ -393,89 +392,44 @@ export class CitasComponent implements OnInit {
 		});
 	}
 
-	public updateReserva(){
-			this.facturaService.post('',{
-	"factura": {
-		"fecha":"2018-08-22T21:30:21.000Z",
-		"nombreComercial":"Ronald Lobo Barrantes",
-		"situacion": "normal",
-		"emisor":{
-			"nombre":"Ronald Lobo Barrantes",
-			"tipoId":"01",
-			"id":"206780037",
-			"provincia":"2",
-			"canton":"02",
-			"distrito":"01",
-			"barrio":"01",
-			"senas":"Cond Valle Esmeralda",
-			"codigoPaisTel":"506",
-			"tel":"87051854",
-			"codigoPaisFax":"",
-			"fax":"",
-			"email":"ronald.lb2@gmail.com"
-		},
-		"receptor":{
-			"nombre":"Ronald Lobo Barrantes",
-			"tipoId":"01",
-			"id":"206780037",
-			"provincia":"2",
-			"canton":"02",
-			"distrito":"01",
-			"barrio":"01",
-			"senas":"Cond Valle Esmeralda",
-			"codigoPaisTel":"506",
-			"tel":"87051854",
-			"codigoPaisFax":"",
-			"fax":"",
-			"email":"ronald.lb2@gmail.com"
-		},
-		"condicionVenta":"01",
-		"plazoCredito":"0",
-		"medioPago":"01",
-		"codMoneda":"CRC",
-		"tipoCambio":"1",
-		"totalServGravados":"0",
-		"totalServExentos":"8000",
-		"totalMercGravada":"0",
-		"totalMercExenta":"0",
-		"totalGravados":"0",
-		"totalExentos":"8000",
-		"totalVentas":"8000",
-		"totalDescuentos":"0",
-		"totalVentasNeta":"8000",
-		"totalImpuestos":"0",
-		"totalComprobante":"8000",
-		"otros":"Gracias.",
-		"detalles":{
-			"1": 
-				{
-					"cantidad":"1",
-					"unidadMedida":"Sp",
-					"detalle":"Corte de pelo y Barba",
-					"precioUnitario":"8000",
-					"montoTotal":"8000",
-					"subtotal":"8000",
-					"montoTotalLinea":"8000"
-				}
-			},
-		"omitirReceptor":"false"
-	},
-	"cliente":{
-		"id":"5b79d789cd22f43682adeada"
+
+
+
+
+	public async updateReserva(){
+		await this.facturacionHacienda();
+		console.log('facturaHacienda',this.facturaHacienda);
+		this.facturaService.post('',this.facturaHacienda)
+		    .then(response => {
+		    	console.log(response);
+		    	 if (response.respuesta == 'rechazado'){
+ 						alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
+		    	 }else{
+				
+			 	    this.selectedCita.estadoFactura = 'P';
+				    this.dataService.post('/reserva/?method=put', {'reserva':this.selectedCita})
+		             .then(response => {
+		             	//alert('Información actualizada');
+		               alert('Factura Generada');
+		             	this.cargando = false;
+		             	console.log(response);
+		            },
+		             error => {
+		             	alert('Factura Generada | Error al actualizar el estado. ' + error);
+		             	this.cargando = false;
+				 		this.selectedCita.estadoFactura = 'R';
+		        	});
+		    	 }
+		    
+				  
+		 	 },
+	        error => {
+	        	console.log('error',error);
+	            this.cargando = false;
+	    });
 	}
-});
-			// this.selectedCita.estadoFactura = 'P';
-			// this.dataService.post('/reserva/?method=put', {'reserva':this.selectedCita})
-	  //           .then(response => {
-	  //           	alert('Información actualizada');
-	  //           	this.cargando = false;
-	  //           	console.log(response);
-	  //           },
-	  //           error => {
-	  //           	this.cargando = false;
-			// 		this.selectedCita.estadoFactura = 'R';
-	  //       });
-	}
+		
+	
 
 	public eliminarCita(){
 		this.dataService.delete('/reserva/'+this.selectedCita.id)
@@ -490,41 +444,55 @@ export class CitasComponent implements OnInit {
             });
 	}
 
+	public obtenerDatosBarberia(){
+		return this.dataService.get('/sucursal/'+ this.authService.loggedUser.idSucursal);
+	}
 
 
-// CedulaJuridica, NombreNegocio, Distrito, Barrio
-	public facturacionHacienda(){
+
+	public async facturacionHacienda(){
+		var sucursal = await this.obtenerDatosBarberia();
+		console.log('suc',sucursal);
+		this.sucursal = sucursal[0];
+		this.facturaHacienda.factura  = {};
+		this.facturaHacienda.cliente  = {};
+		this.facturaHacienda.factura.emisor  = {};
+		this.facturaHacienda.factura.receptor  = {};
+		this.facturaHacienda.factura.detalles  = {};
+
 		this.facturaHacienda.factura.fecha = new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString();
-		this.facturaHacienda.factura.nombreComercial = fechaActual.toString(); //nombre barberia
+		this.facturaHacienda.factura.nombreComercial = this.sucursal.nombreNegocio; //nombre barberia
 		this.facturaHacienda.factura.situacion = 'normal';
 
-		this.facturaHacienda.factura.emisor.nombre = 'normal';// nombre del negocio
+
+
+		this.facturaHacienda.factura.emisor.nombre = this.sucursal.descripcion;// nombre del negocio
 		this.facturaHacienda.factura.emisor.tipoId = '02';
-		this.facturaHacienda.factura.emisor.id = '02';//cedula juridic
-		this.facturaHacienda.factura.emisor.provincia = '2';//cedula juridica
-		this.facturaHacienda.factura.emisor.canton = '02';//cedula juridica
-		this.facturaHacienda.factura.emisor.distrito = '02';//cedula juridica
-		this.facturaHacienda.factura.emisor.barrio = '02';//cedula juridica
-		this.facturaHacienda.factura.emisor.senas = '02';//cedula juridica
+		this.facturaHacienda.factura.emisor.id = this.sucursal.cedulaJuridica;
+		this.facturaHacienda.factura.emisor.provincia = this.sucursal.provincia;
+		this.facturaHacienda.factura.emisor.canton = this.sucursal.idCanton;
+		this.facturaHacienda.factura.emisor.distrito = this.sucursal.distrito;
+		this.facturaHacienda.factura.emisor.barrio = this.sucursal.barrio;
+		this.facturaHacienda.factura.emisor.senas = this.sucursal.detalleDireccion;
 		this.facturaHacienda.factura.emisor.codigoPaisTel = '506';
-		this.facturaHacienda.factura.emisor.tel = '02';//cedula juridica
+		this.facturaHacienda.factura.emisor.tel = this.sucursal.telefono[0].telefono;
 		this.facturaHacienda.factura.emisor.codigoPaisFax = '';
 		this.facturaHacienda.factura.emisor.fax = '';
-		this.facturaHacienda.factura.emisor.email = '02';//cedula juridica
+		this.facturaHacienda.factura.emisor.email = this.sucursal.correo[0].correo;
 
-		this.facturaHacienda.factura.receptor.nombre = '02';//cedula juridica -- cliente
+		this.facturaHacienda.factura.receptor.nombre =   this.nuevoUsuario.nombre;
 		this.facturaHacienda.factura.receptor.tipoId = '01';
-		this.facturaHacienda.factura.receptor.id = '02';//cedula juridica
-		this.facturaHacienda.factura.receptor.provincia = '02';//cedula juridica
-		this.facturaHacienda.factura.receptor.canton = '02';//cedula juridica
-		this.facturaHacienda.factura.receptor.distrito = '02';//cedula juridica
-		this.facturaHacienda.factura.receptor.barrio = '02';//cedula juridica
-		this.facturaHacienda.factura.receptor.senas = '02';//cedula juridica
+		this.facturaHacienda.factura.receptor.id =  this.nuevoUsuario.usuario;
+		this.facturaHacienda.factura.receptor.provincia = '';//cedula juridica
+		this.facturaHacienda.factura.receptor.canton = '';//cedula juridica
+		this.facturaHacienda.factura.receptor.distrito = '';//cedula juridica
+		this.facturaHacienda.factura.receptor.barrio = '';//cedula juridica
+		this.facturaHacienda.factura.receptor.senas = '';//cedula juridica
 		this.facturaHacienda.factura.receptor.codigoPaisTel = '506';
-		this.facturaHacienda.factura.receptor.tel = '02';//cedula juridica
+		this.facturaHacienda.factura.receptor.tel =  this.nuevoUsuario.telefono[0].telefono;
 		this.facturaHacienda.factura.receptor.codigoPaisFax = '';
 		this.facturaHacienda.factura.receptor.fax = '';
-		this.facturaHacienda.factura.receptor.email = '';//cedula juridica
+		this.facturaHacienda.factura.receptor.email = this.nuevoUsuario.correo[0].correo;
 
 		this.facturaHacienda.factura.condicionVenta = '01';
 		this.facturaHacienda.factura.plazoCredito = '0';
@@ -532,32 +500,33 @@ export class CitasComponent implements OnInit {
 		this.facturaHacienda.factura.codMoneda = 'CRC';
 		this.facturaHacienda.factura.tipoCambio = '1';
 		this.facturaHacienda.factura.totalServGravados = '0';
-		this.facturaHacienda.factura.totalServExentos = 'normal';//total del servicio
+		this.facturaHacienda.factura.totalServExentos = this.selectedCita.precio;//total del servicio
 		this.facturaHacienda.factura.totalMercGravada = '0';
 		this.facturaHacienda.factura.totalMercExenta = '0';
 		this.facturaHacienda.factura.totalGravados = '0';
-		this.facturaHacienda.factura.totalExentos = 'normal';//total del servicio
-		this.facturaHacienda.factura.totalVentas = 'normal';//total del servicio
+		this.facturaHacienda.factura.totalExentos = this.selectedCita.precio;//total del servicio
+		this.facturaHacienda.factura.totalVentas = this.selectedCita.precio;//total del servicio
 		this.facturaHacienda.factura.totalDescuentos = '0';
-		this.facturaHacienda.factura.totalVentasNeta = 'normal';//total del servicio
+		this.facturaHacienda.factura.totalVentasNeta = this.selectedCita.precio;//total del servicio
 		this.facturaHacienda.factura.totalImpuestos = 'normal';
-		this.facturaHacienda.factura.totalComprobante = 'normal';//total del servicio
+		this.facturaHacienda.factura.totalComprobante = this.selectedCita.precio;//total del servicio
 		this.facturaHacienda.factura.otros = 'Gracias.';
 
-
-		this.facturaHacienda.factura.detalles['1'].cantidad = 'Gracias.';
-		this.facturaHacienda.factura.detalles.unidadMedida = 'Sp.';
-		this.facturaHacienda.factura.detalles.detalle = 'Gracias.';
-		this.facturaHacienda.factura.detalles.precioUnitario = 'Gracias.';
-		this.facturaHacienda.factura.detalles.montoTotal = 'Gracias.';
-		this.facturaHacienda.factura.detalles.subtotal = 'Gracias.';
-		this.facturaHacienda.factura.detalles.montoTotalLinea = 'Gracias.';
-
-
-		this.facturaHacienda.factura.omitirReceptor = 'Gracias.';
+		this.facturaHacienda.factura.detalles['1'] = {};
+		this.facturaHacienda.factura.detalles['1'].cantidad = '1';
+		this.facturaHacienda.factura.detalles['1'].unidadMedida = 'Sp.';
+		this.facturaHacienda.factura.detalles['1'].detalle = this.selectedCita.servicio;
+		this.facturaHacienda.factura.detalles['1'].precioUnitario = this.selectedCita.precio;
+		this.facturaHacienda.factura.detalles['1'].montoTotal = this.selectedCita.precio;
+		this.facturaHacienda.factura.detalles['1'].subtotal = this.selectedCita.precio;
+		this.facturaHacienda.factura.detalles['1'].montoTotalLinea = this.selectedCita.precio;
 
 
-		this.facturaHacienda.cliente.id = 'Gracias.';
+		this.facturaHacienda.factura.omitirReceptor = 'false';
+
+
+		this.facturaHacienda.cliente.id = "5b79d789cd22f43682adeada";//this.sucursal.idFacturaAPI;
+	
 	}
 	
 

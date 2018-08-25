@@ -17,7 +17,6 @@ export class CalendarioInputComponent implements OnChanges{
   }
 
   ngOnChanges(changes){
-    console.log('date',changes);
     if(changes.daterecive){
       this.bsValue = new Date(changes.daterecive.currentValue);
     }
@@ -29,7 +28,6 @@ export class CalendarioInputComponent implements OnChanges{
   }
  
   set bsValue(v: Date) {
-    console.log(v);
     this.dateSelectedChange.emit(this.parseDate(v));
     this._bsValue = v;
   }

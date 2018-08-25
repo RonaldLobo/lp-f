@@ -107,6 +107,8 @@ export class UsuariosComponent implements OnInit {
 	public updateUser(){
 		this.usuarioErrores = this.validatorService.validaUsuario(this.nuevoUsuario, false);
 		console.log(this.usuarioErrores);
+		this.nuevoUsuario.fechaNacimiento = this.fecha;
+		
 		console.log('kim ',this.nuevoUsuario.fechaNacimiento);
 		if(this.usuarioErrores.length == 0){
 			this.dataService.post('/usuario/?method=put', {'usuario':this.nuevoUsuario})
@@ -156,14 +158,10 @@ export class UsuariosComponent implements OnInit {
 	}
 
   	public fechaChanges(param){
-  		console.log(this.fecha);
-  		//let newDate = new Date(this.fecha);
-		//newDate.setDate(newDate.getDate() + 1);
-		//this.fecha = newDate;
+
   		var date = this.fecha.getFullYear()+'-'+this.zerofill(this.fecha.getMonth(),1)+'-'+this.zerofill(this.fecha.getDate() ,0);
   		if(date != param){
-			this.fecha = new Date(param);
-			console.log('kim',this.fecha);
+			this.fecha = new Date(param.replace(/-/g, '\/'));
 		}
 		
 	}
