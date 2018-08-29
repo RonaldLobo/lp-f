@@ -18,6 +18,7 @@ import { CalendarioInputComponent } from './calendario-input/calendario-input.co
 import { AuthService } from './services/auth.service';
 import { DataService } from './services/data.service';
 import { FacturaService } from './services/factura.service';
+import { SharedService } from './services/shared.service';
 import { ValidatorService } from './services/validator.service';
 import { FacebookLoginService } from './services/facebook-login.service';
 import { PushNotificationsService } from './services/push-notification.service';
@@ -44,8 +45,9 @@ import { UsuariosComponent } from './usuarios/usuarios.component';
 
 
 import { CitasComponent } from './citas/citas.component';
+import { FacturaComponent } from './factura/factura.component';
 
-
+import {NgxPaginationModule} from 'ngx-pagination'; 
 
 
 export const ROUTES: Routes = [
@@ -73,6 +75,10 @@ export const ROUTES: Routes = [
     { 
         path: 'citas',
         component: CitasComponent
+    },
+    { 
+        path: 'factura',
+        component: FacturaComponent
     },
     { 
         path: '**', 
@@ -105,9 +111,11 @@ import { WindowRefService } from './services/window.service';
     InfoComponent,
     CalendarioInputComponent,
     UsuariosComponent,
-    CitasComponent
+    CitasComponent,
+    FacturaComponent
   ],
   imports: [
+    NgxPaginationModule,
     RouterModule.forRoot(
             ROUTES,
             { 
@@ -141,7 +149,8 @@ import { WindowRefService } from './services/window.service';
       DataService,
       ValidatorService,
       FacebookLoginService,
-      PushNotificationsService
+      PushNotificationsService,
+      SharedService
   ],
   bootstrap: [AppComponent]
 })

@@ -54,6 +54,9 @@
                 <a class="nav-link" [routerLink]="['reserva']">Reserva</a>
             </li>
             <li class="nav-item" [routerLinkActive]="['active']" data-toggle="collapse" data-target=".navbar-collapse.show">
+                <a class="nav-link" [routerLink]="['factura']">Factura</a>
+            </li>
+            <li class="nav-item" [routerLinkActive]="['active']" data-toggle="collapse" data-target=".navbar-collapse.show">
                 <a class="nav-link" [routerLink]="['configuracion']">Configuración</a>
             </li>
             <li class="nav-item" [routerLinkActive]="['active']" data-toggle="collapse" data-target=".navbar-collapse.show" *ngIf="authService.isUserLogged()">

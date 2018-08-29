@@ -7,6 +7,7 @@ import { Usuario } from "../models/usuario";
 import { Telefono } from '../models/telefono';
 import { Correo } from '../models/correo';
 import { DataService } from '../services/data.service';
+import { SharedService } from '../services/shared.service';
 import * as _ from "lodash";
 
 @Component({
@@ -32,14 +33,44 @@ export class UsuariosComponent implements OnInit {
 	public usuarioCita: any = [];
 	public encontroUsuario: boolean = false;
 	public selectedDateNoFormat: string = '';
+	public selectedProvincia : any = {};
+	public selectedCanton : any = {};
+	public provincias : any = [];
+	public cantones : any = [];
+	public distritos : any = [];
+	public cantonesDisplay : any ;
+	public posiblesClientes : any = [];
 
-  constructor(private router:Router,private dataService:DataService, public authService:AuthService, public validatorService:ValidatorService) { }
+  constructor(private router:Router,private dataService:DataService, public authService:AuthService, public validatorService:ValidatorService, public sharedService:SharedService) { }
 
   ngOnInit() {
+  		this.sharedService.get("/api/ubicacion").then((data) =>{
+  			this.provincias = data.ubicacion;
+  			this.selectedProvincia = this.provincias[0];
+  			this.selectedCanton = this.selectedProvincia.cantones[0];
+  			this.nuevoUsuario.distrito = this.selectedCanton.distritos[0].codigo;
+  		});
   }
+
+
+
+
+	public changeProvincia(event){
+		this.selectedCanton = this.selectedProvincia.cantones[0];
+  		this.nuevoUsuario.distrito = this.selectedCanton.distritos[0].codigo;
+	}
+
+	public changeCanton(event){
+		this.nuevoUsuario.distrito = this.selectedCanton.distritos[0].codigo;
+	}
+
 
   public newUser(){
 		this.nuevoUsuario.contrasenna = 'clave';
+		this.nuevoUsuario.fechaNacimiento = this.fecha;
+		this.nuevoUsuario.idProvincia = this.selectedProvincia.codigo ;
+		this.nuevoUsuario.idCanton = this.selectedCanton.codigo ;
+		this.nuevoUsuario.barrio = '01';
 		this.usuarioErrores = this.validatorService.validaUsuario(this.nuevoUsuario);
 		if(this.usuarioErrores.length == 0){
 			this.cargando = true;
@@ -106,11 +137,12 @@ export class UsuariosComponent implements OnInit {
 
 	public updateUser(){
 		this.usuarioErrores = this.validatorService.validaUsuario(this.nuevoUsuario, false);
-		console.log(this.usuarioErrores);
 		this.nuevoUsuario.fechaNacimiento = this.fecha;
-		
-		console.log('kim ',this.nuevoUsuario.fechaNacimiento);
+		this.nuevoUsuario.idProvincia = this.selectedProvincia.codigo ;
+		this.nuevoUsuario.idCanton = this.selectedCanton.codigo ;
+	    this.nuevoUsuario.barrio = '01';
 		if(this.usuarioErrores.length == 0){
+			this.cargando = true;
 			this.dataService.post('/usuario/?method=put', {'usuario':this.nuevoUsuario})
 	            .then(response => {
 	            	alert('Información actualizada');
@@ -146,6 +178,8 @@ export class UsuariosComponent implements OnInit {
 
 	public seleccionaUsuarioCita(usuario){
 		this.nuevoUsuario = usuario;
+		this.selectedProvincia = this.provincias[Number(this.nuevoUsuario.idProvincia) - 1];
+		this.selectedCanton = this.selectedProvincia.cantones[Number(this.nuevoUsuario.idCanton) - 1];
 		this.encontroUsuario=true;
 		this.usuarioCita = [];
 		this.fecha= new Date(this.nuevoUsuario.fechaNacimiento);
@@ -178,8 +212,77 @@ export class UsuariosComponent implements OnInit {
             error => {
             	alert('Información Eliminada');
             	this.cargando = false;
+            	this.cargando = false;
+                this.nuevoUsuario = new Usuario();
+                this.encontroUsuario = false;
+                this.buscaUsuario = '';
         });
         
+	}
+
+	public buscarPorNombre(){
+		this.posiblesClientes = [];
+		this.cargando = true;
+		this.sharedService.get('/api/personas?tipo=nombre&nombre='+this.nuevoUsuario.nombre+'&apellido1='+this.nuevoUsuario.apellido1+'&apellido2='+this.nuevoUsuario.apellido2).then(res =>{
+			console.log(res);
+			this.cargando = false;
+			if(res.persona.length == 1){
+				this.nuevoUsuario.cedula = res.persona[0].cedula;
+				this.nuevoUsuario.nombre = this.toTitleCase(res.persona[0].nombre);
+				this.nuevoUsuario.apellido1 = this.toTitleCase(res.persona[0].apellido1);
+				this.nuevoUsuario.apellido2 = this.toTitleCase(res.persona[0].apellido2);
+				//this.cliente.tipoId = '01';
+				var cod = ''+res.persona[0].codigoelec;
+
+				this.nuevoUsuario.idProvincia = Number(cod.substr(0,1));
+				this.nuevoUsuario.idCanton = Number(cod.substr(1,2));
+				this.selectedProvincia = this.provincias[Number(this.nuevoUsuario.idProvincia) - 1];
+				this.selectedCanton = this.selectedProvincia.cantones[Number(this.nuevoUsuario.idCanton) - 1];
+				this.nuevoUsuario.distrito = '' + Number(cod.substr(4,2));
+			} else{
+				this.posiblesClientes = res.persona;
+			}
+		}, err =>{
+			console.log(err);
+		})
+	}
+
+	toTitleCase(str) {
+	    return str.replace(/\w\S*/g, function(txt){
+	        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+	    });
+	}
+
+	buscarPorCedula(){
+		this.cargando = true;
+		this.sharedService.get('/api/personas?tipo=cedula&filter='+this.nuevoUsuario.cedula).then(res =>{
+			this.cargando = false;
+			if(res.persona.length == 1){
+				this.nuevoUsuario.cedula = res.persona[0].cedula;
+				this.nuevoUsuario.nombre = this.toTitleCase(res.persona[0].nombre);
+				this.nuevoUsuario.apellido1 = this.toTitleCase(res.persona[0].apellido1);
+				this.nuevoUsuario.apellido2 = this.toTitleCase(res.persona[0].apellido2);
+				//this.nuevoUsuario.tipoId = '01';
+				var cod = ''+res.persona[0].codigoelec;
+
+				this.nuevoUsuario.idProvincia = Number(cod.substr(0,1));
+				this.nuevoUsuario.idCanton = Number(cod.substr(1,2));
+				this.selectedProvincia = this.provincias[Number(this.nuevoUsuario.idProvincia) - 1];
+				this.selectedCanton = this.selectedProvincia.cantones[Number(this.nuevoUsuario.idCanton) - 1];
+				this.nuevoUsuario.distrito = '' + Number(cod.substr(4,2));
+			}
+		}, err =>{
+			console.log(err);
+		})
+	}
+
+	selectCliente(cli){
+		this.nuevoUsuario.cedula = cli.cedula;
+		//this.cliente.tipoId = '01';
+		var cod = ''+cli.codigoelec;
+		this.nuevoUsuario.idProvincia = Number(cod.substr(0,1));
+		this.nuevoUsuario.idCanton = Number(cod.substr(1,2));
+		this.nuevoUsuario.distrito = cod.substr(4,2);
 	}
 
 }

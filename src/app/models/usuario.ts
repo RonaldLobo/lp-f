@@ -18,6 +18,12 @@ export class Usuario {
     idSucursal: number;
     horarios: any[];
     fechaNacimiento: Date;
+    idCanton: number;
+    idProvincia: number;
+    distrito: string;
+    barrio: string;
+    detalleDireccion: string;
+    cedula: string;
 
     constructor(){
     	this.id = 0;
@@ -36,6 +42,13 @@ export class Usuario {
         this.servicios = [];
         this.horarios = [];
         this.fechaNacimiento = new Date();
+        this.cedula = '';
+        this.idProvincia = 0;
+        this.idCanton = 0;
+        this.barrio = '';
+        this.distrito = '';
+        this.detalleDireccion = '';
+
     }
 
 }

@@ -397,36 +397,36 @@ export class CitasComponent implements OnInit {
 
 
 	public async updateReserva(){
-		await this.facturacionHacienda();
-		console.log('facturaHacienda',this.facturaHacienda);
-		this.facturaService.post('',this.facturaHacienda)
-		    .then(response => {
-		    	console.log(response);
-		    	 if (response.respuesta == 'rechazado'){
- 						alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
-		    	 }else{
+		// await this.facturacionHacienda();
+		// console.log('facturaHacienda',this.facturaHacienda);
+		// this.facturaService.post('',this.facturaHacienda)
+		//     .then(response => {
+		//     	console.log(response);
+		//     	 if (response.respuesta == 'rechazado'){
+ 	// 					alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
+		//     	 }else{
 				
 			 	    this.selectedCita.estadoFactura = 'P';
 				    this.dataService.post('/reserva/?method=put', {'reserva':this.selectedCita})
 		             .then(response => {
-		             	//alert('Información actualizada');
-		               alert('Factura Generada');
+		             	alert('Información actualizada');
+		               // alert('Factura Generada');
 		             	this.cargando = false;
 		             	console.log(response);
 		            },
 		             error => {
-		             	alert('Factura Generada | Error al actualizar el estado. ' + error);
+		             	// alert('Factura Generada | Error al actualizar el estado. ' + error);
 		             	this.cargando = false;
 				 		this.selectedCita.estadoFactura = 'R';
 		        	});
-		    	 }
+		    	 // }
 		    
 				  
-		 	 },
-	        error => {
-	        	console.log('error',error);
-	            this.cargando = false;
-	    });
+		 	 // },
+	    //     error => {
+	    //     	console.log('error',error);
+	    //         this.cargando = false;
+	    // });
 	}
 		
 	
@@ -525,7 +525,7 @@ export class CitasComponent implements OnInit {
 		this.facturaHacienda.factura.omitirReceptor = 'false';
 
 
-		this.facturaHacienda.cliente.id = "5b79d789cd22f43682adeada";//this.sucursal.idFacturaAPI;
+		this.facturaHacienda.cliente.id = this.sucursal.idFacturaAPI; // "5b79d789cd22f43682adeada";//
 	
 	}
 	

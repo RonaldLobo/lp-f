@@ -37,6 +37,7 @@
     "ng2-typeahead": "^1.2.0",
     "ngx-bootstrap": "1.9.3",
     "ngx-facebook": "^2.4.0",
+    "ngx-pagination": "^3.2.0",
     "rxjs": "^5.1.0",
     "zone.js": "^0.8.4"
   },

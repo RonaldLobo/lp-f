@@ -13,7 +13,7 @@
 					<label>Buscar Clientes</label>
 				</div>
 				<div class="col-8">
-					 <input class="auto-usuario" type="text" name="" placeholder="Nombre Apellidos" [(ngModel)]="buscaUsuario" (ngModelChange)="buscaUsuarioChanged()">
+					 <input class="auto-usuario tamComponent" type="text" name="" placeholder="Nombre Apellidos" [(ngModel)]="buscaUsuario" (ngModelChange)="buscaUsuarioChanged()">
 			          <ul>
 			            <li *ngFor="let usuario of usuarioCita"> 
 			              <span class="usuarios" (click)="seleccionaUsuarioCita(usuario)">{{usuario.nombre}} {{usuario.apellido1}} {{usuario.apellido2}} | <span *ngIf="usuario.telefono.length > 0">{{usuario.telefono[0].telefono}}</span>
@@ -25,64 +25,138 @@
 			</div>
 
 			<div class="row col-12">
-				<div class="col-4">
-					<label>Usuario<span class="required" [class.reqerror]="validatorService.hasError('usuario',usuarioErrores)">*</span></label>
-				</div>
-				<div class="col-8">
-					<input type="text" name="usuario" [(ngModel)]="nuevoUsuario.usuario" 
-					[class.error-input]="validatorService.hasError('usuario',usuarioErrores)" placeholder="juan1990">
-				</div>
-				<div class="col-4">
-					<label>Nombre<span class="required" [class.reqerror]="validatorService.hasError('nombre',usuarioErrores)">*</span></label>
-				</div>
-				<div class="col-8">
-					<input type="text" name="nombre" [(ngModel)]="nuevoUsuario.nombre" [class.error-input]="validatorService.hasError('nombre',usuarioErrores)" placeholder="Juan">
-				</div>
-				<div class="col-4">
-					<label>Apellido 1<span class="required" [class.reqerror]="validatorService.hasError('apellido1',usuarioErrores)">*</span></label>
-				</div>
-				<div class="col-8">
-					<input type="text" name="primerApellido" [(ngModel)]="nuevoUsuario.apellido1" [class.error-input]="validatorService.hasError('apellido1',usuarioErrores)" placeholder="Perez">
-				</div>
-				<div class="col-4">
-					<label>Apellido 2</label>
-				</div>
-				<div class="col-8">
-					<input type="text" name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
-				</div>
-				
-				<div class="col-4">
-					<label>Fecha Nacimiento</label>
-				</div>
-				<div class="col-8">
-					<calendario-input name="fechaNacimiento"  [daterecive]="fecha"  (dateSelectedChange)="fechaChanges($event)"></calendario-input>
-				</div>
-				<div class="col-4">
-					<label>Correo<span class="required" [class.reqerror]="validatorService.hasError('correo',usuarioErrores)">*</span></label>
-				</div>
-				<div class="col-8 correos">
-					<div class="row">
-						<div class="col-12 nuevo-numero">
-							<input type="text" [(ngModel)]="nuevoCorreo" [class.error-input]="validatorService.hasError('correo',usuarioErrores)"> <span class="small-action" (click)="addCorreo()"> + </span>
-						</div>
-						<div class="col-12 correo-display contact-item" *ngFor="let correo of nuevoUsuario.correo">
-							<span class="display">{{correo.correo}} </span>
-							<span class="small-action" (click)="removeCorreo(correo)"> - </span> 
-						</div>
-
+				<div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Usuario<span class="required" [class.reqerror]="validatorService.hasError('usuario',usuarioErrores)">*</span></label>
+					<div class="col-8">
+						<input type="text" name="usuario" class="form-control"  [(ngModel)]="nuevoUsuario.usuario" [class.error-input]="validatorService.hasError('usuario',usuarioErrores)" placeholder="juan1990">
 					</div>
 				</div>
-				<div class="col-4">
-					<label>Telefono<span class="required" [class.reqerror]="validatorService.hasError('telefono',usuarioErrores)">*</span></label>
+				<div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Nombre<span class="required" [class.reqerror]="validatorService.hasError('nombre',usuarioErrores)">*</span></label>
+					<div class="col-8">
+						<input type="text" name="nombre" class="form-control"  [(ngModel)]="nuevoUsuario.nombre" [class.error-input]="validatorService.hasError('nombre',usuarioErrores)" placeholder="Juan">
+					</div>
 				</div>
-				<div class="col-8 telefonos">
-					<div class="row">
-						<div class="col-12 nuevo-numero">
-							<input type="number" [(ngModel)]="nuevoTelefono" [class.error-input]="validatorService.hasError('telefono',usuarioErrores)"> <span class="small-action" (click)="addTelefono()"> + </span>
+				<div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Apellido 1<span class="required" [class.reqerror]="validatorService.hasError('apellido1',usuarioErrores)">*</span></label>
+					<div class="col-8">
+						<input type="text" class="form-control"  name="primerApellido" [(ngModel)]="nuevoUsuario.apellido1" [class.error-input]="validatorService.hasError('apellido1',usuarioErrores)" placeholder="Perez">
+					</div>
+				</div>
+				<div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Apellido 2</label>
+					<div class="col-8">
+						<input type="text"  class="form-control"  name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
+					</div>
+				</div>
+				<div class="col-12 row form-group">
+					<label class="col-4 col-form-label"></label>
+					<div class="col-8">
+						<input type="button"  class="btn btn-info" value="Buscar Por Nombre"  name="buscarNombre" (click)="buscarPorNombre()">
+						<ul>
+							<li *ngFor="let cli of posiblesClientes" (click)=selectCliente(cli)>
+								* {{cli.nombre}} {{cli.apellido1}} {{cli.apellido2}} ced: {{cli.cedula}}
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Cédula</label>
+					<div class="col-8"> 
+						<input type="number"  class="form-control" maxlength="9" minlength="9" name="cedula" [(ngModel)]="nuevoUsuario.cedula"  >
+					</div>
+				</div>
+				<div class="col-12 row form-group">
+					<label class="col-4 col-form-label"></label>
+					<div class="col-8">
+						<input type="button"  class="btn btn-info"  value="Buscar por Cédula" name="buscarCedula" (click)="buscarPorCedula()">
+						
+					</div>
+				</div>
+				<div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Fecha Nacimiento</label>
+					<div class="col-8">
+						<calendario-input [customClass]="'form-control'" name="fechaNacimiento"  [daterecive]="fecha"  (dateSelectedChange)="fechaChanges($event)"></calendario-input>
+					</div>
+				</div>
+				<div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Provincia:</label>
+	        		<div class="col-8">
+		                <select class="form-control" id="provincia" [(ngModel)]="selectedProvincia" (ngModelChange)="changeProvincia($event)">
+		                    <option *ngFor="let provincia of provincias;let i = index" [ngValue]="provincia">{{provincia.nombre}}</option>
+		                </select>
+		        	</div>
+		        </div>
+	        	<div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Canton:</label>
+		        	<div class="col-8">
+		        	     <select class="form-control" id="canton" [(ngModel)]="selectedCanton" (ngModelChange)="changeCanton($event)">
+		                    <option *ngFor="let canton of selectedProvincia.cantones" [ngValue]="canton">{{canton.nombre}}</option>
+		                </select>
+		        	</div>
+		        </div>
+	            <div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Distrito:</label>
+		            <!-- <div class="col-8">
+		                <input type="text" class="form-control"  name="distrito" [(ngModel)]="nuevoUsuario.distrito" [class.error]="validatorService.hasError('distrito',usuarioErrores)">
+		            </div> -->
+		            <div class="col-8">
+		        	     <select class="form-control" id="distrito" [(ngModel)]="nuevoUsuario.distrito">
+		                    <option *ngFor="let distrito of selectedCanton.distritos" [value]="distrito.codigo">{{distrito.nombre}}</option>
+		                </select>
+		        	</div>
+		        </div>
+	          <!--   <div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Barrio:</label>
+		            <div class="col-8">
+		                <input type="text" class="form-control"  name="barrio" [(ngModel)]="nuevoUsuario.barrio" [class.error]="validatorService.hasError('barrio',usuarioErrores)">
+		            </div>
+		        </div> -->
+				<div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Señas:</label>
+		        	<div class="col-8">
+		        		<input type="text" class="form-control"  name="ubicacion" [(ngModel)]="nuevoUsuario.detalleDireccion" [class.error]="validatorService.hasError('detalleDireccion',usuarioErrores)">
+		        	</div>
+		        </div>
+
+
+				<div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Correo<span class="required" [class.reqerror]="validatorService.hasError('correo',usuarioErrores)">*</span></label>
+					<div class="col-8 correos">
+						<div class="row ">
+							<div class="col-12 nuevo-numero">
+								<div class="input-group mb-2">
+									<input type="text" [(ngModel)]="nuevoCorreo" [class.error-input]="validatorService.hasError('correo',usuarioErrores)" class="form-control">
+								<!--	<div class="input-group mb-2">-->
+										<span class="small-action" (click)="addCorreo()"> + </span>
+								<!--	</div -->
+								</div>
+							</div>
+							<div class="col-12 correo-display contact-item" *ngFor="let correo of nuevoUsuario.correo">
+								<span class="display">{{correo.correo}} </span>
+								<span class="small-action" (click)="removeCorreo(correo)"> - </span> 
+							</div>
+
 						</div>
-						<div class="col-12 contact-item" *ngFor="let telefono of nuevoUsuario.telefono">
-							<span class="telefono-display">{{telefono.telefono}} </span>
-							<span class="small-action" (click)="removeTelefono(telefono)"> - </span> 
+					</div>
+				</div>
+				<div class="col-12 row form-group">
+					<label class="col-4 col-form-label">Telefono<span class="required" [class.reqerror]="validatorService.hasError('telefono',usuarioErrores)">*</span></label>
+					<div class="col-8 telefonos ">
+						<div class="row ">
+							<div class="col-12 nuevo-numero">
+								<div class="input-group mb-2">
+						        	<input type="number" [(ngModel)]="nuevoTelefono" [class.error-input]="validatorService.hasError('telefono',usuarioErrores)" class="form-control">
+						        	<!--<div class="input-group mb-2"> -->
+									    <span class="small-action input-group-text" (click)="addTelefono()"> + </span>
+									<!--</div>-->
+						    	</div>
+								<!-- <input type="number" [(ngModel)]="nuevoTelefono" [class.error-input]="validatorService.hasError('telefono',usuarioErrores)" class="form-control">  -->
+							</div>
+							<div class="col-12 contact-item" *ngFor="let telefono of nuevoUsuario.telefono">
+								<span class="telefono-display">{{telefono.telefono}} </span>
+								<span class="small-action" (click)="removeTelefono(telefono)"> - </span> 
+							</div>
 						</div>
 					</div>
 				</div>

@@ -218,6 +218,12 @@
                 <input type="text" name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
               </div>
               <div class="col-4">
+                <label>Cédula<span class="required" [class.reqerror]="validatorService.hasError('cedula',usuarioErrores)">*</span></label>
+              </div>
+              <div class="col-8">
+                <input type="text" name="cedula" [(ngModel)]="nuevoUsuario.cedula" [class.error-input]="validatorService.hasError('cedula',usuarioErrores)" >
+              </div>
+              <div class="col-4">
                 <label>Correo<span class="required" [class.reqerror]="validatorService.hasError('correo',usuarioErrores)">*</span></label>
               </div>
               <div class="col-8 correos">

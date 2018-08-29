@@ -2,13 +2,15 @@ import { Component,Output,Input,EventEmitter, OnChanges } from '@angular/core';
  
 @Component({
   selector: 'calendario-input',
-  templateUrl: './calendario-input.component.html'
+  templateUrl: './calendario-input.component.html',
+  styleUrls: ['./calendario-input.component.css']
 })
 export class CalendarioInputComponent implements OnChanges{
   minDate = new Date(2017, 5, 10);
   maxDate = new Date(2018, 9, 15);
   @Output() dateSelectedChange = new EventEmitter<any>();
   @Input() daterecive : any;
+  @Input() customClass : any;
 
   _bsValue: Date;
 
