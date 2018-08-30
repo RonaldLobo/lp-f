@@ -58,10 +58,12 @@
 								</p>
 							</div>
 							<div class="col-sm-4 col-6 text-center" style="padding-top: 4px;">
-								<button (click)="cargarFactura(factura); openModal(facturaModal)" class="btn btn-info">
-									<i  class="fa fa-expand" aria-hidden="true"></i> Ver
+								<button (click)="selectedFactura = factura; openModal(facturaModal)" class="btn btn-info">
+									<i class="fa fa-expand" aria-hidden="true"></i> Ver
 								</button>
-								
+								<button (click)="selectedFactura = factura; openModalPrint(print)" class="btn btn-success">
+									<i class="fa fa-print" aria-hidden="true"></i> Imprimir
+								</button>
 							</div>
 						</div>
 					</li>
@@ -145,3 +147,38 @@
     </div>
 
  </template>
+
+
+<ng-template #print>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left" style="text-transform: capitalize;">Imprimir</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="printRefCompletar.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+  	<div class="text-center">
+  		<p>Seleccione el tipo de factura a imprimir</p>
+  	</div>
+    <div class="col-12">
+    	<div class="row" style="padding-bottom: 35px;">
+    		<div class="col-5 card" (click)="imprimir('pdv')">
+    			<p class="text-center">
+    				Impresora punto de venta.
+    			</p>
+    			<p class="text-center">
+    				<img src="/assets/pdv.png" style="width: 178px;">
+    			</p>
+    		</div>
+    		<div class="col-5 offset-2 card" (click)="imprimir('A4')">
+    			<p class="text-center">
+    				Hoja A4
+    			</p>
+    			<p class="text-center">
+    				<img src="/assets/a4.jpg" style="width: 131px;">
+    			</p>
+    		</div>
+    	</div>
+    </div>
+  </div>
+</ng-template>

@@ -4,11 +4,16 @@ import { DataService } from '../services/data.service';
 import { FacturaService } from '../services/factura.service';
 import { WindowRefService } from '../services/window.service';
 import { ValidatorService } from '../services/validator.service';
+import { SharedService } from '../services/shared.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/modal-options.class';
 import { Usuario } from '../models/usuario';
 import { Telefono } from '../models/telefono';
 import { Correo } from '../models/correo';
+
+import { DecimalPipe } from '@angular/common';
+
+declare var window;
 
 
 
@@ -59,6 +64,9 @@ export class CitasComponent implements OnInit {
 	public today= new Date();	
 	public facturaHacienda : any = {};
 
+	public selectedProvincia : any = {};
+ 	public selectedCanton : any = {};
+
 
     constructor(
     		private modalService: BsModalService,
@@ -66,7 +74,9 @@ export class CitasComponent implements OnInit {
     		private validatorService:ValidatorService,
     		private dataService:DataService, 
     		private windowRef: WindowRefService, 
-    		private facturaService:FacturaService
+    		private facturaService:FacturaService,
+    		private sharedService:SharedService,
+    		private decimalPipe:DecimalPipe
     ) {}
 
     ngOnInit() {
@@ -100,6 +110,13 @@ export class CitasComponent implements OnInit {
 		    if(that.authService.isAdminSucursalUser()){
 		    	//that.obtieneCitasBarberia(that);
 		    }
+		    that.sharedService.get('/api/ubicacion').then((data) => {
+		        that.selectedProvincia = data.ubicacion[Number(that.authService.loggedUser.idProvincia) - 1];
+		        that.selectedCanton = that.selectedProvincia.cantones[Number(that.authService.loggedUser.idCanton) - 1];
+		        that.cargando = false;
+			},(error)=>{
+				console.log('error',error);
+			});
 
 		},time);
 	}
@@ -397,8 +414,55 @@ export class CitasComponent implements OnInit {
 
 
 	public async updateReserva(){
-		// await this.facturacionHacienda();
-		// console.log('facturaHacienda',this.facturaHacienda);
+		await this.facturacionHacienda();
+		console.log('factura hacienda',this.facturaHacienda);
+		var fact = this.facturaHacienda;
+		var that = this;
+		fact.con = true;
+		that.facturaService.post('',fact)
+		.then(res => {
+			console.log('res',res);
+			fact.con = false;
+			this.selectedCita.consecutivo = res.resp.consecutivo;
+			this.selectedCita.clave = res.resp.clave;
+			that.genLetter(function(doc){
+				var blob = doc.output("blob");
+		    	that.blobToBase64(blob,function(base){
+					fact.facturabase = {
+						base: base
+					};
+					that.facturaService.post('',fact)
+					.then(res => {
+						console.log('res',res);
+						if(res.respuesta == "aceptado"){
+							this.selectedCita.estadoFactura = 'P';
+						    this.dataService.post('/reserva/?method=put', {'reserva':this.selectedCita})
+				             .then(response => {
+				             	alert('Información actualizada');
+				               // alert('Factura Generada');
+				             	this.cargando = false;
+				             	console.log(response);
+				            },
+				             error => {
+				             	// alert('Factura Generada | Error al actualizar el estado. ' + error);
+				             	this.cargando = false;
+						 		this.selectedCita.estadoFactura = 'R';
+				        	});
+						}
+						if (res.respuesta == 'rechazado'){
+							this.cargando = false;
+ 							alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
+		    	 		}
+					}, err =>{
+						console.log('error',err);
+						this.cargando = false;
+					})
+				});
+		    });
+		}, err =>{
+			console.log('error',err);
+			this.cargando = false;
+		});
 		// this.facturaService.post('',this.facturaHacienda)
 		//     .then(response => {
 		//     	console.log(response);
@@ -406,19 +470,7 @@ export class CitasComponent implements OnInit {
  	// 					alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
 		//     	 }else{
 				
-			 	    this.selectedCita.estadoFactura = 'P';
-				    this.dataService.post('/reserva/?method=put', {'reserva':this.selectedCita})
-		             .then(response => {
-		             	alert('Información actualizada');
-		               // alert('Factura Generada');
-		             	this.cargando = false;
-		             	console.log(response);
-		            },
-		             error => {
-		             	// alert('Factura Generada | Error al actualizar el estado. ' + error);
-		             	this.cargando = false;
-				 		this.selectedCita.estadoFactura = 'R';
-		        	});
+							 	    
 		    	 // }
 		    
 				  
@@ -464,8 +516,6 @@ export class CitasComponent implements OnInit {
 		this.facturaHacienda.factura.nombreComercial = this.sucursal.nombreNegocio; //nombre barberia
 		this.facturaHacienda.factura.situacion = 'normal';
 
-
-
 		this.facturaHacienda.factura.emisor.nombre = this.sucursal.descripcion;// nombre del negocio
 		this.facturaHacienda.factura.emisor.tipoId = '02';
 		this.facturaHacienda.factura.emisor.id = this.sucursal.cedulaJuridica;
@@ -479,20 +529,30 @@ export class CitasComponent implements OnInit {
 		this.facturaHacienda.factura.emisor.codigoPaisFax = '';
 		this.facturaHacienda.factura.emisor.fax = '';
 		this.facturaHacienda.factura.emisor.email = this.sucursal.correo[0].correo;
-
-		this.facturaHacienda.factura.receptor.nombre =   this.nuevoUsuario.nombre;
-		this.facturaHacienda.factura.receptor.tipoId = '01';
-		this.facturaHacienda.factura.receptor.id =  this.nuevoUsuario.usuario;
-		this.facturaHacienda.factura.receptor.provincia = '';//cedula juridica
-		this.facturaHacienda.factura.receptor.canton = '';//cedula juridica
-		this.facturaHacienda.factura.receptor.distrito = '';//cedula juridica
-		this.facturaHacienda.factura.receptor.barrio = '';//cedula juridica
-		this.facturaHacienda.factura.receptor.senas = '';//cedula juridica
-		this.facturaHacienda.factura.receptor.codigoPaisTel = '506';
-		this.facturaHacienda.factura.receptor.tel =  this.nuevoUsuario.telefono[0].telefono;
-		this.facturaHacienda.factura.receptor.codigoPaisFax = '';
-		this.facturaHacienda.factura.receptor.fax = '';
-		this.facturaHacienda.factura.receptor.email = this.nuevoUsuario.correo[0].correo;
+		if(this.nuevoUsuario.nombre != 'generico' && ((this.nuevoUsuario.nombre && this.nuevoUsuario.apellido1 && this.nuevoUsuario.apellido2) || this.nuevoUsuario.cedula)){
+			this.facturaHacienda.factura.receptor.nombre = this.nuevoUsuario.nombre + this.nuevoUsuario.apellido1 + this.nuevoUsuario.apellido2;
+			this.facturaHacienda.factura.receptor.tipoId = '01';
+			if(!this.nuevoUsuario.cedula && this.nuevoUsuario.nombre && this.nuevoUsuario.apellido1 && this.nuevoUsuario.apellido2){
+				var usuarios = await(this.sharedService.get('/api/personas?tipo=nombre&nombre='+this.nuevoUsuario.nombre+'&apellido1='+this.nuevoUsuario.apellido1+'&apellido2='+this.nuevoUsuario.apellido2));
+				if(usuarios.persona[0].length == 1){
+					this.nuevoUsuario.cedula == usuarios.persona[0].cedula;
+				}
+			}
+			this.facturaHacienda.factura.receptor.id =  this.nuevoUsuario.cedula;
+			this.facturaHacienda.factura.receptor.provincia = this.nuevoUsuario.idProvincia;
+			this.facturaHacienda.factura.receptor.canton = this.nuevoUsuario.idCanton;
+			this.facturaHacienda.factura.receptor.distrito = this.nuevoUsuario.distrito;
+			this.facturaHacienda.factura.receptor.barrio = '01';
+			this.facturaHacienda.factura.receptor.senas = 'senas';
+			this.facturaHacienda.factura.receptor.codigoPaisTel = '506';
+			this.facturaHacienda.factura.receptor.tel =  this.nuevoUsuario.telefono[0].telefono;
+			this.facturaHacienda.factura.receptor.codigoPaisFax = '';
+			this.facturaHacienda.factura.receptor.fax = '';
+			this.facturaHacienda.factura.receptor.email = this.nuevoUsuario.correo[0].correo;
+			this.facturaHacienda.factura.omitirReceptor = 'false';
+		} else {
+			this.facturaHacienda.factura.omitirReceptor = 'true';
+		}
 
 		this.facturaHacienda.factura.condicionVenta = '01';
 		this.facturaHacienda.factura.plazoCredito = '0';
@@ -522,11 +582,231 @@ export class CitasComponent implements OnInit {
 		this.facturaHacienda.factura.detalles['1'].montoTotalLinea = this.selectedCita.precio;
 
 
-		this.facturaHacienda.factura.omitirReceptor = 'false';
 
 
 		this.facturaHacienda.cliente.id = this.sucursal.idFacturaAPI; // "5b79d789cd22f43682adeada";//
 	
+	}
+
+	paseDate(date){
+		var dd = date.getDate();
+		var mm = date.getMonth()+1; //January is 0!
+
+		var yyyy = date.getFullYear();
+		if(dd<10){
+		    dd='0'+dd;
+		} 
+		if(mm<10){
+		    mm='0'+mm;
+		} 
+		var parsed = dd+'/'+mm+'/'+yyyy;
+		return parsed;
+	}
+
+	truncate(str, limit) {
+	    var bits, i;
+	    bits = str.split('');
+	    if (bits.length > limit) {
+	        for (i = bits.length - 1; i > -1; --i) {
+	            if (i > limit) {
+	                bits.length = i;
+	            }
+	            else if (' ' === bits[i]) {
+	                bits.length = i;
+	                break;
+	            }
+	        }
+	        bits.push('...');
+	    }
+	    return bits.join('');
+	}
+
+	genLetter(cb){
+		var that = this;
+		var doc;
+		var img = new Image();
+		img.addEventListener('load', function() {
+			// header
+			// var pags = Math.ceil(that.factura.items.length / 32); -> se usa en caso de tener mas de un item
+			var pags = 1;
+			console.log(window.jsPDF);
+			doc = new window.jsPDF('p','pt','letter');
+			// var i = 0;
+			// console.log('j',j,pags);
+			var j = 0;
+			var o,f,temparray,chunk = 32;
+			for (o=0,f=1; o<f; o+=chunk) {
+				// temparray = that.factura.items.slice(o,o+chunk);
+				// console.log(temparray);
+			// for (var j = 0 ; j < pags; j++) {
+				console.log('looped',i,pags);
+				doc.setFont("helvetica");
+				doc.setFontType("bold");
+				doc.setFontSize("12");
+				doc.text(that.sucursal.nombreNegocio, 100, 20);
+				doc.setFont("helvetica");
+				doc.setFontType("normal");
+				doc.setFontSize("8");
+				doc.text(that.selectedCanton.nombre +', '+that.selectedProvincia.nombre, 100, 35);
+				doc.text('Tel. '+that.sucursal.telefono[0].telefono, 100, 45);
+				doc.text(that.sucursal.correo[0].correo, 100, 55);
+				// if(that.sucursal.paginaWeb){ --> si la barberia tiene pagina web
+				// 	doc.text(that.sucursal.paginaWeb, 100, 65);
+				// }
+				img.width = 80;
+				img.height = 80;
+			    doc.addImage(img, 'png', 25, 10);
+			    // fin header
+			    // numero factura
+			    doc.setFont("helvetica");
+				doc.setFontType("bold");
+				doc.setFontSize("12");
+			    doc.text('Factura No', 25, 120);
+			    var con = that.selectedCita.consecutivo || 'Sin consecutivo';
+			    doc.text(con, 100, 120);
+			    doc.text('Fecha', 25, 140);
+			    doc.text(that.selectedCita.dia +': '+ that.selectedCita.horaInicial, 100, 140);
+			    // fin numero factura
+			    // cliente 
+			    // doc.setFillColor(191,191,191);
+				doc.rect(300, 100, 250, 58);
+				doc.text('Cliente', 310, 115);
+			    doc.setFont("helvetica");
+				doc.setFontType("normal");
+				doc.setFontSize("10");
+			    doc.text('Nombre', 310, 130);
+			    if(that.selectedCita.nombreUserReserva != '' || that.selectedCita.nombreUserReserva != 'generico'){
+			    	doc.text(that.selectedCita.nombreUserReserva + ' ' +
+			    			that.selectedCita.primerApellidoUserReserva + ' ' +
+			    			that.selectedCita.segundoApellidoUserReserva, 380, 130);
+			    	if(that.selectedCita.cedula){
+				    	doc.text('Cedula', 310, 145);
+				    	doc.text(''+that.selectedCita.cedula, 380, 145);
+				    }
+			    } else {
+			    	doc.text('Factura sin cliente', 380, 130);
+			    }
+			    // fin cliente
+			    // tabla productos
+			    doc.rect(25, 200, 560, 430);
+			    doc.setFillColor(191,191,191);
+			    doc.rect(26, 201, 558, 13, 'F');
+			    var x = 26, y = 214;
+			    for(var i=0; i<32;i++){
+			    	if(i % 2 == 0){
+			    		doc.setFillColor(204,217,255);
+			    	} else {
+			    		doc.setFillColor(255,255,255);
+			    	}
+			    	doc.rect(x, y, 558, 13, 'F');
+			    	y += 13;
+			    }
+			    doc.setDrawColor(255,255,255);
+			    doc.setLineWidth(1.5);
+				doc.line(280, 200, 280, 700);
+				doc.line(330, 200, 330, 700);
+				doc.line(400, 200, 400, 700);
+				doc.line(480, 200, 480, 700);
+			    doc.setFontSize("8");
+			    doc.text('Detalle', 47, 210);
+			    doc.text('Cantidad', 290, 210);
+			    doc.text('Descuento', 345, 210);
+			    doc.text('Precio und', 420, 210);
+			    doc.text('Precio', 520, 210);
+			    // fin tabla productos
+			    // agregar productos
+			    y = 223;
+				// for (var i = temparray.length - 1; i >= 0; i--) {
+					doc.text(''+that.selectedCita.servicio, 45, y, 'left');
+					doc.text('1', 310, y, 'right');
+					doc.text(that.toDecimals(0), 380, y, 'right');
+					doc.text(that.toDecimals(that.selectedCita.precio), 460, y, 'right');
+					doc.text(that.toDecimals(that.selectedCita.precio), 550, y, 'right');
+					y += 13;
+				// }
+			    // fin agregar productos
+			    // total
+			    if(that.sucursal.pieFactura){
+				    console.log('split text',that.sucursal.pieFactura);
+				    var splitTitle = doc.splitTextToSize(that.sucursal.pieFactura, 200);
+					doc.text(splitTitle, 35, 670);
+				}
+				// var splitTitle = doc.splitTextToSize("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.", 200);
+				// doc.text(splitTitle, 35, 670);
+			    doc.setFontSize("10");
+				doc.setFontType("bold");
+			    doc.text('Total Bruto', 400, 670);
+			    doc.setFontType("normal");
+			    doc.text(that.toDecimals(that.selectedCita.precio), 560, 670, 'right');
+			    doc.text('Descuento', 400, 690);
+			    doc.text(that.toDecimals(that.selectedCita.precio), 560, 690, 'right');
+			    doc.text('Total Neto', 400, 710);
+			    doc.text(that.toDecimals(that.selectedCita.precio), 560, 710, 'right');
+			    doc.text('Impuestos', 400, 730);
+			    doc.text(that.toDecimals(that.selectedCita.precio), 560, 730, 'right');
+			    doc.setFontSize("11");
+				doc.setFontType("bold");
+			    doc.text('Total Factura', 400, 750);
+			    doc.text(that.toDecimals(that.selectedCita.precio), 560, 750, 'right');
+			    doc.text('Pag. '+(j+1)+' de '+ pags, 540, 15);
+			    if(j < pags - 1){
+			    	doc.addPage();
+			    }
+			    j++;
+			}
+		    // fin total
+		    cb(doc);
+		});
+		var imgName = this.sucursal.logoName || 'kyr.jpg';
+		img.src = 'assets/' + imgName;
+	}
+
+
+	blobToBase64(blob, cb) {
+	    var reader = new FileReader();
+	    reader.onload = function() {
+		    var dataUrl = reader.result;
+		    var base64 = dataUrl.split(',')[1];
+		    cb(base64);
+	    };
+	    reader.readAsDataURL(blob);
+	}
+
+	public calculaTotalItem(fi){
+		return fi.precioUnitario * fi.cantidad - fi.montoDescuento + ((fi.precioUnitario * fi.cantidad - fi.montoDescuento )* fi.impuestos / 100);
+	}
+
+	descuentoPorProducto(productoItem){
+		var totalDescuento = productoItem.montoDescuento * productoItem.cantidad;
+		return totalDescuento;
+	}
+
+	dottedLine(doc, xFrom, yFrom, xTo, yTo, segmentLength){
+	    // Calculate line length (c)
+	    var a = Math.abs(xTo - xFrom);
+	    var b = Math.abs(yTo - yFrom);
+	    var c = Math.sqrt(Math.pow(a,2) + Math.pow(b,2));
+
+	    // Make sure we have an odd number of line segments (drawn or blank)
+	    // to fit it nicely
+	    var fractions = c / segmentLength;
+	    var adjustedSegmentLength = (Math.floor(fractions) % 2 === 0) ? (c / Math.ceil(fractions)) : (c / Math.floor(fractions));
+
+	    // Calculate x, y deltas per segment
+	    var deltaX = adjustedSegmentLength * (a / c);
+	    var deltaY = adjustedSegmentLength * (b / c);
+
+	    var curX = xFrom, curY = yFrom;
+	    while (curX <= xTo && curY <= yTo)
+	    {
+	        doc.line(curX, curY, curX + deltaX, curY + deltaY);
+	        curX += 2*deltaX;
+	        curY += 2*deltaY;
+	    }
+	}
+
+	toDecimals(num){
+		return this.decimalPipe.transform(num,'1.2-2');
 	}
 	
 

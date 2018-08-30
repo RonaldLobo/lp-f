@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, LOCALE_ID, Injectable } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { DecimalPipe } from '@angular/common'
 import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
 
 import { AppComponent } from './app.component';
@@ -145,6 +146,7 @@ import { WindowRefService } from './services/window.service';
       // { provide: LOCALE_ID, useValue: "es-es" },
       WindowRefService,
       AuthService,
+      DecimalPipe,
       FacturaService,
       DataService,
       ValidatorService,

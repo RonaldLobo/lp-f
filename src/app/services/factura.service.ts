@@ -18,7 +18,7 @@ export class FacturaService {
     public token:any = '';
     // public server:string = "http://localhost:82/API/index.php"
     // public server:string = "/API/index.php"
-    public server:string = "http://kyrapps.com/facturador/api/facturador/";
+    public server:string = "http://kyrapps.com/facturador-api/api/facturador";
 
 
     constructor(
