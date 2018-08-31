@@ -296,9 +296,9 @@ export class CitasComponent implements OnInit {
 
 	public generar(){
 		let barberoId = this.authService.loggedUser.id;
-		console.log('is admin',this.authService.isAdminSucursalUser());
+		//console.log('is admin',this.authService.isAdminSucursalUser());
 		if(this.authService.isAdminSucursalUser()){
-			console.log(this.selectedBarbero);
+			//console.log(this.selectedBarbero);
 			barberoId = this.selectedBarbero;
 		}
 		var resIni = new Date(this.resumenFechaInicial);
@@ -415,7 +415,7 @@ export class CitasComponent implements OnInit {
 
 	public async updateReserva(){
 		await this.facturacionHacienda();
-		console.log('factura hacienda',this.facturaHacienda);
+	//	console.log('factura hacienda',this.facturaHacienda);
 		var fact = this.facturaHacienda;
 		var that = this;
 		fact.con = true;
@@ -504,7 +504,7 @@ export class CitasComponent implements OnInit {
 
 	public async facturacionHacienda(){
 		var sucursal = await this.obtenerDatosBarberia();
-		console.log('suc',sucursal);
+		//console.log('suc',sucursal);
 		this.sucursal = sucursal[0];
 		this.facturaHacienda.factura  = {};
 		this.facturaHacienda.cliente  = {};
@@ -739,11 +739,11 @@ export class CitasComponent implements OnInit {
 			    doc.setFontType("normal");
 			    doc.text(that.toDecimals(that.selectedCita.precio), 560, 670, 'right');
 			    doc.text('Descuento', 400, 690);
-			    doc.text(that.toDecimals(that.selectedCita.precio), 560, 690, 'right');
+			    doc.text(that.toDecimals(0), 560, 690, 'right');
 			    doc.text('Total Neto', 400, 710);
 			    doc.text(that.toDecimals(that.selectedCita.precio), 560, 710, 'right');
 			    doc.text('Impuestos', 400, 730);
-			    doc.text(that.toDecimals(that.selectedCita.precio), 560, 730, 'right');
+			    doc.text(that.toDecimals(0), 560, 730, 'right');
 			    doc.setFontSize("11");
 				doc.setFontType("bold");
 			    doc.text('Total Factura', 400, 750);

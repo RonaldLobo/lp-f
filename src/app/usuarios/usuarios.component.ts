@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';  
 
 import { AuthService } from '../services/auth.service';
@@ -9,6 +9,9 @@ import { Correo } from '../models/correo';
 import { DataService } from '../services/data.service';
 import { SharedService } from '../services/shared.service';
 import * as _ from "lodash";
+import { BsModalRef } from 'ngx-bootstrap/modal/modal-options.class';
+import { BsModalService } from 'ngx-bootstrap/modal';
+
 
 @Component({
   selector: 'app-usuarios',
@@ -40,8 +43,9 @@ export class UsuariosComponent implements OnInit {
 	public distritos : any = [];
 	public cantonesDisplay : any ;
 	public posiblesClientes : any = [];
+	public printRefCompletar: BsModalRef;
 
-  constructor(private router:Router,private dataService:DataService, public authService:AuthService, public validatorService:ValidatorService, public sharedService:SharedService) { }
+  constructor(private router:Router,private dataService:DataService, public authService:AuthService, public validatorService:ValidatorService, public sharedService:SharedService,private modalService: BsModalService) { }
 
   ngOnInit() {
   		this.sharedService.get("/api/ubicacion").then((data) =>{
@@ -51,9 +55,9 @@ export class UsuariosComponent implements OnInit {
   			this.nuevoUsuario.distrito = this.selectedCanton.distritos[0].codigo;
   		});
   }
-
-
-
+ 	openModalPrint(template: TemplateRef<any>) {
+		this.printRefCompletar = this.modalService.show(template);
+	}
 
 	public changeProvincia(event){
 		this.selectedCanton = this.selectedProvincia.cantones[0];

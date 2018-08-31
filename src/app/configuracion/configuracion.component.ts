@@ -384,12 +384,15 @@ export class ConfiguracionComponent implements OnInit {
 	public ModificarBarberia(){
 		this.barberiaErrores = this.validatorService.validaBarberia(this.nuevaBarberia);
 		if(this.barberiaErrores.length == 0){
-			console.log('modificar Barberia',this.nuevaBarberia);
 			this.cargando = true;
 			//this.nuevaBarberia.descripcion = this.nuevaBarberia.descripcion.replace("'","\'");
 			//this.nuevaBarberia.nombreNegocio = this.nuevaBarberia.nombreNegocio.replace("'","\'");
 
-			this.nuevaBarberia.descripcion = this.nuevaBarberia.descripcion.replace("'","\'");
+
+			//this.nuevaBarberia.descripcion = 	this.nuevaBarberia.descripcion.replace(/[']/g, "/'");;
+			//console.log(this.nuevaBarberia.descripcion, 'kim');
+
+			//this.nuevaBarberia.descripcion = this.nuevaBarberia.descripcion.replace("'","\'");
 
 			this.dataService.post('/sucursal/?method=PUT', {"sucursal":this.nuevaBarberia})
             .then(response => {
@@ -399,7 +402,6 @@ export class ConfiguracionComponent implements OnInit {
             	}
                 this.dataService.get(url)
 	            .then(response => {
-	                console.log('success Sucursales',response);
 	                this.sucursales = response;
 	                if(!this.authService.isAdminSucursalUser()){
 	                	this.sucursales = response.sucursal;
@@ -408,7 +410,6 @@ export class ConfiguracionComponent implements OnInit {
 					this.selectedBarberiaId = this.nuevaBarberia.id;
 					this.dataService.get('/usuario/?idSucursal='+this.nuevaBarberia.id)
 			            .then(response => {
-			                console.log('success barberos',response);
 			                this.barberos = response.usuario;
 			                this.nuevoBarbero = Object.assign({},this.barberos[0]);
 			                if(this.barberos.length > 0){

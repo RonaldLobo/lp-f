@@ -265,11 +265,11 @@ export class FacturaComponent implements OnInit {
 			    doc.setFontType("normal");
 			    doc.text(that.toDecimals(that.selectedFactura.precio), 560, 670, 'right');
 			    doc.text('Descuento', 400, 690);
-			    doc.text(that.toDecimals(that.selectedFactura.precio), 560, 690, 'right');
+			    doc.text(that.toDecimals(0), 560, 690, 'right');
 			    doc.text('Total Neto', 400, 710);
 			    doc.text(that.toDecimals(that.selectedFactura.precio), 560, 710, 'right');
 			    doc.text('Impuestos', 400, 730);
-			    doc.text(that.toDecimals(that.selectedFactura.precio), 560, 730, 'right');
+			    doc.text(that.toDecimals(0), 560, 730, 'right');
 			    doc.setFontSize("11");
 				doc.setFontType("bold");
 			    doc.text('Total Factura', 400, 750);
@@ -334,7 +334,7 @@ export class FacturaComponent implements OnInit {
 			doc.text('Total Neto: ', 35, y+4,"right");
 			doc.text(that.toDecimals(that.selectedFactura.precio), 50, y+4,"right");
 			doc.text('Total Impuestos: ', 35, y+8,"right");
-			doc.text(that.toDecimals(that.selectedFactura.precio), 50, y+8,"right");
+			doc.text(that.toDecimals(0), 50, y+8,"right");
 			doc.text('Total: ', 35,y+12,"right");
 			doc.text(that.toDecimals(that.selectedFactura.precio), 50, y+12,"right");
 			// fin total
