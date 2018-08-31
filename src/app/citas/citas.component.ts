@@ -414,27 +414,28 @@ export class CitasComponent implements OnInit {
 
 
 	public async updateReserva(){
-		await this.facturacionHacienda();
-	//	console.log('factura hacienda',this.facturaHacienda);
+
+		//await this.facturacionHacienda();
+		console.log('factura hacienda',this.facturaHacienda);
 		var fact = this.facturaHacienda;
-		var that = this;
-		fact.con = true;
-		that.facturaService.post('',fact)
-		.then(res => {
-			console.log('res',res);
-			fact.con = false;
-			this.selectedCita.consecutivo = res.resp.consecutivo;
-			this.selectedCita.clave = res.resp.clave;
-			that.genLetter(function(doc){
-				var blob = doc.output("blob");
-		    	that.blobToBase64(blob,function(base){
-					fact.facturabase = {
-						base: base
-					};
-					that.facturaService.post('',fact)
-					.then(res => {
-						console.log('res',res);
-						if(res.respuesta == "aceptado"){
+		// var that = this;
+		// fact.con = true;
+		// that.facturaService.post('',fact)
+		// .then(res => {
+		// 	console.log('res',res);
+		// 	fact.con = false;
+		// 	this.selectedCita.consecutivo = res.resp.consecutivo;
+		// 	this.selectedCita.clave = res.resp.clave;
+		// 	that.genLetter(function(doc){
+		// 		var blob = doc.output("blob");
+		//     	that.blobToBase64(blob,function(base){
+		// 			fact.facturabase = {
+		// 				base: base
+		// 			};
+		// 			that.facturaService.post('',fact)
+		// 			.then(res => {
+		// 				console.log('res',res);
+		// 				if(res.respuesta == "aceptado"){
 							this.selectedCita.estadoFactura = 'P';
 						    this.dataService.post('/reserva/?method=put', {'reserva':this.selectedCita})
 				             .then(response => {
@@ -448,21 +449,21 @@ export class CitasComponent implements OnInit {
 				             	this.cargando = false;
 						 		this.selectedCita.estadoFactura = 'R';
 				        	});
-						}
-						if (res.respuesta == 'rechazado'){
-							this.cargando = false;
- 							alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
-		    	 		}
-					}, err =>{
-						console.log('error',err);
-						this.cargando = false;
-					})
-				});
-		    });
-		}, err =>{
-			console.log('error',err);
-			this.cargando = false;
-		});
+		// 				}
+		// 				if (res.respuesta == 'rechazado'){
+		// 					this.cargando = false;
+ 	// 						alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
+		//     	 		}
+		// 			}, err =>{
+		// 				console.log('error',err);
+		// 				this.cargando = false;
+		// 			})
+		// 		});
+		//     });
+		// }, err =>{
+		// 	console.log('error',err);
+		// 	this.cargando = false;
+		// });
 		// this.facturaService.post('',this.facturaHacienda)
 		//     .then(response => {
 		//     	console.log(response);
