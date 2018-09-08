@@ -127,7 +127,9 @@
         </p>
         <ul class="reservas row">
           <ng-container *ngFor="let reserva of camposLibres">
-            <li (click)="(!reserva.reservada && !reserva.pausada && selectReserva(reserva)) ||(authService.isAdminSucursalUser() && reserva.pausada)" class="col-4" *ngIf="(!reserva.reservada && !reserva.pausada) || authService.isAdminSucursalUser()">
+            <li (click)="
+              (!reserva.reservada && !reserva.pausada && selectReserva(reserva)) ||
+              (authService.isAdminSucursalUser() && reserva.pausada && selectReserva(reserva))" class="col-4" *ngIf="(!reserva.reservada && !reserva.pausada) || authService.isAdminSucursalUser()">
               <div [class.active]="selectedReserva==reserva" [class.reservada]="reserva.reservada" [class.pausada]="reserva.pausada">
                 <p>{{reserva.hora | date:'shortTime'}}</p>
               </div>
