@@ -436,6 +436,8 @@ export class CitasComponent implements OnInit {
 		// 			.then(res => {
 		// 				console.log('res',res);
 		// 				if(res.respuesta == "aceptado"){
+							this.selectedCita.consecutivo = '';
+							this.selectedCita.clave = '';
 							this.selectedCita.estadoFactura = 'P';
 						    this.dataService.post('/reserva/?method=put', {'reserva':this.selectedCita})
 				             .then(response => {

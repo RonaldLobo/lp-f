@@ -489,6 +489,8 @@ export class ReservaComponent implements OnInit {
 			reserva.dia = this.reservacion.fecha;
 			reserva.horaInicial = this.reservacion.hora.hora.getHours() + ":" + this.reservacion.hora.hora.getMinutes() + ":00";
 			reserva.estado = 1;
+			reserva.consecutivo = '';
+			reserva.clave = '';
 			this.dataService.post('/reserva/', {"reserva":reserva})
 	            .then(response => {
 	                this.cargando = false;
@@ -517,6 +519,8 @@ export class ReservaComponent implements OnInit {
 						reserva.dia = this.reservacion.fecha;
 						reserva.horaInicial = this.reservacion.hora.hora.getHours() + ":" + this.reservacion.hora.hora.getMinutes() + ":00";
 						reserva.estado = 1;
+						reserva.consecutivo = '';
+						reserva.clave = '';
 						this.dataService.post('/reserva/', {"reserva":reserva})
 				            .then(response => {
 				                this.cargando = false;
