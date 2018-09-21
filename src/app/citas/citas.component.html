@@ -253,7 +253,7 @@
           	<input type="text" name="detalleFactura" [disabled]="selectedCita.estadoFactura=='P' || authService.isRegularUser() "  [(ngModel)]="selectedCita.detalleFactura">
           </li>
 
-          <li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P'">
+          <li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && selectedCita.estadoFactura!='E'">
           	<button type="button" class="btn btn-danger" (click)="modalRef.hide();openModal(confirmaEliminarCita)" *ngIf="!authService.isRegularUser() || mayorQueHoy(selectedCita.dia)">
 				Eliminar
 			</button>
@@ -261,14 +261,19 @@
 				Para eliminar esta cita por favor comuniquese con el barbero.
 			</p>
           </li>
-          <li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P'  && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
+          <li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && selectedCita.estadoFactura!='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
           	<button type="button" class="btn btn-success" (click)="visualizarModificar()">
 				Actualizar Cliente
 			</button>
           </li>
-           <li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
+           <li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && selectedCita.estadoFactura!='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
           	<button type="button" class="btn btn-info" (click)="updateReserva()">
 				Pagar
+			</button>
+          </li>
+          <li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura=='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
+          	<button type="button" class="btn btn-info" (click)="reenviarMH()">
+				Reenviar
 			</button>
           </li>
         </ul>

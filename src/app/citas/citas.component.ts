@@ -12,6 +12,7 @@ import { Telefono } from '../models/telefono';
 import { Correo } from '../models/correo';
 
 import { DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 declare var window;
 
@@ -66,6 +67,7 @@ export class CitasComponent implements OnInit {
 
 	public selectedProvincia : any = {};
  	public selectedCanton : any = {};
+ 	public enviandoMH: boolean = false;
 
 
     constructor(
@@ -76,7 +78,8 @@ export class CitasComponent implements OnInit {
     		private windowRef: WindowRefService, 
     		private facturaService:FacturaService,
     		private sharedService:SharedService,
-    		private decimalPipe:DecimalPipe
+    		private decimalPipe:DecimalPipe,
+    		private datePipe:DatePipe
     ) {}
 
     ngOnInit() {
@@ -409,79 +412,130 @@ export class CitasComponent implements OnInit {
 		});
 	}
 
-
-
-
-
 	public async updateReserva(){
-
-		//await this.facturacionHacienda();
+		await this.facturacionHacienda();
 		console.log('factura hacienda',this.facturaHacienda);
 		var fact = this.facturaHacienda;
-		// var that = this;
-		// fact.con = true;
-		// that.facturaService.post('',fact)
-		// .then(res => {
-		// 	console.log('res',res);
-		// 	fact.con = false;
-		// 	this.selectedCita.consecutivo = res.resp.consecutivo;
-		// 	this.selectedCita.clave = res.resp.clave;
-		// 	that.genLetter(function(doc){
-		// 		var blob = doc.output("blob");
-		//     	that.blobToBase64(blob,function(base){
-		// 			fact.facturabase = {
-		// 				base: base
-		// 			};
-		// 			that.facturaService.post('',fact)
-		// 			.then(res => {
-		// 				console.log('res',res);
-		// 				if(res.respuesta == "aceptado"){
-							this.selectedCita.consecutivo = '';
-							this.selectedCita.clave = '';
-							this.selectedCita.estadoFactura = 'P';
-						    this.dataService.post('/reserva/?method=put', {'reserva':this.selectedCita})
+		var that = this;
+		fact.con = true;
+		that.enviandoMH = true;
+		that.facturaService.post('',fact)
+		.then(res => {
+			console.log('res',res);
+			fact.con = false;
+			this.selectedCita.consecutivo = res.resp.consecutivo;
+			this.selectedCita.clave = res.resp.clave;
+			that.genLetter(function(doc){
+				var blob = doc.output("blob");
+		    	that.blobToBase64(blob,function(base){
+					fact.facturabase = {
+						base: base
+					};
+					that.facturaService.post('',fact)
+					.then(res => {
+						console.log('res',res);
+						if(res.respuesta == "aceptado"){
+							that.selectedCita.consecutivo = '';
+							that.selectedCita.clave = '';
+							that.selectedCita.estadoFactura = 'P';
+						    that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita})
 				             .then(response => {
 				             	alert('Información actualizada');
-				               // alert('Factura Generada');
-				             	this.cargando = false;
+				             	that.enviandoMH = false;
 				             	console.log(response);
 				            },
 				             error => {
-				             	// alert('Factura Generada | Error al actualizar el estado. ' + error);
-				             	this.cargando = false;
-						 		this.selectedCita.estadoFactura = 'R';
+				             	that.enviandoMH = false;
+						 		that.selectedCita.estadoFactura = 'R';
 				        	});
-		// 				}
-		// 				if (res.respuesta == 'rechazado'){
-		// 					this.cargando = false;
- 	// 						alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
-		//     	 		}
-		// 			}, err =>{
-		// 				console.log('error',err);
-		// 				this.cargando = false;
-		// 			})
-		// 		});
-		//     });
-		// }, err =>{
-		// 	console.log('error',err);
-		// 	this.cargando = false;
-		// });
-		// this.facturaService.post('',this.facturaHacienda)
-		//     .then(response => {
-		//     	console.log(response);
-		//     	 if (response.respuesta == 'rechazado'){
- 	// 					alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
-		//     	 }else{
-				
-							 	    
-		    	 // }
-		    
-				  
-		 	 // },
-	    //     error => {
-	    //     	console.log('error',error);
-	    //         this.cargando = false;
-	    // });
+						} else if(res.error == "recibido"){
+							alert('Su factura fue enviada pero el Ministerio de Hacienda esta tardando mucho tiempo en responder, por favor reintente el envío desde "Factura"');
+							that.selectedCita.refresh = res.refreshToken;
+							that.selectedCita.xml = res.xml;
+							that.selectedCita.estadoFactura = 'E';
+						    that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita})
+				             .then(response => {
+				             	alert('Información actualizada');
+				            	that.enviandoMH = false;
+				             	console.log(response);
+				            },
+				             error => {
+				             	that.enviandoMH = false;
+						 		that.selectedCita.estadoFactura = 'R';
+				        	});
+						} else {
+							that.enviandoMH = false;
+ 							alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
+						}
+					}, err =>{
+						console.log('error',err);
+						that.enviandoMH = false;
+					})
+				});
+		    });
+		}, err =>{
+			console.log('error',err);
+			that.enviandoMH = false;
+		});
+	}
+
+	public async reenviarMH(){
+		var that = this;
+		await this.facturacionHacienda();
+		var fact = this.facturaHacienda;
+		console.log(fact);
+		that.enviandoMH = true;
+		fact.conrealizada = true;
+		// that.openModalReenviar(temp);
+		that.genLetter(function(doc){
+			var blob = doc.output("blob");
+			that.blobToBase64(blob,function(base){
+				fact.facturabase = {
+					base: base
+				};
+				that.facturaService.post('',fact)
+				.then(res => {
+					console.log('res',res);
+					if(res.respuesta == "aceptado"){
+						that.selectedCita.consecutivo = '';
+						that.selectedCita.clave = '';
+						that.selectedCita.estadoFactura = 'P';
+					    that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita})
+			             .then(response => {
+			             	alert('Información actualizada');
+			             	that.enviandoMH = false;
+			             	console.log(response);
+			            },
+			             error => {
+			             	that.enviandoMH = false;
+					 		that.selectedCita.estadoFactura = 'R';
+			        	});
+					} else if(res.error == "recibido"){
+						alert('Su factura fue enviada pero el Ministerio de Hacienda esta tardando mucho tiempo en responder, por favor reintente el envío desde "Factura"');
+						that.selectedCita.refresh = res.refreshToken;
+						that.selectedCita.xml = res.xml;
+						that.selectedCita.estadoFactura = 'E';
+					    that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita})
+			             .then(response => {
+			             	alert('Información actualizada');
+			            	that.enviandoMH = false;
+			             	console.log(response);
+			            },
+			             error => {
+			             	that.enviandoMH = false;
+					 		that.selectedCita.estadoFactura = 'R';
+			        	});
+					} else {
+						that.enviandoMH = false;
+							alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
+					}
+				}, err =>{
+					console.log('error',err);
+					that.enviandoMH = false;
+					// that.reenviarRefCompletar.hide();
+				})
+			});
+		});
 	}
 		
 	
@@ -515,15 +569,15 @@ export class CitasComponent implements OnInit {
 		this.facturaHacienda.factura.receptor  = {};
 		this.facturaHacienda.factura.detalles  = {};
 
-		this.facturaHacienda.factura.fecha = new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString();
+		this.facturaHacienda.factura.fecha = this.formatDate(new Date());
 		this.facturaHacienda.factura.nombreComercial = this.sucursal.nombreNegocio; //nombre barberia
 		this.facturaHacienda.factura.situacion = 'normal';
 
 		this.facturaHacienda.factura.emisor.nombre = this.sucursal.descripcion;// nombre del negocio
-		this.facturaHacienda.factura.emisor.tipoId = '02';
+		this.facturaHacienda.factura.emisor.tipoId = this.sucursal.tipoId;
 		this.facturaHacienda.factura.emisor.id = this.sucursal.cedulaJuridica;
 		this.facturaHacienda.factura.emisor.provincia = this.sucursal.provincia;
-		this.facturaHacienda.factura.emisor.canton = this.sucursal.idCanton;
+		this.facturaHacienda.factura.emisor.canton = this.sucursal.canton;
 		this.facturaHacienda.factura.emisor.distrito = this.sucursal.distrito;
 		this.facturaHacienda.factura.emisor.barrio = this.sucursal.barrio;
 		this.facturaHacienda.factura.emisor.senas = this.sucursal.detalleDireccion;
@@ -571,23 +625,25 @@ export class CitasComponent implements OnInit {
 		this.facturaHacienda.factura.totalVentas = this.selectedCita.precio;//total del servicio
 		this.facturaHacienda.factura.totalDescuentos = '0';
 		this.facturaHacienda.factura.totalVentasNeta = this.selectedCita.precio;//total del servicio
-		this.facturaHacienda.factura.totalImpuestos = 'normal';
+		this.facturaHacienda.factura.totalImpuestos = '0';
 		this.facturaHacienda.factura.totalComprobante = this.selectedCita.precio;//total del servicio
 		this.facturaHacienda.factura.otros = 'Gracias.';
 
 		this.facturaHacienda.factura.detalles['1'] = {};
 		this.facturaHacienda.factura.detalles['1'].cantidad = '1';
-		this.facturaHacienda.factura.detalles['1'].unidadMedida = 'Sp.';
+		this.facturaHacienda.factura.detalles['1'].unidadMedida = 'Sp';
 		this.facturaHacienda.factura.detalles['1'].detalle = this.selectedCita.servicio;
 		this.facturaHacienda.factura.detalles['1'].precioUnitario = this.selectedCita.precio;
 		this.facturaHacienda.factura.detalles['1'].montoTotal = this.selectedCita.precio;
 		this.facturaHacienda.factura.detalles['1'].subtotal = this.selectedCita.precio;
 		this.facturaHacienda.factura.detalles['1'].montoTotalLinea = this.selectedCita.precio;
 
+		this.facturaHacienda.factura.refreshToken = this.facturaHacienda.factura.refresh || '';
+		this.facturaHacienda.factura.clave = this.facturaHacienda.factura.clave || '';
+		this.facturaHacienda.factura.xml = this.facturaHacienda.factura.xml || '';
+		this.facturaHacienda.factura.consecutivo = this.facturaHacienda.factura.consecutivo || '';
 
-
-
-		this.facturaHacienda.cliente.id = this.sucursal.idFacturaAPI; // "5b79d789cd22f43682adeada";//
+		this.facturaHacienda.cliente.id = this.sucursal.idFacturaAPI;
 	
 	}
 
@@ -810,6 +866,10 @@ export class CitasComponent implements OnInit {
 
 	toDecimals(num){
 		return this.decimalPipe.transform(num,'1.2-2');
+	}
+
+	formatDate(date:Date){
+		return this.datePipe.transform(date, 'yyyy-MM-ddTHH:mm:ss-06:00')
 	}
 	
 

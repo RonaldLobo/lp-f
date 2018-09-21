@@ -56,6 +56,9 @@
 								<p *ngIf="factura.estadoFactura == 'P'">
 									Pagado
 								</p>
+                <p *ngIf="factura.estadoFactura == 'E'">
+                  Enviado
+                </p>
 							</div>
 							<div class="col-sm-4 col-6 text-center" style="padding-top: 4px;">
 								<button (click)="selectedFactura = factura; openModal(facturaModal)" class="btn btn-info">
@@ -64,6 +67,9 @@
 								<button (click)="selectedFactura = factura; openModalPrint(print)" class="btn btn-success">
 									<i class="fa fa-print" aria-hidden="true"></i> Imprimir
 								</button>
+                <button (click)="obtenerInfoUsuario(factura.idUsuarioReserva)" *ngIf="factura.estadoFactura == 'E'" class="btn btn-warning">
+                  <i class="fa fa-paper-plane" aria-hidden="true"></i> Reenviar
+                </button>
 							</div>
 						</div>
 					</li>
@@ -137,11 +143,11 @@
 
           <li class="col-4 centered-content action-modal" *ngIf="selectedFactura.estadoFactura!='P'">
           	<button type="button" class="btn btn-danger" (click)="modalRef.hide();openModal(confirmaEliminarCita)" *ngIf="!authService.isRegularUser() || mayorQueHoy(selectedFactura.dia)">
-				Eliminar
-			</button>
-			<p *ngIf="authService.isRegularUser() && igualQueHoy(selectedFactura.dia)" style="color:red">
-				Para eliminar esta cita por favor comuniquese con el barbero.
-			</p>
+      				Eliminar
+      			</button>
+      			<p *ngIf="authService.isRegularUser() && igualQueHoy(selectedFactura.dia)" style="color:red">
+      				Para eliminar esta cita por favor comuniquese con el barbero.
+      			</p>
           </li>
         </ul>
     </div>
