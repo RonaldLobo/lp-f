@@ -22,6 +22,7 @@ export class FacturaComponent implements OnInit {
 	public facturas: any = [];
 	public idSucursal: string = '';
 	public mostrarFactura: boolean = false;
+	public cargando: boolean = false;
 	public selectedFactura:any={};
 	public selectedProvincia : any = {};
  	public selectedCanton : any = {};
