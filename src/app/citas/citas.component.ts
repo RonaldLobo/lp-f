@@ -15,6 +15,7 @@ import { DecimalPipe } from '@angular/common';
 import { DatePipe } from '@angular/common';
 
 declare var window;
+import * as _ from "lodash";
 
 
 
@@ -25,6 +26,7 @@ declare var window;
 })
 export class CitasComponent implements OnInit {
 	public modalRef: BsModalRef;
+	printRefCompletar: BsModalRef;
 	public displayCitas: boolean = false;
 	public correosUsuarioDisplay :any = [];
 	public telefonosUsuarioDisplay :any = [];
@@ -51,6 +53,8 @@ export class CitasComponent implements OnInit {
 
 	public cargando:boolean = true;
 	public mostrarModificar:boolean = false;
+	public mostrarSeleccionar:boolean = false;
+	public nuevoUsuarioDisplay:boolean = false;
 
 	public nuevoUsuario:Usuario = new Usuario();
 	public usuarioErrores : any = [];
@@ -68,6 +72,12 @@ export class CitasComponent implements OnInit {
 	public selectedProvincia : any = {};
  	public selectedCanton : any = {};
  	public enviandoMH: boolean = false;
+
+ 	public ubicacion : any = {};
+
+	public buscaUsuario:string = "";
+	public usuarioCita: any = [];
+	public provincias: any = [];
 
 
     constructor(
@@ -111,14 +121,29 @@ export class CitasComponent implements OnInit {
 		            });
 		    }
 		    if(that.authService.isAdminSucursalUser()){
-		    	//that.obtieneCitasBarberia(that);
+		    	that.obtieneCitasBarberia(that);
 		    }
+		   //  this.sharedService.get("/api/ubicacion").then((data) =>{
+	  		// 	this.provincias = data.ubicacion;
+	  		// 	this.selectedProvincia = this.provincias[0];
+	  		// 	this.selectedCanton = this.selectedProvincia.cantones[0];
+	  		// 	this.nuevoUsuario.distrito = this.selectedCanton.distritos[0].codigo;
+	  		// });
 		    that.sharedService.get('/api/ubicacion').then((data) => {
-		        that.selectedProvincia = data.ubicacion[Number(that.authService.loggedUser.idProvincia) - 1];
-		        that.selectedCanton = that.selectedProvincia.cantones[Number(that.authService.loggedUser.idCanton) - 1];
+		    	console.log('that.authService.loggedUser.idProvincia',that.authService.loggedUser.idProvincia);
+  				that.provincias = data.ubicacion;
+		        // that.selectedProvincia = data.ubicacion[Number(that.authService.loggedUser.idProvincia) - 1];
+		        // that.selectedCanton = that.selectedProvincia.cantones[Number(that.authService.loggedUser.idCanton) - 1];
+		        that.ubicacion = data.ubicacion;
 		        that.cargando = false;
 			},(error)=>{
 				console.log('error',error);
+			});
+
+
+			that.obtenerDatosBarberia().then((data) => {
+				console.log(data);
+				that.sucursal = data[0];
 			});
 
 		},time);
@@ -223,6 +248,10 @@ export class CitasComponent implements OnInit {
 		this.modalRef = this.modalService.show(template);
 	}
 
+	public openModalPrint(template: TemplateRef<any>) {
+		this.printRefCompletar = this.modalService.show(template);
+	}
+
 	public zerofill(i,add) {
 		i = i + add;
     	return ((i < 10 ? '0' : '') + i);
@@ -234,7 +263,6 @@ export class CitasComponent implements OnInit {
 		}
 		return pausas;
 	}
-
 
 	public obtieneCitasBarberia(that){
 		that.obteniendoBarberos = true;
@@ -352,7 +380,11 @@ export class CitasComponent implements OnInit {
 	}
 
 	public visualizarModificar(){
-		this.mostrarModificar = true;
+		this.mostrarModificar = !this.mostrarModificar;
+	}
+
+	public visualizarSeleccionar(){
+		this.mostrarSeleccionar = !this.mostrarSeleccionar;
 	}
 
 	public mayorQueHoy(date){
@@ -419,6 +451,7 @@ export class CitasComponent implements OnInit {
 		var that = this;
 		fact.con = true;
 		that.enviandoMH = true;
+		console.log(fact);
 		that.facturaService.post('',fact)
 		.then(res => {
 			console.log('res',res);
@@ -502,6 +535,7 @@ export class CitasComponent implements OnInit {
 						that.selectedCita.estadoFactura = 'P';
 					    that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita})
 			             .then(response => {
+			             	that.obtieneCitasBarberia(that);
 			             	alert('Información actualizada');
 			             	that.enviandoMH = false;
 			             	console.log(response);
@@ -511,6 +545,7 @@ export class CitasComponent implements OnInit {
 					 		that.selectedCita.estadoFactura = 'R';
 			        	});
 					} else if(res.error == "recibido"){
+						that.obtieneCitasBarberia(that);
 						alert('Su factura fue enviada pero el Ministerio de Hacienda esta tardando mucho tiempo en responder, por favor reintente el envío desde "Factura"');
 						that.selectedCita.refresh = res.refreshToken;
 						that.selectedCita.xml = res.xml;
@@ -557,12 +592,16 @@ export class CitasComponent implements OnInit {
 		return this.dataService.get('/sucursal/'+ this.authService.loggedUser.idSucursal);
 	}
 
+	public obtenerDatosUsuario(idUsuario){
+		return this.dataService.get('/usuario/'+ idUsuario);
+	}
+
 
 
 	public async facturacionHacienda(){
-		var sucursal = await this.obtenerDatosBarberia();
-		//console.log('suc',sucursal);
-		this.sucursal = sucursal[0];
+		var user = await this.obtenerDatosUsuario(this.selectedCita.idUsuarioBarbero);
+		var barbero : Usuario = user.usuario;
+		console.log('barbero',barbero);
 		this.facturaHacienda.factura  = {};
 		this.facturaHacienda.cliente  = {};
 		this.facturaHacienda.factura.emisor  = {};
@@ -573,19 +612,19 @@ export class CitasComponent implements OnInit {
 		this.facturaHacienda.factura.nombreComercial = this.sucursal.nombreNegocio; //nombre barberia
 		this.facturaHacienda.factura.situacion = 'normal';
 
-		this.facturaHacienda.factura.emisor.nombre = this.sucursal.descripcion;// nombre del negocio
-		this.facturaHacienda.factura.emisor.tipoId = this.sucursal.tipoId;
-		this.facturaHacienda.factura.emisor.id = this.sucursal.cedulaJuridica;
-		this.facturaHacienda.factura.emisor.provincia = this.sucursal.provincia;
-		this.facturaHacienda.factura.emisor.canton = this.sucursal.canton;
-		this.facturaHacienda.factura.emisor.distrito = this.sucursal.distrito;
-		this.facturaHacienda.factura.emisor.barrio = this.sucursal.barrio;
-		this.facturaHacienda.factura.emisor.senas = this.sucursal.detalleDireccion;
+		this.facturaHacienda.factura.emisor.nombre = barbero.nombre+ ' ' + barbero.apellido1 + ' ' +barbero.apellido2;// nombre del negocio
+		this.facturaHacienda.factura.emisor.tipoId = '01';
+		this.facturaHacienda.factura.emisor.id = barbero.cedula;
+		this.facturaHacienda.factura.emisor.provincia = barbero.idProvincia;
+		this.facturaHacienda.factura.emisor.canton = this.pad(barbero.idCanton,2,0);
+		this.facturaHacienda.factura.emisor.distrito = this.pad(barbero.distrito,2,0);
+		this.facturaHacienda.factura.emisor.barrio = '01';
+		this.facturaHacienda.factura.emisor.senas = barbero.detalleDireccion;
 		this.facturaHacienda.factura.emisor.codigoPaisTel = '506';
-		this.facturaHacienda.factura.emisor.tel = this.sucursal.telefono[0].telefono;
+		this.facturaHacienda.factura.emisor.tel = barbero.telefono[0].telefono;
 		this.facturaHacienda.factura.emisor.codigoPaisFax = '';
 		this.facturaHacienda.factura.emisor.fax = '';
-		this.facturaHacienda.factura.emisor.email = this.sucursal.correo[0].correo;
+		this.facturaHacienda.factura.emisor.email = barbero.correo[0].correo;
 		if(this.nuevoUsuario.nombre != 'generico' && ((this.nuevoUsuario.nombre && this.nuevoUsuario.apellido1 && this.nuevoUsuario.apellido2) || this.nuevoUsuario.cedula)){
 			this.facturaHacienda.factura.receptor.nombre = this.nuevoUsuario.nombre + this.nuevoUsuario.apellido1 + this.nuevoUsuario.apellido2;
 			this.facturaHacienda.factura.receptor.tipoId = '01';
@@ -596,9 +635,21 @@ export class CitasComponent implements OnInit {
 				}
 			}
 			this.facturaHacienda.factura.receptor.id =  this.nuevoUsuario.cedula;
-			this.facturaHacienda.factura.receptor.provincia = this.nuevoUsuario.idProvincia;
-			this.facturaHacienda.factura.receptor.canton = this.nuevoUsuario.idCanton;
-			this.facturaHacienda.factura.receptor.distrito = this.nuevoUsuario.distrito;
+			if(this.nuevoUsuario.idProvincia && this.nuevoUsuario.idProvincia != 0){
+				this.facturaHacienda.factura.receptor.provincia = this.nuevoUsuario.idProvincia;
+			} else {
+				this.facturaHacienda.factura.receptor.provincia = 1;
+			}
+			if(this.nuevoUsuario.idCanton && this.nuevoUsuario.idCanton != 0){
+				this.facturaHacienda.factura.receptor.canton = this.pad(this.nuevoUsuario.idCanton,2,0);
+			} else {
+				this.facturaHacienda.factura.receptor.canton = '01';
+			}
+			if(this.nuevoUsuario.distrito && this.nuevoUsuario.distrito != '0'){
+				this.facturaHacienda.factura.receptor.distrito = this.pad(this.nuevoUsuario.distrito,2,0);
+			} else {
+				this.facturaHacienda.factura.receptor.distrito = '01';
+			}
 			this.facturaHacienda.factura.receptor.barrio = '01';
 			this.facturaHacienda.factura.receptor.senas = 'senas';
 			this.facturaHacienda.factura.receptor.codigoPaisTel = '506';
@@ -643,7 +694,7 @@ export class CitasComponent implements OnInit {
 		this.facturaHacienda.factura.xml = this.facturaHacienda.factura.xml || '';
 		this.facturaHacienda.factura.consecutivo = this.facturaHacienda.factura.consecutivo || '';
 
-		this.facturaHacienda.cliente.id = this.sucursal.idFacturaAPI;
+		this.facturaHacienda.cliente.id = barbero.idFacturador;
 	
 	}
 
@@ -684,6 +735,9 @@ export class CitasComponent implements OnInit {
 		var that = this;
 		var doc;
 		var img = new Image();
+		console.log('suc',that.sucursal);
+		that.selectedProvincia = that.ubicacion[Number(that.sucursal.provincia) - 1];
+		that.selectedCanton = that.selectedProvincia.cantones[Number(that.sucursal.idCanton) - 1];
 		img.addEventListener('load', function() {
 			// header
 			// var pags = Math.ceil(that.factura.items.length / 32); -> se usa en caso de tener mas de un item
@@ -871,7 +925,152 @@ export class CitasComponent implements OnInit {
 	formatDate(date:Date){
 		return this.datePipe.transform(date, 'yyyy-MM-ddTHH:mm:ss-06:00')
 	}
+
+	pad(n, width, z) {
+      z = z || '0';
+      n = n + '';
+      return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    }
 	
+
+	async imprimir(tipo){
+		// console.log('imprimir',tipo,this.cita.items.length);
+		var doc;
+		var that = this;
+		if(tipo == 'A4'){
+			this.genLetter(that.printDoc);
+		} else {
+			var height = 60;
+			var user = await this.obtenerDatosUsuario(this.selectedCita.idUsuarioBarbero);
+			var barbero : Usuario = user.usuario;
+			console.log(this.sucursal);
+			that.selectedProvincia = that.ubicacion[Number(this.sucursal.provincia) - 1];
+			that.selectedCanton = that.selectedProvincia.cantones[Number(this.sucursal.idCanton) - 1];
+			height += 1 * 4;
+			doc = new window.jsPDF('p','mm',[60,height]);
+			doc.setFontSize("10");
+			doc.setFontType("bold");
+			doc.text(this.sucursal.nombreNegocio, 30, 8,"center");
+			doc.setFontSize("7");
+			doc.setFontType("normal");
+			doc.text(that.selectedCita.consecutivo, 30, 12,"center");
+			doc.text(that.selectedCanton.nombre +', '+that.selectedProvincia.nombre, 30, 16,"center");
+			doc.text('Tel. '+this.sucursal.telefono[0].telefono, 30, 20,"center");
+			doc.text(this.sucursal.correo[0].correo, 30, 24,"center");
+			// if(that.factura.vendedor.paginaWeb){
+			// 	doc.text(that.factura.vendedor.paginaWeb, 30, 28,"center");
+			// } else {
+				doc.text('www.lospeluqueros.com', 30, 28,"center");
+			// }
+			doc.text(barbero.cedula, 30, 32,"center");
+			doc.text('Barbero:', 7, 36,"left");
+			doc.text(barbero.nombre+ ' ' + barbero.apellido1 + ' ' +barbero.apellido2, 30, 36,"left");
+			//display products
+			var y = 43;
+			// for (var i = that.factura.items.length - 1; i >= 0; i--) {
+			// 	if(that.factura.items[i].detalle != '0000'){
+			// 		var text = ''+that.factura.items[i].detalle;
+			// 		doc.text(that.truncate(text,14), 7, y,'left');
+			// 	} else {
+					doc.text(''+that.selectedCita.servicio, 7, y,'left');
+			// 	}
+				doc.text(that.toDecimals(that.selectedCita.precio), 50, y, 'right');
+				y += 4;
+			// }
+			// end display
+			// total
+			doc.text('-------------------------------------------------------------', 30, y,"center");
+			doc.text('Total Neto: ', 35, y+4,"right");
+			doc.text(that.toDecimals(that.selectedCita.precio), 50, y+4,"right");
+			doc.text('Total Impuestos: ', 35, y+8,"right");
+			doc.text(that.toDecimals(that.selectedCita.precio), 50, y+8,"right");
+			doc.text('Total: ', 35,y+12,"right");
+			doc.text(that.toDecimals(that.selectedCita.precio), 50, y+12,"right");
+			// fin total
+			doc.setFontSize("8");
+			doc.text('Muchas Gracias', 30,y+19,"center");
+			that.printDoc(doc);
+			// doc.save('pdv.pdf')
+		}
+	}
+
+	printDoc(doc){
+		var blob = doc.output("blob");
+		window.open(URL.createObjectURL(blob));
+	}
+
+	public seleccionaUsuarioCita(usuario){
+		this.selectedCita.usuarioCita = usuario;
+	}
+
+	public buscaUsuarioChanged = _.debounce(function() {
+		if(this.buscaUsuario.length >= 3){
+		    this.cargando = true;
+		    this.dataService.get('/usuario/?nombre='+this.buscaUsuario)
+	        .then(response => {
+	            console.log('success usuarios',response);
+	            this.usuarioCita = response.usuario;
+				this.cargando = false;
+	        },
+	        error => {
+	        })
+	    } else if(!this.buscaUsuario){
+	    	this.usuarioCita = [];
+	    }
+	}, 400);
+
+	buscarPorCedula(){
+		this.cargando = true;
+		this.sharedService.get('/api/personas?tipo=cedula&filter='+this.nuevoUsuario.cedula).then(res =>{
+			this.cargando = false;
+			if(res.persona.length == 1){
+				this.nuevoUsuario.cedula = res.persona[0].cedula;
+				this.nuevoUsuario.nombre = this.toTitleCase(res.persona[0].nombre);
+				this.nuevoUsuario.apellido1 = this.toTitleCase(res.persona[0].apellido1);
+				this.nuevoUsuario.apellido2 = this.toTitleCase(res.persona[0].apellido2);
+				//this.nuevoUsuario.tipoId = '01';
+				var cod = ''+res.persona[0].codigoelec;
+
+				this.nuevoUsuario.idProvincia = Number(cod.substr(0,1));
+				this.nuevoUsuario.idCanton = Number(cod.substr(1,2));
+				this.selectedProvincia = this.provincias[Number(this.nuevoUsuario.idProvincia) - 1];
+				this.selectedCanton = this.selectedProvincia.cantones[Number(this.nuevoUsuario.idCanton) - 1];
+				this.nuevoUsuario.distrito = '' + Number(cod.substr(4,2));
+			}
+		}, err =>{
+			console.log(err);
+		})
+	}
+
+	toTitleCase(str) {
+	    return str.replace(/\w\S*/g, function(txt){
+	        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+	    });
+	}
+
+	openNuevo(){
+		this.nuevoUsuario = new Usuario(); 
+		this.nuevoUsuarioDisplay = !this.nuevoUsuarioDisplay;
+	}
+
+	newUser(){
+		this.nuevoUsuario.contrasenna = 'clave';
+		this.usuarioErrores = this.validatorService.validaUsuario(this.nuevoUsuario);
+		if(this.usuarioErrores.length == 0){
+			this.cargando = true;
+			this.authService.nuevoUsuarioNoLogin(this.nuevoUsuario);
+			let sub = this.authService.loggedObservable.subscribe(value => {
+				this.cargando = false;
+				this.usuarioCita = [];
+			    if(value){
+			    	this.selectedCita.usuarioCita = value;
+			    	this.nuevoUsuarioDisplay = false;
+			    	// this.updateReserva();
+			    }
+			    sub.unsubscribe();
+			});
+		}
+	}
 
 
 

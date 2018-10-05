@@ -5,7 +5,7 @@
 	<div clas="col-12">
 		<div class="module white-back static row">
 			<div class="title reserva col-12">
-			  <h5>Citas</h5>
+				<h5>Citas</h5>
 			</div>
 			<div class="col-xs-12 item" *ngIf="authService.isRegularUser()">
 				<div class="row">
@@ -85,281 +85,433 @@
 						<ul class="reservas row">
 							<li *ngFor="let barberoCita of barberosCitasSucursal" class="col-12 barbero-cita">
 								<p> Barbero: {{barberoCita.barbero.nombre}} {{barberoCita.barbero.apellido1}}
-								<ul class="reservas row">
-									<li *ngFor="let cita of barberoCita.citas" class="col-4 cita">
-										<div (click)="obtieneInfo(cita);selectedCita = Object.assign({}, cita);openModal(citaModal)">
-											{{convierteTiempo(cita.horaInicialFormat)}}
-										</div>
-									</li>
-									<p *ngIf="barberoCita.citas.length == 0" class="col-12">
-										No tiene citas registradas para este día.
-									</p>
-								</ul>
-							</li>
-							<p *ngIf="obteniendoBarberos" class="col-12">
-								Obteniendo citas...
-							</p>
-						</ul>
+									<ul class="reservas row">
+										<li *ngFor="let cita of barberoCita.citas" class="col-4 cita">
+											<div (click)="obtieneInfo(cita);selectedCita = Object.assign({}, cita);openModal(citaModal)">
+												{{convierteTiempo(cita.horaInicialFormat)}}
+											</div>
+										</li>
+										<p *ngIf="barberoCita.citas.length == 0" class="col-12">
+											No tiene citas registradas para este día.
+										</p>
+									</ul>
+								</li>
+								<p *ngIf="obteniendoBarberos" class="col-12">
+									Obteniendo citas...
+								</p>
+							</ul>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="col-xs-12 col-md-6 item" *ngIf="(authService.isBarberoUser() && authService.isAdminUser()) || authService.isBarberoUser() || authService.isAdminSucursalUser()">
-				<div class="row">
-					<div class="col-5" (click)="displayResumen = !displayResumen">
-						<p class="heading">Resumen <span *ngIf="!displayResumen">></span> <span *ngIf="displayResumen"><</span></p>
+				<div class="col-xs-12 col-md-6 item" *ngIf="(authService.isBarberoUser() && authService.isAdminUser()) || authService.isBarberoUser() || authService.isAdminSucursalUser()">
+					<div class="row">
+						<div class="col-5" (click)="displayResumen = !displayResumen">
+							<p class="heading">Resumen <span *ngIf="!displayResumen">></span> <span *ngIf="displayResumen"><</span></p>
+						</div>
 					</div>
-				</div>
-				<div class="row" *ngIf="displayResumen">
-					<div class="col-9">
-						<select class="styled-select blue semi-square"(change)="changeBarbero($event.target.value)" *ngIf="authService.isAdminSucursalUser()">
-	                    	<option *ngFor="let barberoCita of barberosCitasSucursal" [value]='barberoCita.barbero.id'>{{barberoCita.barbero.nombre}} {{barberoCita.barbero.primerApellido}}</option>
-						</select>
+					<div class="row" *ngIf="displayResumen">
+						<div class="col-9">
+							<select class="styled-select blue semi-square"(change)="changeBarbero($event.target.value)" *ngIf="authService.isAdminSucursalUser()">
+								<option *ngFor="let barberoCita of barberosCitasSucursal" [value]='barberoCita.barbero.id'>{{barberoCita.barbero.nombre}} {{barberoCita.barbero.primerApellido}}</option>
+							</select>
+						</div>
 					</div>
-				</div>
-				<div class="row date" *ngIf="displayResumen">
-					<div class="col-6">Fecha Inicial:<br> <calendario-input (dateSelectedChange)="fechaInicialChanges($event)"></calendario-input></div>
-					<div class="col-6">Fecha Final:<br> <calendario-input (dateSelectedChange)="fechaFinalChanges($event)"></calendario-input></div>
-				</div>
-				<div class="row" *ngIf="displayResumen">
-					<div class="col-12 update centered-content">
-						<button type="button" class="btn btn-primary" (click)="generar()">
-							Generar
-						</button>
+					<div class="row date" *ngIf="displayResumen">
+						<div class="col-6">Fecha Inicial:<br> <calendario-input (dateSelectedChange)="fechaInicialChanges($event)"></calendario-input></div>
+						<div class="col-6">Fecha Final:<br> <calendario-input (dateSelectedChange)="fechaFinalChanges($event)"></calendario-input></div>
 					</div>
-				</div>
-				<div class="row resumen" *ngIf="displayResumen && resumenGenerado">
-					<div class="col-12 centered-content title">
-						Resumen de {{resumenFechaInicial}} hasta {{resumenFechaFinal}}
+					<div class="row" *ngIf="displayResumen">
+						<div class="col-12 update centered-content">
+							<button type="button" class="btn btn-primary" (click)="generar()">
+								Generar
+							</button>
+						</div>
 					</div>
-					<div class="col-6">
-						Cantidad de citas:
-					</div>
-					<div class="col-6">
-						{{cantidadCitas}}
-					</div>
-					<div class="col-6">
-						Ganancias por citas:
-					</div>
-					<div class="col-6">
-						{{ganancias | number:'.2-2'}}
+					<div class="row resumen" *ngIf="displayResumen && resumenGenerado">
+						<div class="col-12 centered-content title">
+							Resumen de {{resumenFechaInicial}} hasta {{resumenFechaFinal}}
+						</div>
+						<div class="col-6">
+							Cantidad de citas:
+						</div>
+						<div class="col-6">
+							{{cantidadCitas}}
+						</div>
+						<div class="col-6">
+							Ganancias por citas:
+						</div>
+						<div class="col-6">
+							{{ganancias | number:'.2-2'}}
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
-		
-
-<template #confirmaEliminarCita>
-	<div class="modal-header">
-	    <h4 class="modal-title pull-left">Confirmar eliminación de cita</h4>
-	    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
-			<span aria-hidden="true">&times;</span>
-		</button>
-	</div>
-    <div class="modal-body">
-      	<button type="button" class="btn btn-danger" (click)="eliminarCita()">
-			Eliminar
-		</button>
-		<button type="button" class="btn btn-primary" (click)="modalRef.hide()">
-			No Eliminar
-		</button>
-    </div>
-</template>
 
 
-<div class="cargando" *ngIf="cargando">
-  <div>
-    <img src="assets/images/m2.png">
-    Cargando...
-  </div>
-</div>
-<template #citaModal>
-	<div class="modal-header">
-	    <h4 class="modal-title pull-left">Cita</h4>
-	    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
-			<span aria-hidden="true">&times;</span>
-		</button>
-	</div>
-    <div class="modal-body container">
-    	<ul class="row">
-          <li class="col-5"><span>Barberia : </span></li>
-          <li class="col-7"><span>{{selectedCita.sucursal}}</span></li>
-          <li class="col-5" *ngIf="authService.isRegularUser()"><span>Barbero : </span></li>
-          <li class="col-7" *ngIf="authService.isRegularUser()"><span>{{selectedCita.nombreBarbero}} {{selectedCita.primerApellidoBarbero}}</span></li>
-          <li class="col-5" *ngIf="authService.isRegularUser()"><span>Tel Barbero : </span></li>
-          <li class="col-7" *ngIf="authService.isRegularUser()">
-          	<span *ngFor="let tel of telefonosBarberoDisplay">
-          		{{tel.telefono}}<br>
-          	</span>
-          </li>
-          <li class="col-5" *ngIf="authService.isRegularUser()"><span>Correo Barbero : </span></li>
-          <li class="col-7" *ngIf="authService.isRegularUser()">
-          	<span *ngFor="let cor of correosBarberoDisplay">
-          		{{cor.correo}}<br>
-          	</span>
-          </li>
-          <li class="col-5"><span>Servicio : </span></li>
-          <li class="col-7">
-          	<span *ngIf="selectedCita.esDinamico == 1">{{selectedCita.descripcion}}</span>
-          	<span *ngIf="selectedCita.esDinamico != 1">{{selectedCita.servicio}}</span>
-          </li>
-          <li class="col-5" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()"><span>Cliente : </span></li>
-          <li class="col-7" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()"><span>{{selectedCita.nombreUserReserva}} {{selectedCita.primerApellidoUserReserva}}</span></li>
-          <li class="col-5" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()"><span>Tel Cliente : </span></li>
-          <li class="col-7" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()">
-          	<span *ngFor="let tel of telefonosUsuarioDisplay">
-          		{{tel.telefono}}<br>
-          	</span>
-          </li>
-          <li class="col-5" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()"><span>Correo Cliente : </span></li>
-          <li class="col-7" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()">
-          	<span *ngFor="let cor of correosUsuarioDisplay">
-          		{{cor.correo}}<br>
-          	</span>
-          </li>
-          <li class="col-5"><span>Duración : </span></li>
-          <li class="col-7">
-          	<span *ngIf="selectedCita.esDinamico == 1">{{convertMinsToHrsMins(selectedCita.duracionDinamica)}}</span>
-          	<span *ngIf="selectedCita.esDinamico != 1">{{convertMinsToHrsMins(selectedCita.duracion)}}</span>
-          </li>
-          <li class="col-5"><span>Fecha : </span></li>
-          <li class="col-7"><span>{{selectedCita.dia}}</span></li>
-          <li class="col-5"><span>Hora : </span></li>
-          <li class="col-7"><span>{{convierteTiempo(selectedCita.horaInicialFormat)}}</span></li>
-          <li class="col-5"><span>Precio : </span></li>
-          <li class="col-7">
-          	<span *ngIf="selectedCita.esDinamico == 1">{{selectedCita.precioDinamico}}</span> 
-          	<span *ngIf="selectedCita.esDinamico != 1">{{selectedCita.precio}}</span> Colones
-          </li>
- 		  <li class="col-5"><span>Estado Factura : </span></li>
-          <li class="col-7">
-          	<span *ngIf="selectedCita.estadoFactura=='R'">Registrado</span> 
-          	<span *ngIf="selectedCita.estadoFactura=='P'">Pagada</span>
-          </li>
-  		  <li class="col-5"><span>Tipo Pago : </span></li>
-          <li class="col-7">
-          	<select [(ngModel)]="selectedCita.tipoPago" [disabled]="selectedCita.estadoFactura=='P' || authService.isRegularUser() ">
-          		<option value="E">Efectivo</option>
-          		<option value="T">Tarjeta</option>
-          	</select>
-          </li>
- 		  <li class="col-5"  *ngIf="selectedCita.tipoPago=='T'"><span>Comprobante : </span></li>
-          <li class="col-7" *ngIf="selectedCita.tipoPago=='T'">
-          	<input type="text" name="comprobanteFactura" [(ngModel)]="selectedCita.comprobantePago">
-          </li>
-          <li class="col-5"><span>Detalle Factura : </span></li>
-          <li class="col-7">
-          	<input type="text" name="detalleFactura" [disabled]="selectedCita.estadoFactura=='P' || authService.isRegularUser() "  [(ngModel)]="selectedCita.detalleFactura">
-          </li>
-
-          <li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && selectedCita.estadoFactura!='E'">
-          	<button type="button" class="btn btn-danger" (click)="modalRef.hide();openModal(confirmaEliminarCita)" *ngIf="!authService.isRegularUser() || mayorQueHoy(selectedCita.dia)">
+	<template #confirmaEliminarCita>
+		<div class="modal-header">
+			<h4 class="modal-title pull-left">Confirmar eliminación de cita</h4>
+			<button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<button type="button" class="btn btn-danger" (click)="eliminarCita()">
 				Eliminar
 			</button>
-			<p *ngIf="authService.isRegularUser() && igualQueHoy(selectedCita.dia)" style="color:red">
-				Para eliminar esta cita por favor comuniquese con el barbero.
-			</p>
-          </li>
-          <li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && selectedCita.estadoFactura!='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
-          	<button type="button" class="btn btn-success" (click)="visualizarModificar()">
-				Actualizar Cliente
+			<button type="button" class="btn btn-primary" (click)="modalRef.hide()">
+				No Eliminar
 			</button>
-          </li>
-           <li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && selectedCita.estadoFactura!='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
-          	<button type="button" class="btn btn-info" (click)="updateReserva()">
-				Pagar
-			</button>
-          </li>
-          <li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura=='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
-          	<button type="button" class="btn btn-info" (click)="reenviarMH()">
-				Reenviar
-			</button>
-          </li>
-        </ul>
-    </div>
+		</div>
+	</template>
 
 
-<div class="container"  *ngIf="mostrarModificar">
-	<div class="col-12 separador"></div>
-	<div clas="col-12 ">
-		<div class="module white-back static row">
-			<div class="title reserva col-12">
-			  <h5>Actualizar Cliente</h5>
-			</div>
-			<div class="row col-12">
-				<div class="col-4">
-					<label>Usuario<span class="required" [class.reqerror]="validatorService.hasError('usuario',usuarioErrores)">*</span></label>
-				</div>
-				<div class="col-8">
-					<input type="text" name="usuario" [(ngModel)]="nuevoUsuario.usuario" 
-					[class.error-input]="validatorService.hasError('usuario',usuarioErrores)" placeholder="juan1990">
-				</div>
-				<div class="col-4">
-					<label>Nombre<span class="required" [class.reqerror]="validatorService.hasError('nombre',usuarioErrores)">*</span></label>
-				</div>
-				<div class="col-8">
-					<input type="text" name="nombre" [(ngModel)]="nuevoUsuario.nombre" [class.error-input]="validatorService.hasError('nombre',usuarioErrores)" placeholder="Juan">
-				</div>
-				<div class="col-4">
-					<label>Apellido 1<span class="required" [class.reqerror]="validatorService.hasError('apellido1',usuarioErrores)">*</span></label>
-				</div>
-				<div class="col-8">
-					<input type="text" name="primerApellido" [(ngModel)]="nuevoUsuario.apellido1" [class.error-input]="validatorService.hasError('apellido1',usuarioErrores)" placeholder="Perez">
-				</div>
-				<div class="col-4">
-					<label>Apellido 2</label>
-				</div>
-				<div class="col-8">
-					<input type="text" name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
-				</div>
-				<div class="col-4">
-					<label>Correo<span class="required" [class.reqerror]="validatorService.hasError('correo',usuarioErrores)">*</span></label>
-				</div>
-				<div class="col-8 correos">
-					<div class="row">
-						<div class="col-12 nuevo-numero">
-							<input type="text" [(ngModel)]="nuevoCorreo" [class.error-input]="validatorService.hasError('correo',usuarioErrores)"> <span class="small-action" (click)="addCorreo()"> + </span>
-						</div>
-						<div class="col-12 correo-display contact-item" *ngFor="let correo of nuevoUsuario.correo">
-							<span class="display">{{correo.correo}} </span>
-							<span class="small-action" (click)="removeCorreo(correo)"> - </span> 
-						</div>
+	<div class="cargando" *ngIf="cargando">
+		<div>
+			<img src="assets/images/m2.png">
+			Cargando...
+		</div>
+	</div>
+	<template #citaModal>
+		<div class="modal-header">
+			<h4 class="modal-title pull-left">Cita</h4>
+			<button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body container">
+			<ul class="row">
+				<li class="col-5"><span>Barberia : </span></li>
+				<li class="col-7"><span>{{selectedCita.sucursal}}</span></li>
+				<li class="col-5" *ngIf="authService.isRegularUser()"><span>Barbero : </span></li>
+				<li class="col-7" *ngIf="authService.isRegularUser()"><span>{{selectedCita.nombreBarbero}} {{selectedCita.primerApellidoBarbero}}</span></li>
+				<li class="col-5" *ngIf="authService.isRegularUser()"><span>Tel Barbero : </span></li>
+				<li class="col-7" *ngIf="authService.isRegularUser()">
+					<span *ngFor="let tel of telefonosBarberoDisplay">
+						{{tel.telefono}}<br>
+					</span>
+				</li>
+				<li class="col-5" *ngIf="authService.isRegularUser()"><span>Correo Barbero : </span></li>
+				<li class="col-7" *ngIf="authService.isRegularUser()">
+					<span *ngFor="let cor of correosBarberoDisplay">
+						{{cor.correo}}<br>
+					</span>
+				</li>
+				<li class="col-5"><span>Servicio : </span></li>
+				<li class="col-7">
+					<span *ngIf="selectedCita.esDinamico == 1">{{selectedCita.descripcion}}</span>
+					<span *ngIf="selectedCita.esDinamico != 1">{{selectedCita.servicio}}</span>
+				</li>
+				<li class="col-5" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()"><span>Cliente : </span></li>
+				<li class="col-7" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()"><span>{{selectedCita.nombreUserReserva}} {{selectedCita.primerApellidoUserReserva}}</span></li>
+				<li class="col-5" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()"><span>Tel Cliente : </span></li>
+				<li class="col-7" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()">
+					<span *ngFor="let tel of telefonosUsuarioDisplay">
+						{{tel.telefono}}<br>
+					</span>
+				</li>
+				<li class="col-5" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()"><span>Correo Cliente : </span></li>
+				<li class="col-7" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()">
+					<span *ngFor="let cor of correosUsuarioDisplay">
+						{{cor.correo}}<br>
+					</span>
+				</li>
+				<li class="col-5"><span>Duración : </span></li>
+				<li class="col-7">
+					<span *ngIf="selectedCita.esDinamico == 1">{{convertMinsToHrsMins(selectedCita.duracionDinamica)}}</span>
+					<span *ngIf="selectedCita.esDinamico != 1">{{convertMinsToHrsMins(selectedCita.duracion)}}</span>
+				</li>
+				<li class="col-5"><span>Fecha : </span></li>
+				<li class="col-7"><span>{{selectedCita.dia}}</span></li>
+				<li class="col-5"><span>Hora : </span></li>
+				<li class="col-7"><span>{{convierteTiempo(selectedCita.horaInicialFormat)}}</span></li>
+				<li class="col-5"><span>Precio : </span></li>
+				<li class="col-7">
+					<span *ngIf="selectedCita.esDinamico == 1">{{selectedCita.precioDinamico}}</span> 
+					<span *ngIf="selectedCita.esDinamico != 1">{{selectedCita.precio}}</span> Colones
+				</li>
+				<li class="col-5"><span>Estado Factura : </span></li>
+				<li class="col-7">
+					<span *ngIf="selectedCita.estadoFactura=='R'">Registrado</span> 
+					<span *ngIf="selectedCita.estadoFactura=='P'">Pagada</span>
+				</li>
+				<li class="col-5"><span>Tipo Pago : </span></li>
+				<li class="col-7">
+					<select [(ngModel)]="selectedCita.tipoPago" [disabled]="selectedCita.estadoFactura=='P' || authService.isRegularUser() ">
+						<option value="E">Efectivo</option>
+						<option value="T">Tarjeta</option>
+					</select>
+				</li>
+				<li class="col-5"  *ngIf="selectedCita.tipoPago=='T'"><span>Comprobante : </span></li>
+				<li class="col-7" *ngIf="selectedCita.tipoPago=='T'">
+					<input type="text" name="comprobanteFactura" [(ngModel)]="selectedCita.comprobantePago">
+				</li>
+				<li class="col-5"><span>Detalle Factura : </span></li>
+				<li class="col-7">
+					<input type="text" name="detalleFactura" [disabled]="selectedCita.estadoFactura=='P' || authService.isRegularUser() "  [(ngModel)]="selectedCita.detalleFactura">
+				</li>
 
-					</div>
-				</div>
-				<div class="col-4">
-					<label>Telefono<span class="required" [class.reqerror]="validatorService.hasError('telefono',usuarioErrores)">*</span></label>
-				</div>
-				<div class="col-8 telefonos">
-					<div class="row">
-						<div class="col-12 nuevo-numero">
-							<input type="number" [(ngModel)]="nuevoTelefono" [class.error-input]="validatorService.hasError('telefono',usuarioErrores)"> <span class="small-action" (click)="addTelefono()"> + </span>
-						</div>
-						<div class="col-12 contact-item" *ngFor="let telefono of nuevoUsuario.telefono">
-							<span class="telefono-display">{{telefono.telefono}} </span>
-							<span class="small-action" (click)="removeTelefono(telefono)"> - </span> 
-						</div>
-					</div>
-				</div>
-				<div class="col-12 entrar">
-					
-					<button type="button" class="btn btn-primary" (click)="updateUser()">
-						Modificar
+				<li class="col-12 centered-content action-modal" *ngIf="selectedCita.estadoFactura=='P'">
+					<button type="button" class="btn btn-success" (click)="openModalPrint(print)">
+						Imprimir
 					</button>
+				</li>
+
+				<li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && selectedCita.estadoFactura!='E'">
+					<button type="button" class="btn btn-danger" (click)="modalRef.hide();openModal(confirmaEliminarCita)" *ngIf="!authService.isRegularUser() || mayorQueHoy(selectedCita.dia)">
+						Eliminar
+					</button>
+					<p *ngIf="authService.isRegularUser() && igualQueHoy(selectedCita.dia)" style="color:red">
+						Para eliminar esta cita por favor comuniquese con el barbero.
+					</p>
+				</li>
+				<li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && selectedCita.estadoFactura!='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser()) && selectedCita.nombreUserReserva != 'generico'">
+					<button type="button" class="btn btn-success" (click)="visualizarModificar()">
+						Actualizar Cliente
+					</button>
+				</li>
+				<li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && selectedCita.estadoFactura!='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser()) && selectedCita.nombreUserReserva == 'generico'">
+					<button type="button" class="btn btn-success" (click)="visualizarSeleccionar()">
+						Seleccionar Cliente
+					</button>
+				</li>
+				<li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && selectedCita.estadoFactura!='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
+					<button type="button" class="btn btn-info" (click)="updateReserva()">
+						Pagar
+					</button>
+				</li>
+				<li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura=='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
+					<button type="button" class="btn btn-info" (click)="reenviarMH()">
+						Reenviar
+					</button>
+				</li>
+			</ul>
+		</div>
+		<div class="container"  *ngIf="mostrarModificar">
+			<div class="col-12 separador"></div>
+			<div clas="col-12 ">
+				<div class="module white-back static row">
+					<div class="title reserva col-12">
+						<h5>Actualizar Cliente</h5>
+					</div>
+					<div class="row col-12">
+						<div class="col-4">
+							<label>Usuario<span class="required" [class.reqerror]="validatorService.hasError('usuario',usuarioErrores)">*</span></label>
+						</div>
+						<div class="col-8">
+							<input type="text" name="usuario" [(ngModel)]="nuevoUsuario.usuario" 
+							[class.error-input]="validatorService.hasError('usuario',usuarioErrores)" placeholder="juan1990">
+						</div>
+						<div class="col-4">
+							<label>Cedula<span class="required" [class.reqerror]="validatorService.hasError('cedula',usuarioErrores)">*</span></label>
+						</div>
+
+						<div class="col-8">
+							<input type="text" name="cedula" [(ngModel)]="nuevoUsuario.cedula" 
+							[class.error-input]="validatorService.hasError('cedula',usuarioErrores)" placeholder="202220222">
+						</div>
+						<div class="col-4">
+							<label>Nombre<span class="required" [class.reqerror]="validatorService.hasError('nombre',usuarioErrores)">*</span></label>
+						</div>
+						<div class="col-8">
+							<input type="text" name="nombre" [(ngModel)]="nuevoUsuario.nombre" [class.error-input]="validatorService.hasError('nombre',usuarioErrores)" placeholder="Juan">
+						</div>
+						<div class="col-4">
+							<label>Apellido 1<span class="required" [class.reqerror]="validatorService.hasError('apellido1',usuarioErrores)">*</span></label>
+						</div>
+						<div class="col-8">
+							<input type="text" name="primerApellido" [(ngModel)]="nuevoUsuario.apellido1" [class.error-input]="validatorService.hasError('apellido1',usuarioErrores)" placeholder="Perez">
+						</div>
+						<div class="col-4">
+							<label>Apellido 2</label>
+						</div>
+						<div class="col-8">
+							<input type="text" name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
+						</div>
+						<div class="col-4">
+							<label>Correo<span class="required" [class.reqerror]="validatorService.hasError('correo',usuarioErrores)">*</span></label>
+						</div>
+						<div class="col-8 correos">
+							<div class="row">
+								<div class="col-12 nuevo-numero">
+									<input type="text" [(ngModel)]="nuevoCorreo" [class.error-input]="validatorService.hasError('correo',usuarioErrores)"> <span class="small-action" (click)="addCorreo()"> + </span>
+								</div>
+								<div class="col-12 correo-display contact-item" *ngFor="let correo of nuevoUsuario.correo">
+									<span class="display">{{correo.correo}} </span>
+									<span class="small-action" (click)="removeCorreo(correo)"> - </span> 
+								</div>
+
+							</div>
+						</div>
+						<div class="col-4">
+							<label>Telefono<span class="required" [class.reqerror]="validatorService.hasError('telefono',usuarioErrores)">*</span></label>
+						</div>
+						<div class="col-8 telefonos">
+							<div class="row">
+								<div class="col-12 nuevo-numero">
+									<input type="number" [(ngModel)]="nuevoTelefono" [class.error-input]="validatorService.hasError('telefono',usuarioErrores)"> <span class="small-action" (click)="addTelefono()"> + </span>
+								</div>
+								<div class="col-12 contact-item" *ngFor="let telefono of nuevoUsuario.telefono">
+									<span class="telefono-display">{{telefono.telefono}} </span>
+									<span class="small-action" (click)="removeTelefono(telefono)"> - </span> 
+								</div>
+							</div>
+						</div>
+						<div class="col-12 entrar">
+
+							<button type="button" class="btn btn-primary" (click)="updateUser()">
+								Modificar
+							</button>
+						</div>
+						
+						<div class="col-12" *ngIf="nuevoUsuarioError" style="color:red;">
+							{{authService.errorDisplay}}
+						</div>
+						<div class="col-12" *ngIf="validationError" style="color:red;">
+							{{validationErrorMsg}}
+						</div>
+					</div>
 				</div>
-					
-				<div class="col-12" *ngIf="nuevoUsuarioError" style="color:red;">
-					{{authService.errorDisplay}}
-				</div>
-				<div class="col-12" *ngIf="validationError" style="color:red;">
-					{{validationErrorMsg}}
+			</div>
+		</div>
+		<div class="container"  *ngIf="mostrarSeleccionar">
+			<div class="col-12 separador"></div>
+			<div clas="col-12 ">
+				<div class="module white-back static row">
+					<p>Digite el nombre del cliente para el cual quiere agregar esta cita o de click en Nuevo Cliente para agregar uno nuevo:</p>
+					<input class="auto-usuario" type="text" name="" placeholder="Nombre Apellidos" [(ngModel)]="buscaUsuario" (ngModelChange)="buscaUsuarioChanged()">
+					<ul>
+						<li *ngFor="let usuario of usuarioCita"> 
+							<span class="usuarios" (click)="seleccionaUsuarioCita(usuario)" [class.active]="selectedCita.usuarioCita && usuario.id == selectedCita.usuarioCita.id">{{usuario.nombre}} {{usuario.apellido1}} {{usuario.apellido2}} | <span *ngIf="usuario.telefono.length > 0">{{usuario.telefono[0].telefono}}</span>
+						</span>
+					</li>
+				</ul>
+				<button type="button" class="btn btn-primary" style="margin-bottom: 30px;" (click)="openNuevo()">
+					Nuevo Cliente 
+					<span *ngIf="!nuevoUsuarioDisplay">></span>
+					<span *ngIf="nuevoUsuarioDisplay"><</span>
+				</button>
+				<div *ngIf="nuevoUsuarioDisplay">
+					<div class="title reserva col-12">
+						<h5>Agregar Cliente</h5>
+					</div>
+					<div class="row col-12">
+						<div class="col-4">
+							<label>Usuario<span class="required" [class.reqerror]="validatorService.hasError('usuario',usuarioErrores)">*</span></label>
+						</div>
+						<div class="col-8">
+							<input type="text" name="usuario" [(ngModel)]="nuevoUsuario.usuario" 
+							[class.error-input]="validatorService.hasError('usuario',usuarioErrores)" placeholder="juan1990">
+						</div>
+						<div class="col-4">
+							<label>Cedula<span class="required" [class.reqerror]="validatorService.hasError('cedula',usuarioErrores)">*</span></label>
+						</div>
+						<div class="col-8">
+							<input type="text" name="cedula" [(ngModel)]="nuevoUsuario.cedula" 
+							[class.error-input]="validatorService.hasError('cedula',usuarioErrores)" placeholder="202220222">
+						</div>
+						<div class="col-4">
+							<input type="button"  class="btn btn-info"  value="Buscar por Cédula" name="buscarCedula" (click)="buscarPorCedula()">
+						</div>
+						<div class="col-8">
+						</div>
+						<div class="col-4">
+							<label>Nombre<span class="required" [class.reqerror]="validatorService.hasError('nombre',usuarioErrores)">*</span></label>
+						</div>
+						<div class="col-8">
+							<input type="text" name="nombre" [(ngModel)]="nuevoUsuario.nombre" [class.error-input]="validatorService.hasError('nombre',usuarioErrores)" placeholder="Juan">
+						</div>
+						<div class="col-4">
+							<label>Apellido 1<span class="required" [class.reqerror]="validatorService.hasError('apellido1',usuarioErrores)">*</span></label>
+						</div>
+						<div class="col-8">
+							<input type="text" name="primerApellido" [(ngModel)]="nuevoUsuario.apellido1" [class.error-input]="validatorService.hasError('apellido1',usuarioErrores)" placeholder="Perez">
+						</div>
+						<div class="col-4">
+							<label>Apellido 2</label>
+						</div>
+						<div class="col-8">
+							<input type="text" name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
+						</div>
+						<div class="col-4">
+							<label>Correo<span class="required" [class.reqerror]="validatorService.hasError('correo',usuarioErrores)">*</span></label>
+						</div>
+						<div class="col-8 correos">
+							<div class="row">
+								<div class="col-12 nuevo-numero">
+									<input type="text" [(ngModel)]="nuevoCorreo" [class.error-input]="validatorService.hasError('correo',usuarioErrores)"> <span class="small-action" (click)="addCorreo()"> + </span>
+								</div>
+								<div class="col-12 correo-display contact-item" *ngFor="let correo of nuevoUsuario.correo">
+									<span class="display">{{correo.correo}} </span>
+									<span class="small-action" (click)="removeCorreo(correo)"> - </span> 
+								</div>
+
+							</div>
+						</div>
+						<div class="col-4">
+							<label>Telefono<span class="required" [class.reqerror]="validatorService.hasError('telefono',usuarioErrores)">*</span></label>
+						</div>
+						<div class="col-8 telefonos">
+							<div class="row">
+								<div class="col-12 nuevo-numero">
+									<input type="number" [(ngModel)]="nuevoTelefono" [class.error-input]="validatorService.hasError('telefono',usuarioErrores)"> <span class="small-action" (click)="addTelefono()"> + </span>
+								</div>
+								<div class="col-12 contact-item" *ngFor="let telefono of nuevoUsuario.telefono">
+									<span class="telefono-display">{{telefono.telefono}} </span>
+									<span class="small-action" (click)="removeTelefono(telefono)"> - </span> 
+								</div>
+							</div>
+						</div>
+						<div class="col-12 entrar">
+							<button type="button" class="btn btn-primary" (click)="addUser()">
+								Agregar
+							</button>
+						</div>
+						<div class="col-12" *ngIf="nuevoUsuarioError" style="color:red;">
+							{{authService.errorDisplay}}
+						</div>
+						<div class="col-12" *ngIf="validationError" style="color:red;">
+							{{validationErrorMsg}}
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
+</template>
 
-
-
+<template #print>
+	<div class="modal-header">
+		<h4 class="modal-title pull-left" style="text-transform: capitalize;">Imprimir</h4>
+		<button type="button" class="close pull-right" aria-label="Close" (click)="printRefCompletar.hide()">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<div class="text-center">
+			<p>Seleccione el tipo de factura a imprimir</p>
+		</div>
+		<div class="col-12">
+			<div class="row" style="padding-bottom: 35px;">
+				<div class="col-5 card" (click)="imprimir('pdv')">
+					<p class="text-center">
+						Impresora punto de venta.
+					</p>
+					<p class="text-center">
+						<img src="assets/pdv.png" style="width: 178px;">
+					</p>
+				</div>
+				<div class="col-5 offset-2 card" (click)="imprimir('A4')">
+					<p class="text-center">
+						Hoja A4
+					</p>
+					<p class="text-center">
+						<img src="assets/a4.jpg" style="width: 131px;">
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>

@@ -24,6 +24,7 @@ export class Usuario {
     barrio: string;
     detalleDireccion: string;
     cedula: string;
+    idFacturador:string;
 
     constructor(){
     	this.id = 0;
@@ -48,6 +49,7 @@ export class Usuario {
         this.barrio = '';
         this.distrito = '';
         this.detalleDireccion = '';
+        this.idFacturador = '';
 
     }
 

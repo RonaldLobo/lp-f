@@ -15,6 +15,18 @@ export class ValidatorService {
     			desc:'Por favor ingrese un nombre'
     		});
     	}
+        if(!this.isNotNull(usuario.cedula)){
+            errors.push({
+                error:'cedula',
+                desc:'Por favor ingrese una cedula'
+            });
+        }
+        if(usuario.cedula && usuario.cedula.length != 9){
+            errors.push({
+                error:'cedula',
+                desc:'Por favor revise el número de cedula.'
+            });
+        }
     	if(!this.isNotNull(usuario.usuario)){
     		errors.push({
     			error:'usuario',
