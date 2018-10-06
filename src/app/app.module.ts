@@ -49,6 +49,10 @@ import { UsuariosComponent } from './usuarios/usuarios.component';
 import { CitasComponent } from './citas/citas.component';
 import { FacturaComponent } from './factura/factura.component';
 
+import { WindowRefService } from './services/window.service';
+import { InventarioComponent } from './inventario/inventario.component';
+import { FacturarComponent } from './facturar/facturar.component';
+
 import {NgxPaginationModule} from 'ngx-pagination'; 
 
 
@@ -82,6 +86,14 @@ export const ROUTES: Routes = [
         path: 'factura',
         component: FacturaComponent
     },
+     { 
+        path: 'facturar',
+        component: FacturarComponent
+    },
+    { 
+        path: 'inventario',
+        component: InventarioComponent
+    },
     { 
         path: '**', 
         redirectTo: '/home'
@@ -94,7 +106,6 @@ import { es } from 'ngx-bootstrap/locale';
 
 defineLocale(es.abbr, es);
 
-import { WindowRefService } from './services/window.service';
 
 @NgModule({
   declarations: [
@@ -114,7 +125,9 @@ import { WindowRefService } from './services/window.service';
     CalendarioInputComponent,
     UsuariosComponent,
     CitasComponent,
-    FacturaComponent
+    FacturaComponent,
+    InventarioComponent,
+    FacturarComponent
   ],
   imports: [
     NgxPaginationModule,

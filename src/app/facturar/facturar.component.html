@@ -1,0 +1,170 @@
+<div class="header-space">
+</div>
+
+<div class="container">
+	<div clas="col-12">
+		<div class="module white-back static row">
+			<div class="row col-12 separador">
+    			<div class="title reserva col-12">
+    			  <h2>Facturar</h2>
+    			</div>
+    			<div class="row col-12">
+    				<div class="col-3">
+    					<p><b>Total Neto:</b></p>
+    				</div>
+    				<div class="col-3">
+    					<p><b>Total Desc:</b></p>
+    				</div>
+    				<div class="col-3">
+    					<p><b>Total Imp:</b></p>
+    				</div>
+    				<div class="col-3">
+    					<p><b>Total:</b></p>
+    				</div>
+    			</div>
+	    	</div>
+
+
+	    	<div class="row col-12 separador">
+				<div class="col-2">
+					<label>Nombre</label>
+				</div>
+				<div class="col-4">
+					 <input class="tamComponent" type="text" name="buscarNombre" placeholder="Buscar" [(ngModel)]="buscaUsuario" (ngModelChange)="buscaUsuarioChanged()">
+					  <ul>
+			            <li *ngFor="let usuario of usuarioCita"> 
+			              <span class="usuarios" (click)="seleccionaUsuarioCita(usuario)">{{usuario.nombre}} {{usuario.apellido1}} {{usuario.apellido2}} | {{usuario.cedula}} 
+			              </span>
+			            </li>
+			          </ul>
+				</div>
+				<div class="col-2">
+					<label>Cédula</label>
+				</div>
+				<div class="col-4">
+					 <input class="tamComponent" type="text" name="buscarCedula" placeholder="Buscar" [(ngModel)]="buscaCedula" (ngModelChange)="buscaCedulaChanged()">
+				</div>
+			</div>
+
+
+			<div class="row col-12 separador">
+				<div class="title reserva row col-6 ">
+    				 <h5>Usuarios</h5>
+    			</div>
+				<div class="title reserva row col-6 ">
+    				 <h5>Productos</h5>
+    			</div>
+				<div class="col-2">
+					<label>Nombre</label>
+				</div>
+				<div class="col-4">
+					 <input class="tamComponent" type="text" name="buscarProducto" placeholder="Buscar" [(ngModel)]="buscaProducto" (ngModelChange)="buscaUsuarioChanged()">
+					  <ul>
+			            <li *ngFor="let producto of productos"> 
+			              <span class="usuarios" (click)="seleccionaUsuarioCita(usuario)">{{usuario.nombre}} {{usuario.apellido1}} {{usuario.apellido2}} | {{usuario.cedula}} 
+			              </span>
+			            </li>
+			          </ul>
+				</div>
+				<div class="col-2">
+					<label>Código</label>
+				</div>
+				<div class="col-4">
+					 <input class="tamComponent" type="text" name="buscarCodigo" placeholder="Buscar" [(ngModel)]="buscaCodigo" (ngModelChange)="buscaCedulaChanged()">
+				</div>
+			</div>
+			<div class="row col-12 separador">
+				<div class="title reserva row col-12 ">
+	    			 <h5>Agregar Elementos de la Factura</h5>
+	    		</div>
+				<div class="row">
+					<div class="col-3">
+						<p>Cantidad</p>
+						<input type="text"  class="form-control"  name="cantidad" >
+					</div>
+					<div class="col-3">
+						<p>Precio Und</p>
+						<input type="text"  class="form-control"  name="precio" >
+					</div>
+					<div class="col-3">
+						<p>% Impuestos</p>
+						<input type="text"  class="form-control"  name="impuesto" >
+					</div>
+					<div class="col-3">
+						<p>Tipo</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-3">
+						<p>Detalle</p>
+						<input type="text"  class="form-control"  name="detalle" >
+					</div>
+					<div class="col-3">
+						<p>Descuento</p>
+						<input type="text"  class="form-control"  name="descuento" >
+					</div>
+					<div class="col-3">
+						<p>Razón Descuento</p>
+						<input type="text"  class="form-control"  name="razonDescuento" >
+					</div>
+					<div class="col-3">
+						<p>Acciones</p>
+						<button class="btn btn-warning">
+                 			 <i class="fa fa-paper-plane" aria-hidden="true"></i> Agregar
+               			</button>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="title reserva row col-12 ">
+    			 <h5>Elementos de la Factura</h5>
+    		</div>
+		
+
+
+			<div class="col-12 text-center">
+    		    <pagination-controls (pageChange)="p = $event" previousLabel="Previo" nextLabel="Siguiente"></pagination-controls>
+    		</div>
+
+			<ul class="col-12 items-list">
+				<li class="item">
+					<div class="col-12 row">
+						<div class="col-sm-3 col-6">
+							<p>Detalle</p>
+						</div>
+						<div class="col-sm-2 d-none d-sm-block text-center">
+							<p>Cant</p>
+						</div>
+						<div class="col-sm-2 d-none d-sm-block text-center">
+							<p>Precio</p>
+						</div>
+						<div class="col-sm-2 d-none d-sm-block text-center">
+							<p>Impuesto</p>
+						</div>
+						<div class="col-sm-3 d-none d-sm-block text-center">
+							<p>Total</p>
+						</div>
+					</div>
+				</li>
+				<li *ngFor="let detalle of detalleFactura | paginate: { itemsPerPage: 10, currentPage: p }; index as i;" 
+					class="item" 
+					[class.odd]="i%2==0">
+					<div class="col-12 row">
+						<div class="col-sm-3 col-6">
+							<p *ngIf="detalle.idUsuarioBarbero">
+							</p>
+							<p *ngIf="!detalle.idUsuarioBarbero">
+								Factura sin cliente asignado
+							</p>
+						</div>
+						<div class="col-sm-2 d-none d-sm-block text-center">
+							<p>
+							</p>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>

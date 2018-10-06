@@ -32,7 +32,7 @@
                 <a class="nav-link" [routerLink]="['citas']">Citas</a>
             </li>
             <li class="nav-item" [routerLinkActive]="['active']" data-toggle="collapse" data-target=".navbar-collapse.show" *ngIf="authService.isUserLogged()">
-                <a class="nav-link navbar-right" [routerLink]="['info']">Mi Cuenta</a>
+                <a class="nav-link navbar-right" [routerLink]="['info']">Perfil</a>
             </li>
 
             <li class="nav-item d-none d-md-block user-img"  data-toggle="collapse" data-target=".navbar-collapse.show" *ngIf="authService.isUserLogged() && authService.profilePic != ''">
@@ -56,11 +56,17 @@
             <li class="nav-item" [routerLinkActive]="['active']" data-toggle="collapse" data-target=".navbar-collapse.show">
                 <a class="nav-link" [routerLink]="['factura']">Factura</a>
             </li>
+             <li class="nav-item" [routerLinkActive]="['active']" data-toggle="collapse" data-target=".navbar-collapse.show">
+                <a class="nav-link" [routerLink]="['facturar']">Facturar</a>
+            </li>
+            <li class="nav-item" [routerLinkActive]="['active']" data-toggle="collapse" data-target=".navbar-collapse.show">
+                <a class="nav-link" [routerLink]="['inventario']">Inventario</a>
+            </li>
             <li class="nav-item" [routerLinkActive]="['active']" data-toggle="collapse" data-target=".navbar-collapse.show">
                 <a class="nav-link" [routerLink]="['configuracion']">Configuración</a>
             </li>
             <li class="nav-item" [routerLinkActive]="['active']" data-toggle="collapse" data-target=".navbar-collapse.show" *ngIf="authService.isUserLogged()">
-                <a class="nav-link navbar-right" [routerLink]="['info']">Mi Cuenta</a>
+                <a class="nav-link navbar-right" [routerLink]="['info']">Perfil</a>
             </li>
         </ul>
     </div>

@@ -1,0 +1,18 @@
+.separador{
+    border-bottom: 1px solid;
+    margin-bottom: 25px;
+}
+
+.tamComponent{
+   width: 100%;
+}
+
+.odd{
+	background-color: #494747;
+	color: white;
+}
+
+.margen{
+	margin-top: 20px;
+}
+

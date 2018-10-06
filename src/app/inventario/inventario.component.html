@@ -1,0 +1,234 @@
+<div class="header-space">
+</div>
+
+<div class="container">
+    	<div clas="col-12">
+    		<div class="module white-back static row">
+    			<div class="row col-12 separador">
+	    			<div class="title reserva col-10">
+	    			  <h5>Inventario</h5>
+	    			</div>
+	    			<div class="col-2">
+	    				<button (click)="openModalPrint(inventarioModal)" class="btn btn-success">
+							<i class="fa fa-print" aria-hidden="true"></i> Agregar
+						</button>
+	    			</div>
+		    	</div>
+
+			
+					<div class="col-2">
+						<label>Nombre</label>
+					</div>
+					<div class="col-4">
+						 <input class="tamComponent" type="text" name="buscarNombre" placeholder="Buscar" [(ngModel)]="buscaProducto" (ngModelChange)="buscaProductoChanged()">
+					</div>
+					<div class="col-2">
+						<label>Código</label>
+					</div>
+					<div class="col-4">
+						 <input class="tamComponent" type="text" name="buscarCodigo" placeholder="Buscar" [(ngModel)]="buscaCodigo" (ngModelChange)="buscaCodigoChanged()">
+					</div>
+
+
+
+
+    			<div class="col-12 text-center margen">
+	    		    <pagination-controls (pageChange)="p = $event" previousLabel="Previo" nextLabel="Siguiente"></pagination-controls>
+	    		</div>
+				
+				<ul class="col-12 items-list">
+					<li class="item">
+						<div class="col-12 row">
+							<div class="col-sm-2 d-none d-sm-block text-center">
+								<p>Producto
+								</p>
+							</div>
+						
+							<div class="col-sm-2 d-none d-sm-block text-center">
+								<p>Código</p>
+							</div>
+							<div class="col-sm-2 d-none d-sm-block text-center">
+								<p>Costo</p>
+							</div>
+							<div class="col-sm-2 d-none d-sm-block text-center">
+								<p>Cantidad</p>
+							</div>
+							<div class="col-sm-2 col-4    text-center">
+								<p>
+									Acciones
+						        </p>
+							</div>
+						</div>
+					</li>
+					<li *ngFor="let producto of productos | paginate: { itemsPerPage: 10, currentPage: p }; index as i;" 
+						class="item" 
+						[class.odd]="i%2==0">
+						<div class="col-12 row">
+							<div class="col-sm-2 d-none d-sm-block text-center">
+								<p>
+									{{producto.producto}}
+								</p>
+							</div>
+							
+							<div class="col-sm-2 d-none d-sm-block text-center">
+								<p>
+									{{producto.codigo}}
+								</p>
+							</div>
+							<div class="col-sm-2 d-none d-sm-block text-center">
+								<p>
+									{{producto.costo | number:'1.2-2'}}
+								</p>
+							</div>
+							<div class="col-sm-2 d-none d-sm-block text-center">
+								<p>
+									{{producto.cantDisponible}}
+								</p>
+							</div>
+							
+							<div class="col-sm-2 col-4 text-center" style="padding-top: 4px;">
+								<div class="row">
+									<div class="col-4 text-center">
+										<button (click)="nuevoProducto = producto; encontroInventario = true;  openModal(inventarioModal)" class="btn btn-info">
+											<i class="fa fa-expand" aria-hidden="true"></i> 
+										</button>
+									</div>
+									<div class="col-4 text-center">
+										<button (click)="nuevoProducto = producto;  encontroInventario = false; openModalPrint(inventarioModal)" class="btn btn-success">
+											<i class="fa fa-pencil-square-o" aria-hidden="true"></i> 
+										</button>
+									</div>
+									<div class="col-4 text-center">
+						                <button (click)="nuevoProducto = producto; deleteInventario()"  class="btn btn-danger">
+						                  <i class="fa fa-trash" aria-hidden="true"></i> 
+						                </button>
+					                </div>
+					            </div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+</div>
+
+<div class="cargando" *ngIf="cargando">
+  <div>
+    <img src="assets/images/m2.png">
+    Cargando...
+  </div>
+</div>
+
+
+
+<template #inventarioModal>
+<!-- <div bsModal #inventarioModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"> -->
+	  <!-- <div class="modal-dialog modal-lg"> -->
+	    <div class="modal-content">
+			<div class="modal-header">
+			    <h4 class="modal-title pull-left">Inventario</h4>
+			    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		    <div class="modal-body">
+				<div class="row">
+			    	<div class="form-group col-4">
+						<label>Nombre<span class="required"></span></label>
+						<input type="text" name="producto" class="form-control" [(ngModel)]="nuevoProducto.producto">
+					</div>
+			    	<div class="form-group col-4">
+						<label>Código<span class="required"></span></label>
+						<input type="text" name="codigo" class="form-control" [(ngModel)]="nuevoProducto.codigo">
+					</div>
+					<div class="form-group col-4">
+						<label>Descripción<span class="required"></span></label>
+						<input type="text" name="descripcion" class="form-control" [(ngModel)]="nuevoProducto.descripcion">
+					</div>
+					
+				</div>    	
+				<div class="row">
+					<div class="form-group col-4">
+						<label>Modelo<span class="required"></span></label>
+						<input type="text" name="modelo" class="form-control" [(ngModel)]="nuevoProducto.modelo">
+					</div>
+					<div class="form-group col-4">
+						<label>Precio Sin Impuesto<span class="required"></span></label>
+						<input type="number" name="precio" class="form-control" [(ngModel)]="nuevoProducto.precio">
+					</div>
+					<div class="form-group col-4">
+						<label>Costo</label>
+						<input type="number" name="costo" class="form-control" [(ngModel)]="nuevoProducto.costo">
+					</div>
+				</div>
+						
+				<div class="row">
+					<div class="form-group col-4">
+						<label>Cantidad Disponible</label>
+						<input type="text" type="number" name="cantidadDisponible" class="form-control" [(ngModel)]="nuevoProducto.cantDisponible">
+					</div>
+					<div class="form-group col-4">
+						<label>Cantidad Mínima</label>
+						<input type="text"  type="number" name="cantidadMinima" class="form-control" [(ngModel)]="nuevoProducto.cantMinima">
+					</div>
+					<div class="form-group col-4">
+						<label>Descuento</label>
+						<input type="text" type="number" name="descuento" class="form-control" [(ngModel)]="nuevoProducto.descuento">
+					</div>
+				</div>
+				<div class="row">
+					
+					<div class="form-group col-4">
+						<label>Impuesto</label>
+						<input type="text"  type="number" name="impuesto" class="form-control" [(ngModel)]="nuevoProducto.impuesto">
+					</div>
+					<div class="form-group col-4">
+						<label>Utilidad</label>
+						<input type="text" type="number"  name="utilidad" class="form-control" [(ngModel)]="nuevoProducto.utilidad">
+					</div>
+					<div class="form-group col-4">
+						<label>Proveedor</label>
+						<input type="text" name="proveedor" class="form-control" [(ngModel)]="nuevoProducto.proveedor">
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-4">
+						<label>Categoria</label>
+						<select [(ngModel)]="nuevoProducto.categoria"  class="form-control"  >
+			          		<option value="1">Kits</option>
+			          		<option value="0">Cremas</option>
+			          	</select>
+
+					</div>
+					<div class="form-group col-4">
+						<label>Estado</label>
+						<select [(ngModel)]="nuevoProducto.estado"  class="form-control"  >
+			          		<option value="1">Activo</option>
+			          		<option value="0">Inactivo</option>
+			          	</select>
+					</div>
+					<div class="form-group col-4">
+						<label>Ubicación</label>
+						<input type="text" name="ubicacion" class="form-control" [(ngModel)]="nuevoProducto.ubicacion">
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-4">
+						<label>Marca<span class="required"></span></label>
+						<input type="text" name="marca" class="form-control" [(ngModel)]="nuevoProducto.marca">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<button type="button" *ngIf="encontroInventario"  class="btn btn-primary"  (click)="newInventario()">
+							Registrar
+						</button>
+						<button type="button" *ngIf="!encontroInventario"  class="btn btn-primary"  (click)="updateInventario()">
+							Modificar
+						</button>
+					</div>
+				</div>
+			</div>
+		<!-- </div> -->
+	</div>
+</template>
