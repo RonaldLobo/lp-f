@@ -186,3 +186,7 @@ ul.pausas-edit li {
 .tamComponent{
    width: 40%;
 }
+
+.error-input{
+  border: 1px solid red !important;
+}

@@ -166,7 +166,12 @@
 			</button>
 		</div>
 	</template>
-
+	<div class="cargando" *ngIf="spinnerEmitiendoFactura">
+	  <div>
+	    <img src="assets/images/m2.png">
+	   		 Emitiendo Factura...
+	  </div>
+	</div>
 
 	<div class="cargando" *ngIf="cargando">
 		<div>
@@ -281,6 +286,7 @@
 					<button type="button" class="btn btn-info" (click)="updateReserva()">
 						Pagar
 					</button>
+					
 				</li>
 				<li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura=='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
 					<button type="button" class="btn btn-info" (click)="reenviarMH()">
@@ -480,6 +486,7 @@
 			</div>
 		</div>
 	</div>
+						
 </template>
 
 <template #print>

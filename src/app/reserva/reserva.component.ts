@@ -161,39 +161,26 @@ export class ReservaComponent implements OnInit {
 			var timeBoxes = [];
 			var horasBarbero = 0;
 			var horarioInicio = this.updateHora(Object.assign({}, this.reservacion.barbero.horarios.find(o => o.dia == daysMap[this.dateSelected.getDay()]))).horaInicial;
-			console.log('horarioInicio',horarioInicio);
 			var today = new Date();
-			console.log('time');
-			console.log(today.getHours() >= Number(this.modificaHoraToTime(horarioInicio).substring(0, 2)));
-			console.log(today.getMinutes() > Number(this.modificaHoraToTime(horarioInicio).substring(2, 4)));
-			console.log(today.getHours() , Number(this.modificaHoraToTime(horarioInicio).substring(0, 2)));
-			console.log(today.getMinutes() , Number(this.modificaHoraToTime(horarioInicio).substring(2, 4)));
 			if(!this.authService.isAdminSucursalUser() && this.dateSelected.getFullYear()+this.dateSelected.getMonth()+this.dateSelected.getDate() == today.getFullYear()+today.getMonth()+today.getDate() && 
 				(today.getHours() >= Number(this.modificaHoraToTime(horarioInicio).substring(0, 2)) && 
 					today.getMinutes() > Number(this.modificaHoraToTime(horarioInicio).substring(2, 4)))){
-				console.log('entra');
 				var minutos = 0;
 				while(minutos < today.getMinutes()){
 					minutos += Number(this.reservacion.barbero.tiempoBarbero);
 				}
 				horarioInicio = today.getHours()*100 + minutos ;
-				console.log('hora inicio nueva',horarioInicio);
 			}
 			var horarioFinal = this.updateHora(Object.assign({}, this.reservacion.barbero.horarios.find(o => o.dia == daysMap[this.dateSelected.getDay()]))).horaFinal;
-			console.log('horarioFinal',horarioFinal);
+		
 			var hora = new Date();
 			var horarioInicioFull = this.modificaHoraToTime(horarioInicio);
-			console.log('horarioInicio', horarioInicio);
-			console.log('horarioInicioFull', horarioInicioFull);
 			if(horarioInicio){
 				horasBarbero = (horarioFinal - horarioInicio) / 100;
 				hora.setHours(Number(horarioInicioFull.substring(0, 2)));
 				hora.setMinutes(Number(horarioInicioFull.substring(2, 4)));
-				console.log('horasBarbero en if ',horasBarbero)
 			}
-			console.log('hora',hora);
 			let timeBoxCount = (horasBarbero * 60 / this.reservacion.barbero.tiempoBarbero);
-			console.log('timeBoxCount',timeBoxCount);
 			for (var i = 0; i < timeBoxCount; i++) {
 				var reservada = false;
 				var pausada = false;
@@ -205,11 +192,9 @@ export class ReservaComponent implements OnInit {
 					horaReservaInicial.setSeconds(0);
 					horaReservaFinal.setTime(horaReservaInicial.getTime());
 					let duracion = (this.reservas[o].esDinamico == 1) ? this.reservas[o].duracionDinamica : this.reservas[o].duracion;
-					console.log('duracion',duracion);
 					horaReservaFinal.setMinutes(horaReservaFinal.getMinutes() + Number(duracion));
 					horaReservaFinal.setSeconds(0);
 					if (this.reservacion.fecha && horaReservaInicial.getTime() <= hora.getTime() && hora.getTime() <= horaReservaFinal.getTime() && (this.reservacion.fecha.getFullYear()+'-'+this.zerofill(this.reservacion.fecha.getMonth(),1)+'-'+this.zerofill(this.reservacion.fecha.getDate(),0) === this.reservas[o].dia)) {
-						console.log('here',this.reservas[o].id,horaReservaInicial,hora,horaReservaFinal);
 						reservada = true;
 					}
 				}
@@ -244,12 +229,10 @@ export class ReservaComponent implements OnInit {
 			}
 
 			var tiempo = this.reservacion.servicio.duracion;
-			console.log('timeBoxes',timeBoxes);
 			var ocupaCampos = tiempo / this.reservacion.barbero.tiempoBarbero;
 			this.camposLibres = [];
 			var estaReservada = false;
 			var estaPausada = false;
-			console.log('cam',ocupaCampos,timeBoxes.length);
 			for (var i = 0; i < timeBoxes.length; i++) {
 				estaReservada = false;
 				estaPausada = false;
@@ -265,7 +248,6 @@ export class ReservaComponent implements OnInit {
 						}
 					}
 					else{
-						console.log('aqui termina' ,o , timeBoxes);
 						estaReservada = true;
 						break;
 					}
@@ -278,7 +260,6 @@ export class ReservaComponent implements OnInit {
 					})
 				// }
 			}
-			console.log('campos after',this.camposLibres);
 			if(this.camposLibres.length > 0){
 				var existeTiempo = true;
 				var horaFinalDate = new Date();
@@ -297,7 +278,6 @@ export class ReservaComponent implements OnInit {
 					}
 				}
 			}
-			console.log('campos',this.camposLibres);
 		}
 	}
 

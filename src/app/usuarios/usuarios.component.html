@@ -63,7 +63,7 @@
 				<div class="col-12 row form-group">
 					<label class="col-4 col-form-label">Cédula</label>
 					<div class="col-8"> 
-						<input type="number"  class="form-control" maxlength="9" minlength="9" name="cedula" [(ngModel)]="nuevoUsuario.cedula"  >
+						<input class="form-control" minlength="9" name="cedula" [(ngModel)]="nuevoUsuario.cedula" [class.error-input]="validatorService.hasError('cedula',usuarioErrores)" >
 					</div>
 				</div>
 				<div class="col-12 row form-group">

@@ -301,6 +301,7 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
     color: white;
     padding-top: 216px;
+    z-index: 9999;
 }
 
 .cargando img{

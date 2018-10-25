@@ -55,6 +55,7 @@ export class CitasComponent implements OnInit {
 	public mostrarModificar:boolean = false;
 	public mostrarSeleccionar:boolean = false;
 	public nuevoUsuarioDisplay:boolean = false;
+	public spinnerEmitiendoFactura: boolean = false;
 
 	public nuevoUsuario:Usuario = new Usuario();
 	public usuarioErrores : any = [];
@@ -120,9 +121,9 @@ export class CitasComponent implements OnInit {
 		            error => {
 		            });
 		    }
-		    if(that.authService.isAdminSucursalUser()){
-		    	that.obtieneCitasBarberia(that);
-		    }
+		   // if(that.authService.isAdminSucursalUser()){
+		    //	that.obtieneCitasBarberia(that);
+		   // }
 		   //  this.sharedService.get("/api/ubicacion").then((data) =>{
 	  		// 	this.provincias = data.ubicacion;
 	  		// 	this.selectedProvincia = this.provincias[0];
@@ -450,6 +451,7 @@ export class CitasComponent implements OnInit {
 		var fact = this.facturaHacienda;
 		var that = this;
 		fact.con = true;
+		this.spinnerEmitiendoFactura = true;
 		that.enviandoMH = true;
 		console.log(fact);
 		that.facturaService.post('',fact)
@@ -473,13 +475,15 @@ export class CitasComponent implements OnInit {
 							that.selectedCita.estadoFactura = 'P';
 						    that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita})
 				             .then(response => {
-				             	alert('Información actualizada');
+				             	alert('Factura Emitida Satisfactoriamente');
 				             	that.enviandoMH = false;
+				             	that.spinnerEmitiendoFactura = false;
 				             	console.log(response);
 				            },
 				             error => {
 				             	that.enviandoMH = false;
 						 		that.selectedCita.estadoFactura = 'R';
+						 		that.spinnerEmitiendoFactura = false;
 				        	});
 						} else if(res.error == "recibido"){
 							alert('Su factura fue enviada pero el Ministerio de Hacienda esta tardando mucho tiempo en responder, por favor reintente el envío desde "Factura"');
@@ -490,26 +494,32 @@ export class CitasComponent implements OnInit {
 				             .then(response => {
 				             	alert('Información actualizada');
 				            	that.enviandoMH = false;
+				            	that.spinnerEmitiendoFactura = false;
 				             	console.log(response);
 				            },
 				             error => {
 				             	that.enviandoMH = false;
 						 		that.selectedCita.estadoFactura = 'R';
+						 		this.spinnerEmitiendoFactura = false;
 				        	});
 						} else {
 							that.enviandoMH = false;
  							alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
+ 							that.spinnerEmitiendoFactura = false;
 						}
 					}, err =>{
 						console.log('error',err);
 						that.enviandoMH = false;
+						that.spinnerEmitiendoFactura = false;
 					})
 				});
 		    });
 		}, err =>{
 			console.log('error',err);
 			that.enviandoMH = false;
+			that.spinnerEmitiendoFactura = false;
 		});
+	
 	}
 
 	public async reenviarMH(){
@@ -625,9 +635,11 @@ export class CitasComponent implements OnInit {
 		this.facturaHacienda.factura.emisor.codigoPaisFax = '';
 		this.facturaHacienda.factura.emisor.fax = '';
 		this.facturaHacienda.factura.emisor.email = barbero.correo[0].correo;
-		if(this.nuevoUsuario.nombre != 'generico' && ((this.nuevoUsuario.nombre && this.nuevoUsuario.apellido1 && this.nuevoUsuario.apellido2) || this.nuevoUsuario.cedula)){
+		if(this.nuevoUsuario.nombre != 'generico' && (this.nuevoUsuario.cedula.length == 9  || this.nuevoUsuario.cedula.length == 10) && ((this.nuevoUsuario.nombre && this.nuevoUsuario.apellido1 && this.nuevoUsuario.apellido2) || this.nuevoUsuario.cedula)){
 			this.facturaHacienda.factura.receptor.nombre = this.nuevoUsuario.nombre + this.nuevoUsuario.apellido1 + this.nuevoUsuario.apellido2;
-			this.facturaHacienda.factura.receptor.tipoId = '01';
+			
+			this.facturaHacienda.factura.receptor.tipoId = (this.nuevoUsuario.cedula.length==9) ? '01' : '02';
+			
 			if(!this.nuevoUsuario.cedula && this.nuevoUsuario.nombre && this.nuevoUsuario.apellido1 && this.nuevoUsuario.apellido2){
 				var usuarios = await(this.sharedService.get('/api/personas?tipo=nombre&nombre='+this.nuevoUsuario.nombre+'&apellido1='+this.nuevoUsuario.apellido1+'&apellido2='+this.nuevoUsuario.apellido2));
 				if(usuarios.persona[0].length == 1){
