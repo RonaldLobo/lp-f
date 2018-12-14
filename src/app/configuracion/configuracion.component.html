@@ -204,6 +204,12 @@
         	<div class="col-8">
         		<input type="text" name="barberia" [(ngModel)]="nuevoBarbero.usuario" [class.error]="validatorService.hasError('usuario',barberoErrores)" [disabled]="accion=='modificar'">
         	</div>
+            <div class="col-4">
+                Cedula:
+            </div>
+            <div class="col-8">
+                <input type="text" name="cedula" [(ngModel)]="nuevoBarbero.cedula" [class.error]="validatorService.hasError('cedula',barberoErrores)" [disabled]="accion=='modificar'">
+            </div>
         	<div class="col-4">
         		Nombre:
         	</div>
