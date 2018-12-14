@@ -409,3 +409,6 @@ bs-datepicker-container{
   }
 }
 
+body .bs-datepicker{
+  z-index: 10;
+}

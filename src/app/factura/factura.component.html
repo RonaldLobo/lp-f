@@ -37,26 +37,26 @@
 						[class.odd]="i%2==0">
 						<div class="col-12 row">
 							<div class="col-sm-3 col-6">
-								<p *ngIf="factura.idUsuarioBarbero">
+								<p *ngIf="factura.nombreUserReserva">
 									{{factura.nombreUserReserva +' '+factura.primerApellidoUserReserva + ' '+factura.segundoApellidoUserReserva}}
 								</p>
-								<p *ngIf="!factura.idUsuarioBarbero">
+								<p *ngIf="!factura.nombreUserReserva">
 									Factura sin cliente asignado
 								</p>
 							</div>
 							<div class="col-sm-2 d-none d-sm-block text-center">
 								<p>
-									{{factura.dia | date: 'dd/MM/yyyy'}}
+									{{factura.fecha | date: 'dd/MM/yyyy'}}
 								</p>
 							</div>
 							<div class="col-sm-3 d-none d-sm-block text-center">
-								<p *ngIf="factura.estadoFactura == 'R'">
+								<p *ngIf="factura.estado == 'R'">
 									Registrado
 								</p>
-								<p *ngIf="factura.estadoFactura == 'P'">
+								<p *ngIf="factura.estado == 'P'">
 									Pagado
 								</p>
-                <p *ngIf="factura.estadoFactura == 'E'">
+                <p *ngIf="factura.estado == 'E'">
                   Enviado
                 </p>
 							</div>
@@ -67,8 +67,11 @@
 								<button (click)="selectedFactura = factura; openModalPrint(print)" class="btn btn-success">
 									<i class="fa fa-print" aria-hidden="true"></i> Imprimir
 								</button>
-                <button (click)="obtenerInfoUsuario(factura.idUsuarioReserva)" *ngIf="factura.estadoFactura == 'E'" class="btn btn-warning">
+                <button (click)="obtenerInfoUsuario(factura.idUsuarioReserva)" *ngIf="factura.estado == 'E'" class="btn btn-warning">
                   <i class="fa fa-paper-plane" aria-hidden="true"></i> Reenviar
+                </button>
+                 <button (click)="obtenerInfoUsuario(factura.idUsuarioReserva)"  class="btn btn-danger">
+                  <i class="fa fa-paper-plane" aria-hidden="true"></i> Eliminar
                 </button>
 							</div>
 						</div>
@@ -98,57 +101,73 @@
     <div class="modal-body container">
     	<ul class="row">
           <li class="col-5"><span>Barberia : </span></li>
-          <li class="col-7"><span>{{selectedFactura.sucursal}}</span></li>
-          <li class="col-5" *ngIf="authService.isRegularUser()"><span>Barbero : </span></li>
-          <li class="col-7" *ngIf="authService.isRegularUser()"><span>{{selectedFactura.nombreBarbero}} {{selectedFactura.primerApellidoBarbero}}</span></li>
-          <li class="col-5"><span>Servicio : </span></li>
-          <li class="col-7">
-          	<span *ngIf="selectedFactura.esDinamico == 1">{{selectedFactura.descripcion}}</span>
-          	<span *ngIf="selectedFactura.esDinamico != 1">{{selectedFactura.servicio}}</span>
-          </li>
-          <li class="col-5" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()"><span>Cliente : </span></li>
+          <li class="col-7"><span>{{sucursal.descripcion}}</span></li>
+          <li class="col-5"><span>Creado Por : </span></li>
+          <li class="col-7"><span>{{selectedFactura.nombreBarbero}} {{selectedFactura.primerApellidoBarbero}}</span></li>
+           <li class="col-5" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()"><span>Cliente : </span></li>
           <li class="col-7" *ngIf="authService.isBarberoUser() || authService.isAdminSucursalUser()"><span>{{selectedFactura.nombreUserReserva}} {{selectedFactura.primerApellidoUserReserva}}</span></li>
-          <li class="col-5"><span>Duración : </span></li>
-          <li class="col-7">
-          	<span *ngIf="selectedFactura.esDinamico == 1">{{convertMinsToHrsMins(selectedFactura.duracionDinamica)}}</span>
-          	<span *ngIf="selectedFactura.esDinamico != 1">{{convertMinsToHrsMins(selectedFactura.duracion)}}</span>
-          </li>
+    
           <li class="col-5"><span>Fecha : </span></li>
-          <li class="col-7"><span>{{selectedFactura.dia}}</span></li>
-          <li class="col-5"><span>Hora : </span></li>
-          <li class="col-7"><span>{{convierteTiempo(selectedFactura.horaInicialFormat)}}</span></li>
-          <li class="col-5"><span>Precio : </span></li>
-          <li class="col-7">
-          	<span *ngIf="selectedFactura.esDinamico == 1">{{selectedFactura.precioDinamico}}</span> 
-          	<span *ngIf="selectedFactura.esDinamico != 1">{{selectedFactura.precio}}</span> Colones
-          </li>
- 		  <li class="col-5"><span>Estado Factura : </span></li>
-          <li class="col-7">
-          	<span *ngIf="selectedFactura.estadoFactura=='R'">Registrado</span> 
-          	<span *ngIf="selectedFactura.estadoFactura=='P'">Pagada</span>
-          </li>
-  		  <li class="col-5"><span>Tipo Pago : </span></li>
-          <li class="col-7">
-          	<span *ngIf="selectedFactura.tipoPago=='E'">Efectivo</span> 
-          	<span *ngIf="selectedFactura.tipoPago=='T'">Tarjeta</span>
-          </li>
- 		  <li class="col-5"  *ngIf="selectedFactura.tipoPago=='T'"><span>Comprobante : </span></li>
-          <li class="col-7" *ngIf="selectedFactura.tipoPago=='T'">
-          	<span>{{selectedFactura.comprobantePago}}</span>
+          <li class="col-7"><span>{{selectedFactura.fecha | date: 'dd/MM/yyyy'}}</span></li>
+         <!-- <li class="col-5"><span>Hora : </span></li>
+          <li class="col-7"><span>{{convierteTiempo(selectedFactura.horaInicialFormat)}}</span></li>-->
+         <li class="col-5"><span>Estado Factura : </span></li>
+            <li class="col-7">
+              <span *ngIf="selectedFactura.estado=='R'">Registrado</span> 
+              <span *ngIf="selectedFactura.estado=='P'">Pagada</span>
+            </li>
+         
+          <li class="col-5"><span>Tipo Pago : </span></li>
+            <li class="col-7">
+              <span *ngIf="selectedFactura.tipoTransaccion=='01'">Efectivo</span> 
+              <span *ngIf="selectedFactura.tipoTransaccion=='02'">Tarjeta</span>
+              <span *ngIf="selectedFactura.tipoTransaccion=='04'">Transferencia</span>
+            </li>
+        <li class="col-5"  *ngIf="selectedFactura.tipoTransaccion=='02'"><span>Comprobante : </span></li>
+          <li class="col-7" *ngIf="selectedFactura.tipoTransaccion=='02'">
+            <span>{{selectedFactura.numComprobante}}</span>
           </li>
           <li class="col-5"><span>Detalle Factura : </span></li>
           <li class="col-7">
-          	<span>{{selectedFactura.detalleFactura}}</span>
+            <span>{{selectedFactura.detalle}}</span>
           </li>
+          <ul class="col-12 items-list">
+            <li class="item">
+              <div class="col-12 row">
+                <div class="col-sm-6 col-6">
+                  <p>Servicio
+                  </p>
+                </div>
+                 <div class="col-sm-2">
+                  <p>Duración
+                  </p>
+                </div>
+                <div class="col-sm-4 d-none d-sm-block text-center">
+                  <p>Precio</p>
+                </div>
+              </div>
+            </li>
 
-          <li class="col-4 centered-content action-modal" *ngIf="selectedFactura.estadoFactura!='P'">
-          	<button type="button" class="btn btn-danger" (click)="modalRef.hide();openModal(confirmaEliminarCita)" *ngIf="!authService.isRegularUser() || mayorQueHoy(selectedFactura.dia)">
-      				Eliminar
-      			</button>
-      			<p *ngIf="authService.isRegularUser() && igualQueHoy(selectedFactura.dia)" style="color:red">
-      				Para eliminar esta cita por favor comuniquese con el barbero.
-      			</p>
+         <li *ngFor="let factura of selectedFactura.detalleFactura; index as i;" class="item"  [class.odd]="i%2==0">
+            <div class="col-12 row">
+              <div class="col-sm-6 col-6">
+                  {{factura.producto}}
+              </div>
+                <div class="col-sm-2 col-6">
+                  {{convertMinsToHrsMins(factura.duracion)}}
+              </div>
+              <div class="col-sm-4 d-none d-sm-block text-center">
+                <p>
+                  {{factura.precio}}
+                </p>
+              </div>
+            </div>
           </li>
+        </ul>
+
+
+
+         
         </ul>
     </div>
 
@@ -185,6 +204,46 @@
     			</p>
     		</div>
     	</div>
+    </div>
+  </div>
+</ng-template>
+
+
+
+<ng-template #eliminarPop>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left" style="text-transform: capitalize;" *ngIf="isNota">Eliminar Factura</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRefEliminar.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="col-12 confirmar-items">
+      <div class="row">
+        <div class="col-3">
+          Razón
+        </div>
+        <div class="col-9">
+          <input type="text" [(ngModel)]="infoRefeRazon" name="razon" class="form-control"> 
+        </div>
+      </div>
+    <div>
+      <button type="submit" class="btn btn-danger" [disabled]="factura.infoRefeRazon == ''" (click)="isEliminar=true;completarNota(agotadosPop);" [disabled]="enviandoMH" *ngIf="factura.estado != 'enviada'">
+        <span *ngIf="!enviandoMH">Eliminar</span>
+        <span *ngIf="enviandoMH">Enviando...</span>
+      </button>
+    </div>
+    <div *ngIf="enviandoMH" class="enviando">
+      <div class="comp">
+        <i class="fa fa-laptop" aria-hidden="true"></i>
+      </div>
+      <div class="fact">
+        <i class="fa fa-file-code-o" aria-hidden="true"></i>
+      </div>
+      <div class="mh">
+        <i class="fa fa-university" aria-hidden="true"></i>
+      </div>
+    </div>
     </div>
   </div>
 </ng-template>

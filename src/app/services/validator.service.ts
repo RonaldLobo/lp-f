@@ -34,7 +34,7 @@ export class ValidatorService {
     			desc:'Por favor ingrese una clave'
     		});
     	}
-    	if(!this.isNotNull(usuario.apellido1)){
+    	if(!this.isNotNull(usuario.apellido1) && usuario.tipoCedula=='01'){
     		errors.push({
     			error:'apellido1',
     			desc:'Por favor ingrese el primer apellido'

@@ -33,6 +33,7 @@ export class InventarioComponent implements OnInit {
 	public buscaCodigo:string = "";
 	public productoBusqueda: any = [];
 	p: number = 1;
+	public varVer:boolean =true;
 
  constructor(private dataService:DataService,
 		public authService:AuthService,
@@ -59,13 +60,7 @@ export class InventarioComponent implements OnInit {
   ngOnInit() {
   		var that = this;
   			setTimeout(function(){
-		  		that.dataService.get('/inventario?idSucursal='+that.authService.loggedUser.idSucursal)
-					.then(response => {
-						console.log('inventario ',response.inventario);
-						that.productos = response.inventario;
-					},
-					error => {
-					});
+		  		that.cargandoInventario();
 		},2000);
   }
 
@@ -82,6 +77,7 @@ export class InventarioComponent implements OnInit {
          	this.nuevoProducto = {};
          	this.cargando = false;
          	this.modalRef.hide();
+         	this.cargandoInventario();
         },
          error => {
          	this.cargando = false;
@@ -102,6 +98,7 @@ export class InventarioComponent implements OnInit {
 				this.nuevoProducto = {};
             	this.cargando = false;
          		this.modalRef.hide();
+         		this.cargandoInventario();
             },
             error => {
             	this.cargando = false;
@@ -117,19 +114,24 @@ export class InventarioComponent implements OnInit {
             .then(response => {
             	alert('Información Eliminada');
             	this.cargando = false;
-            	this.dataService.get('/inventario?idSucursal='+this.authService.loggedUser.idSucursal)
-					.then(response => {
-						console.log('inventario ',response.inventario);
-						this.productos = response.inventario;
-					},
-				error => {
-				});
+            	this.cargandoInventario();
             },
             error => {
             	alert('Información Eliminada');
             	this.cargando = false;
+            	this.cargandoInventario();
         });
         
+	}
+
+	public cargandoInventario(){
+		this.dataService.get('/inventario?idSucursal='+this.authService.loggedUser.idSucursal)
+			.then(response => {
+				console.log('inventario ',response.inventario);
+				this.productos = response.inventario;
+			},
+		error => {
+		});
 	}
 
 

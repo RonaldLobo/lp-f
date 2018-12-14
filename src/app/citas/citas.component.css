@@ -15,6 +15,10 @@
 	border: 1px solid red;
 }
 
+.ancho {
+    width: 80% !important;
+}
+
 .date .col-2{
 	font-weight: bold;
 	font-size: 20px;

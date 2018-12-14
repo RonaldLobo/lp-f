@@ -7,3 +7,199 @@
     border-bottom: 1px solid;
     margin-bottom: 25px;
 }
+
+.centered-content{
+	text-align: center;
+}
+
+.date{
+	padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.centered-content{
+	text-align: center;
+}
+
+.date{
+	padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.underline{
+	border-bottom: 1px solid black;
+}
+
+.error{
+	border: 1px solid red;
+}
+
+.date .col-2{
+	font-weight: bold;
+	font-size: 20px;
+}
+
+.heading{
+	font-weight: bold;
+	font-size: 16px;
+	border-bottom: 1px solid black;
+}
+
+.cita{
+	/*border: 1px solid green;
+	border-radius: 5px;*/
+}
+
+.telefonos{
+  margin-top: 15px;
+}
+
+.reservas li div{
+	background-color: white;
+	display: inline-block;
+	border: 1px solid green;
+	text-align: center;
+	width: 100%;
+	border-radius: 5px;
+	margin-bottom: 5px;	
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+.update{
+	margin-top: 20px;
+}
+
+.pausas button{
+	margin-bottom: 15px;
+}
+
+.active{
+	border: 1px solid green !important;
+	background: green !important;
+}
+
+.repetir-item{
+	background: gray;
+    display: inline-block;
+    padding: 3px;
+    width: 30px;
+    text-align: center;
+    color: white;
+    border: 1px solid black;
+}
+
+ul.pausas-edit li {
+    margin-bottom: 12px;
+}
+
+.actualizar-usuario div{
+	margin-bottom: 12px;
+}
+
+.actualizar-usuario input{
+	width: 100%;
+}
+
+.action-modal{
+	margin-top: 15px;
+}
+
+.actualizar-horario .col-8{
+	padding-right: 0;
+    padding-left: 4px;
+}
+
+.nuevo-numero input{
+	width: 80% !important;
+}
+
+.small-action{
+	display: inline-block;
+    width: 25px;
+    height: 26px;
+    border: 1px solid black;
+    border-radius: 14px;
+    text-align: center;
+    font-size: 17px;
+    color: red;
+}
+
+.telefono-display{
+	width: 80%;
+	display: inline-block;
+}
+
+.correo-display .small-action{
+	width: 50px;
+}
+
+.correo-display .display{
+	width: 100%;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.nuevo-numero input{
+   width: 80% !important;
+}
+
+.small-action{
+   display: inline-block;
+    width: 25px;
+    height: 26px;
+    border: 1px solid black;
+    border-radius: 14px;
+    text-align: center;
+    font-size: 17px;
+    color: red;
+}
+
+.telefono-display{
+   width: 80%;
+   display: inline-block;
+}
+
+.correo-display .small-action{
+   /*width: 50px;*/
+}
+
+.correo-display .display{
+   width: 80%;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contact-item .telefono-display, .contact-item .display{
+   border-bottom: 1px solid black;
+}
+
+.contact-item,.telefonos,.correos,.nuevo-numero{
+   margin-bottom: 0px !important;
+}
+
+.resumen .title{
+  margin-top: 23px;
+  font-weight: bold;
+}
+
+.resumen div{
+  margin-bottom: 10px;
+}
+
+.barbero-cita{
+  padding-bottom: 2px;
+  border-bottom: 1px solid black;
+  margin-bottom: 7px;
+}
+
+.tamComponent{
+   width: 40%;
+}
+
+.error-input{
+  border: 1px solid red !important;
+}

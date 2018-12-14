@@ -17,17 +17,28 @@ export class AuthService {
     private token:string = "token test";
     public loggedUser:Usuario;
     public errorDisplay: string = '';
+    public logoEmpresa: string = '';
     public isImpersonando: boolean = false;
     public isAppUnica: boolean = false;
     public usuarioOriginal: any = {};
     public idBarberia:any = "";
     public idBarberiaUnica: number = 1;
+    public logoAncho: number = 80;
     public nombreBarberia:string = "Los Peluqueros";
     public usuario:Usuario = new Usuario();
     public profilePic:string = '';
     public isApp = false;
     public fbUserIdApp = '';
     private _window:any;
+    public provinciaSucursal: string = '';
+    public cantonSucursal: string = '';
+    public distritoSucursal: string = '';
+    public barrioSucursal: string = '';
+    public detalleDireccionSucursal: string = '';
+    public tipoIdSucursal: string = '';
+    public cedulaJuridicaSucursal: string = '';
+    public idFacturaAPI : string = '';
+
 
     constructor(private router:Router,private dataService: DataService, private fb:FacebookService, private windowRef: WindowRefService, private pushNotificationsService:PushNotificationsService) {
         this.addAfter();
@@ -64,6 +75,9 @@ export class AuthService {
       this.loggedObservable.next(usuario);
     }
 
+
+
+   
     public login(usuario:Usuario){
         this.dataService.post('/login/', {"usuario":usuario})
             .then(response => {
@@ -80,6 +94,16 @@ export class AuthService {
                     this.dataService.get('/sucursal/'+this.loggedUser.idSucursal)
                     .then(response => {
                             this.idBarberia = response[0].idBarberia;
+                            this.logoEmpresa = response[0].logo;
+                            this.logoAncho = response[0].logoAncho;
+                            this.provinciaSucursal = response[0].provincia;
+                            this.cantonSucursal = response[0].canton;
+                            this.distritoSucursal = response[0].distrito;
+                            this.detalleDireccionSucursal = response[0].detalleDireccion;
+                            this.tipoIdSucursal = response[0].tipoId;
+                            this.cedulaJuridicaSucursal = response[0].cedulaJuridica;
+                            this.barrioSucursal = response[0].barrio;
+                            this.idFacturaAPI = response[0].idFacturaAPI;
                             this.emitLogged();
                             this.storeUser();
                             this.pushNotificationsService.agregarTema('user'+this.loggedUser.id);

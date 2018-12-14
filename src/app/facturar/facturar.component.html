@@ -1,170 +1,534 @@
+
 <div class="header-space">
 </div>
 
 <div class="container">
-	<div clas="col-12">
-		<div class="module white-back static row">
-			<div class="row col-12 separador">
-    			<div class="title reserva col-12">
-    			  <h2>Facturar</h2>
-    			</div>
-    			<div class="row col-12">
-    				<div class="col-3">
-    					<p><b>Total Neto:</b></p>
-    				</div>
-    				<div class="col-3">
-    					<p><b>Total Desc:</b></p>
-    				</div>
-    				<div class="col-3">
-    					<p><b>Total Imp:</b></p>
-    				</div>
-    				<div class="col-3">
-    					<p><b>Total:</b></p>
-    				</div>
-    			</div>
-	    	</div>
+	<div class="row">
+		<div class="col-12">
+			<div class="module white-back static row">
+				<div class="title reserva col-12 row">
+						<div class="col-6">
+	    			    	<h2>Facturar</h2>
+						</div>
+    			    	
+	    				<div class="col-2">
+							<button (click)="openModalPrint(clienteModal)" class="btn btn-warning">
+								<i class="fa fa-plus" aria-hidden="true"></i> Agregar Cliente
+							</button>
+	    				</div>
+	    				<div class="col-2">
+							<button (click)="selectedFactura = factura; openModalPrint(print)" class="btn btn-success">
+								<i class="fa fa-print" aria-hidden="true"></i> Imprimir
+							</button>
+	    				</div>
+	    				<div class="col-2">
+							<button (click)="agregarFactura()" class="btn btn-info">
+								<i class="fa fa-credit-card" aria-hidden="true"></i> Pagar
+							</button>
+	    				</div>
+	    			</div>
+	    			<div class="row col-12 separador">
+		    			<div class="row ">
+		    				<div class="col-3">
+		    					<p><b>Total Neto:</b></p>
+								<input type="number" readonly="true" step="0.01"class="form-control" [(ngModel)]="totalNet">
+		    				</div>
+		    				<div class="col-3">
+		    					<p><b>Total Desc:</b></p>
+								<input type="number" readonly="true" step="0.01" class="form-control" [(ngModel)]="totalDesc">
+		    				</div>
+		    				<div class="col-3">
+		    					<p><b>Total Imp:</b></p>
+								<input type="number" readonly="true" step="0.01" class="form-control" [(ngModel)]="totalImp">
+		    				</div>
+		    				<div class="col-3">
+		    					<p><b>Total:</b></p>
+								<input type="number" readonly="true" step="0.01" class="form-control" [(ngModel)]="totalGeneral">
+		    				</div>
+	    				</div>
+	    			</div>
+				
+				<div class="col-12"> 
+					<div class="row col-12 separador">
+						<div class="title reserva row col-12 ">
+		    				 <h5>Productos</h5>
+		    			</div>
+		    			<div class="row col-12">
+		    				<div class="col-3">
+								<label>Cantidad </label>
+								 <input type="number" class="form-control" [(ngModel)]="cantidadProducto"  >
+							</div>
+		    				<div class="col-3">
+								<label>Nombre</label>
+								<input type="text"  class="form-control"  name="buscaProducto" placeholder="Buscar" [(ngModel)]="buscaProducto" (ngModelChange)="buscaProductoChanged()">
+								 
+							</div>
+							<div class="col-3">
+								<label>Código</label>
+								 <input  type="text" class="form-control"  name="buscaCodigo" placeholder="Buscar" [(ngModel)]="buscaCodigo" (ngModelChange)="buscaCodigoChanged()">
+							</div>
+							<div class="col-3">
+								<label>Fecha Cita</label>
+								<calendario-input [daterecive]="today"  (dateSelectedChange)="changeDateCita($event)" ></calendario-input>
+							</div>
+			    		</div>
+						<div class="row col-12" >
+							<ul>
+					            <li *ngFor="let reserva of reservas"> 
+					              <span class="reservas" (click)="seleccionaUsuarioCita(reserva)">{{reserva.nombreUserReserva}} {{reserva.primerApellidoUserReserva}} {{reserva.segundoApellidoUserReserva}} | {{reserva.horaInicial}} 
+					              </span>
+					            </li>
+					        </ul>
 
+				        	 <ul>
+					            <li *ngFor="let producto of productos"> 
+					              <span (click)="seleccionaProducto(producto)">{{producto.producto}}  | {{producto.codigo}} 
+					              </span>
+					            </li>
+					          </ul>
+						</div>
+				    </div>
+				</div>
+				<div class="row col-12 separador">
+					<div class="row col-12">
+						<div class="col-2">
+							<label>Detalle Factura</label>
+						</div>
+						<div class="col-2">
+							<input type="text"  class="form-control" [(ngModel)]="detalle"  name="detalle" >
+						</div>
+						<div class="col-2">
+							<label>Moneda </label>
+						</div>
+						<div class="col-2">
+							<select [(ngModel)]="moneda"  class="form-control"  >
+				          		<option value="C">Colones</option>
+				          		<option value="P">Dólares</option>
+				          	</select>
+						</div>
+						<div class="col-2">
+							<label>Tipo Transferencia </label>
+						</div>
+						<div class="col-2">
+							<select [(ngModel)]="tipoTransferencia"  class="form-control"  >
+				          		<option value="01">Efectivo</option>
+								<option value="02">Tarjeta</option>
+								<option value="04">Transferencia</option>
+				          	</select>
+						</div>
+					</div>
+					<div class="row col-12">
+						<div class="col-2">
+							<label *ngIf="tipoTransferencia == 'T'">Num Comprobante</label>
+						</div>
+						<div class="col-2">
+							<input type="text" *ngIf="tipoTransferencia == 'T'"  class="form-control" [(ngModel)]="numComprobante"  name="numComprobante" >
+						</div>
+					</div>
+				</div>
+				<div class="row col-12">
+					<div class="col-3">
+						<label>Agregar Elemento en la Factura</label>
+					</div>
+					<div class="col-9">
+						<button (click)="openModalPrint(productoModal)" class="btn btn-success">
+							<i class="fa fa-plus" aria-hidden="true"></i> Agregar
+						</button>
+					</div>
+				</div>
 
-	    	<div class="row col-12 separador">
-				<div class="col-2">
-					<label>Nombre</label>
-				</div>
-				<div class="col-4">
-					 <input class="tamComponent" type="text" name="buscarNombre" placeholder="Buscar" [(ngModel)]="buscaUsuario" (ngModelChange)="buscaUsuarioChanged()">
-					  <ul>
-			            <li *ngFor="let usuario of usuarioCita"> 
-			              <span class="usuarios" (click)="seleccionaUsuarioCita(usuario)">{{usuario.nombre}} {{usuario.apellido1}} {{usuario.apellido2}} | {{usuario.cedula}} 
-			              </span>
-			            </li>
-			          </ul>
-				</div>
-				<div class="col-2">
-					<label>Cédula</label>
-				</div>
-				<div class="col-4">
-					 <input class="tamComponent" type="text" name="buscarCedula" placeholder="Buscar" [(ngModel)]="buscaCedula" (ngModelChange)="buscaCedulaChanged()">
-				</div>
-			</div>
+				<!--<div class="col-4">
+					<div class="module white-back static row">
+						<div class="title reserva row col-12 ">
+			    			 <h5>Citas</h5>
+			    		</div>
+			    		<div class="row col-12">
+			    			<div class="col-4">
+								<label>Fecha</label>
+							</div>
+							<div class="col-8">
+								<div class="row">
+									<div class="col-8 centered-content ">
+										<calendario-input [daterecive]="today" (dateSelectedChange)="changeDateCita($event)" ></calendario-input>
+									</div>
+								</div>
+							</div>
+			    		</div>
+						<div class="row col-12" >
+							<ul>
+					            <li *ngFor="let reserva of reservas"> 
+					              <span class="reservas" (click)="seleccionaUsuarioCita(reserva)">{{reserva.nombreUserReserva}} {{reserva.primerApellidoUserReserva}} {{reserva.segundoApellidoUserReserva}} | {{reserva.horaInicial}} 
+					              </span>
+					            </li>
+					        </ul>
+						</div>
+					</div>
+				</div>-->
+				
+				<div class="row col-12 separador">
+					<div class="title reserva row col-12 ">
+		    			 <h5>Elementos de la Factura</h5>
+		    		</div>
+					<div class="col-12 text-center">
+		    		    <pagination-controls (pageChange)="p = $event" previousLabel="Previo" nextLabel="Siguiente"></pagination-controls>
+		    		</div>
 
-
-			<div class="row col-12 separador">
-				<div class="title reserva row col-6 ">
-    				 <h5>Usuarios</h5>
-    			</div>
-				<div class="title reserva row col-6 ">
-    				 <h5>Productos</h5>
-    			</div>
-				<div class="col-2">
-					<label>Nombre</label>
+					<ul class="col-12 items-list">
+						<li class="item">
+							<div class="col-12 row">
+								<div class="col-sm-3 col-6">
+									<p>Detalle</p>
+								</div>
+								<div class="col-sm-2 d-none d-sm-block text-center">
+									<p>Cant</p>
+								</div>
+								<div class="col-sm-2 d-none d-sm-block text-center">
+									<p>Precio</p>
+								</div>
+								<div class="col-sm-2 d-none d-sm-block text-center">
+									<p>Impuesto</p>
+								</div>
+								<div class="col-sm-3 d-none d-sm-block text-center">
+									<p>Total</p>
+								</div>
+							</div>
+						</li>
+						<li *ngFor="let detalle of detalleFactura | paginate: { itemsPerPage: 10, currentPage: p }; index as i;" 
+							class="item" 
+							[class.odd]="i%2==0">
+							<div class="col-12 row">
+								<div class="col-sm-3 col-6">
+									<p> {{detalle.servicio}}</p>
+								</div>
+								<div class="col-sm-2 d-none d-sm-block text-center">
+									<p>{{detalle.cantidad}}</p>
+								</div>
+								<div class="col-sm-2 d-none d-sm-block text-center">
+									<p>{{detalle.precio | number:'1.2-2'}}</p>
+								</div>
+								<div class="col-sm-2 d-none d-sm-block text-center">
+									<p>{{detalle.impuesto | number:'1.2-2'}}</p>
+								</div>
+								<div class="col-sm-3 d-none d-sm-block text-center">
+									<p>{{detalle.total | number:'1.2-2'}}</p>
+								</div>
+							</div>
+						</li>
+					</ul>
 				</div>
-				<div class="col-4">
-					 <input class="tamComponent" type="text" name="buscarProducto" placeholder="Buscar" [(ngModel)]="buscaProducto" (ngModelChange)="buscaUsuarioChanged()">
-					  <ul>
-			            <li *ngFor="let producto of productos"> 
-			              <span class="usuarios" (click)="seleccionaUsuarioCita(usuario)">{{usuario.nombre}} {{usuario.apellido1}} {{usuario.apellido2}} | {{usuario.cedula}} 
-			              </span>
-			            </li>
-			          </ul>
-				</div>
-				<div class="col-2">
-					<label>Código</label>
-				</div>
-				<div class="col-4">
-					 <input class="tamComponent" type="text" name="buscarCodigo" placeholder="Buscar" [(ngModel)]="buscaCodigo" (ngModelChange)="buscaCedulaChanged()">
-				</div>
-			</div>
-			<div class="row col-12 separador">
-				<div class="title reserva row col-12 ">
-	    			 <h5>Agregar Elementos de la Factura</h5>
-	    		</div>
-				<div class="row">
-					<div class="col-3">
-						<p>Cantidad</p>
-						<input type="text"  class="form-control"  name="cantidad" >
-					</div>
-					<div class="col-3">
-						<p>Precio Und</p>
-						<input type="text"  class="form-control"  name="precio" >
-					</div>
-					<div class="col-3">
-						<p>% Impuestos</p>
-						<input type="text"  class="form-control"  name="impuesto" >
-					</div>
-					<div class="col-3">
-						<p>Tipo</p>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-3">
-						<p>Detalle</p>
-						<input type="text"  class="form-control"  name="detalle" >
-					</div>
-					<div class="col-3">
-						<p>Descuento</p>
-						<input type="text"  class="form-control"  name="descuento" >
-					</div>
-					<div class="col-3">
-						<p>Razón Descuento</p>
-						<input type="text"  class="form-control"  name="razonDescuento" >
-					</div>
-					<div class="col-3">
-						<p>Acciones</p>
-						<button class="btn btn-warning">
-                 			 <i class="fa fa-paper-plane" aria-hidden="true"></i> Agregar
-               			</button>
-					</div>
-				</div>
-			</div>
-
-
-			<div class="title reserva row col-12 ">
-    			 <h5>Elementos de la Factura</h5>
-    		</div>
 		
-
-
-			<div class="col-12 text-center">
-    		    <pagination-controls (pageChange)="p = $event" previousLabel="Previo" nextLabel="Siguiente"></pagination-controls>
-    		</div>
-
-			<ul class="col-12 items-list">
-				<li class="item">
-					<div class="col-12 row">
-						<div class="col-sm-3 col-6">
-							<p>Detalle</p>
-						</div>
-						<div class="col-sm-2 d-none d-sm-block text-center">
-							<p>Cant</p>
-						</div>
-						<div class="col-sm-2 d-none d-sm-block text-center">
-							<p>Precio</p>
-						</div>
-						<div class="col-sm-2 d-none d-sm-block text-center">
-							<p>Impuesto</p>
-						</div>
-						<div class="col-sm-3 d-none d-sm-block text-center">
-							<p>Total</p>
-						</div>
-					</div>
-				</li>
-				<li *ngFor="let detalle of detalleFactura | paginate: { itemsPerPage: 10, currentPage: p }; index as i;" 
-					class="item" 
-					[class.odd]="i%2==0">
-					<div class="col-12 row">
-						<div class="col-sm-3 col-6">
-							<p *ngIf="detalle.idUsuarioBarbero">
-							</p>
-							<p *ngIf="!detalle.idUsuarioBarbero">
-								Factura sin cliente asignado
-							</p>
-						</div>
-						<div class="col-sm-2 d-none d-sm-block text-center">
-							<p>
-							</p>
-						</div>
-					</div>
-				</li>
-			</ul>
 		</div>
+		<div class="cargando" *ngIf="cargando">
+		  <div>
+		    <img src="assets/images/m2.png">
+		    Cargando...
+		  </div>
+		</div>
+
 	</div>
 </div>
+
+
+
+
+<template #productoModal>
+	<div class="modal-content">
+		<div class="modal-header">
+		    <h4 class="modal-title pull-left">Agregar Elementos de la Factura</h4>
+		    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	    <div class="modal-body">
+			<div class="row">
+		    	<div class="form-group col-4">
+					<label>Detalle<span class="required"></span></label>
+					<input type="text"  class="form-control" [(ngModel)]="detalleProdNoReg" name="detalle" >
+				</div>
+		    	<div class="form-group col-4">
+					<label>Cantidad</label>
+					<input type="number"  class="form-control" [(ngModel)]="cantProdNoReg"  name="cantidad" >
+				</div>
+				<div class="form-group col-4">
+					<label>Precio Und<span class="required"></span></label>
+					<input type="number"  class="form-control" [(ngModel)]="precioProdNoReg"  name="precio" >
+				</div>
+				
+			</div>    	
+			<div class="row">
+				<div class="form-group col-4">
+					<label>% Impuestos</label>
+					<input type="number"  class="form-control" [(ngModel)]="impuestoProdNoReg"  name="impuesto" >
+				</div>
+				<div class="form-group col-4">
+					<label>Tipo Descuento</label>
+					<select [(ngModel)]="tipoDescuento"  class="form-control"  >
+		          		<option value="C">Colones</option>
+		          		<option value="P">Porcentual</option>
+		          	</select>
+				</div>
+				<div class="form-group col-4">
+					<label>Descuento</label>
+					<input type="number"  class="form-control" [(ngModel)]="descuentoProdNoReg" name="descuento" >
+				</div>
+			</div>
+					
+			<div class="row">
+				<div class="form-group col-4">
+					<label>Razón Descuento</label>
+					<input type="number"  class="form-control" [(ngModel)]="razonDescProdNoReg" name="razonDescuento" >
+				</div>
+				<div class="form-group col-4">
+					<label>Unidad</label>
+					<select [(ngModel)]="unidad" name="unidad"  class="form-control"  >
+		          		<option value="Unid">Unidad</option>
+		          		<option value="Sp">Servicio Profesional</option>
+	          			<option value="m">Metro</option>
+	          			<option value="kg">Kilogramo</option>
+	          			<option value="L">Litro</option>
+	          			<option value="g">Gramo</option>
+	          			<option value="cm">Centímetro</option>
+	          			<option value="Oz">Onza</option>
+		          	</select>
+				</div>
+			
+			</div>
+			
+			<div class="row">
+				<div class="col-12">
+					<button class="btn btn-primary" (click) = "agregarProducto()">
+                 		<i class="fa fa-paper-plane" aria-hidden="true" ></i> Agregar
+               		</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</template>
+
+
+
+
+
+<template #clienteModal>
+	<div class="modal-content">
+		<div class="title reserva col-12">
+			  <h5>Clientes</h5>
+			</div>
+			<div class="row col-12 separador">
+				<div class="col-4">
+					<label>Buscar Clientes</label>
+				</div>
+				<div class="col-8">
+					 <input class="auto-usuario tamComponent" type="text" name="" placeholder="Nombre Apellidos" [(ngModel)]="buscaUsuario" (ngModelChange)="buscaClienteChanged()">
+			          <ul>
+			            <li *ngFor="let usuario of usuarioCita"> 
+			              <span class="usuarios" (click)="seleccionaCliente(usuario)">{{usuario.nombre}} {{usuario.apellido1}} {{usuario.apellido2}} | <span *ngIf="usuario.telefono.length > 0">{{usuario.telefono[0].telefono}}</span>
+			              </span>
+			            </li>
+			          </ul>
+				</div>
+
+			</div>
+	    <div class="modal-body">
+				
+				<div class="row col-12">
+					<div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Usuario<span class="required" [class.reqerror]="validatorService.hasError('usuario',usuarioErrores)">*</span></label>
+						<div class="col-8">
+							<input type="text" name="usuario" class="form-control"  [(ngModel)]="nuevoUsuario.usuario" [class.error-input]="validatorService.hasError('usuario',usuarioErrores)" placeholder="juan1990">
+						</div>
+					</div>
+					<div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Nombre<span class="required" [class.reqerror]="validatorService.hasError('nombre',usuarioErrores)">*</span></label>
+						<div class="col-8">
+							<input type="text" name="nombre" class="form-control"  [(ngModel)]="nuevoUsuario.nombre" [class.error-input]="validatorService.hasError('nombre',usuarioErrores)" placeholder="Juan">
+						</div>
+					</div>
+					<div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Apellido 1<span class="required" [class.reqerror]="validatorService.hasError('apellido1',usuarioErrores)">*</span></label>
+						<div class="col-8">
+							<input type="text" class="form-control"  name="primerApellido" [(ngModel)]="nuevoUsuario.apellido1" [class.error-input]="validatorService.hasError('apellido1',usuarioErrores)" placeholder="Perez">
+						</div>
+					</div>
+					<div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Apellido 2</label>
+						<div class="col-8">
+							<input type="text"  class="form-control"  name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
+						</div>
+					</div>
+					<div class="col-12 row form-group">
+						<label class="col-4 col-form-label"></label>
+						<div class="col-8">
+							<input type="button"  class="btn btn-info" value="Buscar Por Nombre"  name="buscarNombre" (click)="buscarPorNombre()">
+							<ul>
+								<li *ngFor="let cli of posiblesClientes" (click)=selectCliente(cli)>
+									* {{cli.nombre}} {{cli.apellido1}} {{cli.apellido2}} ced: {{cli.cedula}}
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Cédula</label>
+						<div class="col-8"> 
+							<input class="form-control" minlength="9" name="cedula" [(ngModel)]="nuevoUsuario.cedula" [class.error-input]="validatorService.hasError('cedula',usuarioErrores)" >
+						</div>
+					</div>
+					<div class="col-12 row form-group">
+						<label class="col-4 col-form-label"></label>
+						<div class="col-8">
+							<input type="button"  class="btn btn-info"  value="Buscar por Cédula" name="buscarCedula" (click)="buscarPorCedula()">
+							
+						</div>
+					</div>
+					<div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Fecha Nacimiento</label>
+						<div class="col-8">
+							<calendario-input [customClass]="'form-control'" name="fechaNacimiento"  [daterecive]="fechaNacimiento"  (dateSelectedChange)="fechaNacimientoChanges($event)"></calendario-input>
+						</div>
+					</div>
+					<div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Provincia:</label>
+		        		<div class="col-8">
+			                <select class="form-control" id="provincia" [(ngModel)]="seleccionarProvincia" (ngModelChange)="changeProvincia($event)">
+			                    <option *ngFor="let provincia of provincias;let i = index" [ngValue]="provincia">{{provincia.nombre}}</option>
+			                </select>
+			        	</div>
+			        </div>
+		        	<div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Canton:</label>
+			        	<div class="col-8">
+			        	     <select class="form-control" id="canton" [(ngModel)]="seleccionarCanton" (ngModelChange)="changeCanton($event)">
+			                    <option *ngFor="let canton of seleccionarProvincia.cantones" [ngValue]="canton">{{canton.nombre}}</option>
+			                </select>
+			        	</div>
+			        </div>
+		            <div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Distrito:</label>
+			            <!-- <div class="col-8">
+			                <input type="text" class="form-control"  name="distrito" [(ngModel)]="nuevoUsuario.distrito" [class.error]="validatorService.hasError('distrito',usuarioErrores)">
+			            </div> -->
+			            <div class="col-8">
+			        	     <select class="form-control" id="distrito" [(ngModel)]="nuevoUsuario.distrito">
+			                    <option *ngFor="let distrito of seleccionarCanton.distritos" [value]="distrito.codigo">{{distrito.nombre}}</option>
+			                </select>
+			        	</div>
+			        </div>
+		          <!--   <div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Barrio:</label>
+			            <div class="col-8">
+			                <input type="text" class="form-control"  name="barrio" [(ngModel)]="nuevoUsuario.barrio" [class.error]="validatorService.hasError('barrio',usuarioErrores)">
+			            </div>
+			        </div> -->
+					<div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Señas:</label>
+			        	<div class="col-8">
+			        		<input type="text" class="form-control"  name="ubicacion" [(ngModel)]="nuevoUsuario.detalleDireccion" [class.error]="validatorService.hasError('detalleDireccion',usuarioErrores)">
+			        	</div>
+			        </div>
+
+
+					<div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Correo<span class="required" [class.reqerror]="validatorService.hasError('correo',usuarioErrores)">*</span></label>
+						<div class="col-8 correos">
+							<div class="row ">
+								<div class="col-12 nuevo-numero">
+									<div class="input-group mb-2">
+										<input type="text" [(ngModel)]="nuevoCorreo" [class.error-input]="validatorService.hasError('correo',usuarioErrores)" class="form-control">
+									<!--	<div class="input-group mb-2">-->
+											<span class="small-action" (click)="addCorreo()"> + </span>
+									<!--	</div -->
+									</div>
+								</div>
+								<div class="col-12 correo-display contact-item" *ngFor="let correo of nuevoUsuario.correo">
+									<span class="display">{{correo.correo}} </span>
+									<span class="small-action" (click)="removeCorreo(correo)"> - </span> 
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<div class="col-12 row form-group">
+						<label class="col-4 col-form-label">Telefono<span class="required" [class.reqerror]="validatorService.hasError('telefono',usuarioErrores)">*</span></label>
+						<div class="col-8 telefonos ">
+							<div class="row ">
+								<div class="col-12 nuevo-numero">
+									<div class="input-group mb-2">
+							        	<input type="number" [(ngModel)]="nuevoTelefono" [class.error-input]="validatorService.hasError('telefono',usuarioErrores)" class="form-control">
+							        	<!--<div class="input-group mb-2"> -->
+										    <span class="small-action input-group-text" (click)="addTelefono()"> + </span>
+										<!--</div>-->
+							    	</div>
+									<!-- <input type="number" [(ngModel)]="nuevoTelefono" [class.error-input]="validatorService.hasError('telefono',usuarioErrores)" class="form-control">  -->
+								</div>
+								<div class="col-12 contact-item" *ngFor="let telefono of nuevoUsuario.telefono">
+									<span class="telefono-display">{{telefono.telefono}} </span>
+									<span class="small-action" (click)="removeTelefono(telefono)"> - </span> 
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-2 entrar">
+						<button type="button" *ngIf="encontroUsuario == false" class="btn btn-primary" (click)="newUser()">
+							Registrar
+						</button>
+						<button type="button" *ngIf="encontroUsuario" class="btn btn-primary" (click)="updateUser()">
+							Modificar
+						</button>
+					</div>
+					<div class="col-10 entrar">
+						<button type="button" *ngIf="encontroUsuario" class="btn btn-danger" (click)="deleteUser()">
+							Eliminar
+						</button>
+					</div>
+						
+					<div class="col-12" *ngIf="nuevoUsuarioError" style="color:red;">
+						{{authService.errorDisplay}}
+					</div>
+					<div class="col-12" *ngIf="validationError" style="color:red;">
+						{{validationErrorMsg}}
+					</div>
+				</div>
+			</div>
+	
+	</div>
+
+</template>
+
+
+
+<ng-template #print>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left" style="text-transform: capitalize;">Imprimir</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="printRefCompletar.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+  	<div class="text-center">
+  		<p>Seleccione el tipo de factura a imprimir</p>
+  	</div>
+    <div class="col-12">
+    	<div class="row" style="padding-bottom: 35px;">
+    		<div class="col-5 card" (click)="imprimir('pdv')">
+    			<p class="text-center">
+    				Impresora punto de venta.
+    			</p>
+    			<p class="text-center">
+    				<img src="assets/pdv.png" style="width: 178px;">
+    			</p>
+    		</div>
+    		<div class="col-5 offset-2 card" (click)="imprimir('A4')">
+    			<p class="text-center">
+    				Hoja A4
+    			</p>
+    			<p class="text-center">
+    				<img src="assets/a4.jpg" style="width: 131px;">
+    			</p>
+    		</div>
+    	</div>
+    </div>
+  </div>
+</ng-template>
+
+

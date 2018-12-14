@@ -25,6 +25,7 @@ export class Usuario {
     detalleDireccion: string;
     cedula: string;
     idFacturador:string;
+    tipoCedula:string;
 
     constructor(){
     	this.id = 0;
@@ -50,6 +51,7 @@ export class Usuario {
         this.distrito = '';
         this.detalleDireccion = '';
         this.idFacturador = '';
+        this.tipoCedula = '';
 
     }
 

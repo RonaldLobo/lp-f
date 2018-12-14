@@ -42,7 +42,8 @@
 						<calendario-input [daterecive]="today" (dateSelectedChange)="changeDateBarberia($event)"></calendario-input>
 					</div>
 					<div class="col-2 centered-content clickable" >
-					</div>
+					</div>	
+
 				</div>
 				<div class="row" *ngIf="displayCitas">
 					<div class="col-12">
@@ -63,24 +64,37 @@
 				</div>
 			</div>
 			<!-- display citas barberia -->
-			<div class="col-xs-12 item" *ngIf="authService.isAdminSucursalUser()">
+			<div class="col-12 item" *ngIf="authService.isAdminSucursalUser()">
 				<div class="row">
 					<div class="col-5 clickable">
 						<p class="heading">Citas Barberia</p>
 					</div>
 				</div>
+
+
 				<div class="row date" *ngIf="displayCitasBarberia">
-					<div class="col-2 centered-content clickable" >
+
+					<div class="col-6">
+						<p>Fecha</p>
+						<calendario-input [daterecive]="today" (dateSelectedChange)="changeDateBarberia($event)"></calendario-input>
+					</div>
+					<!--<div class="col-2 centered-content clickable" >
 						
 					</div>
-					<div class="col-8 centered-content ">
+					
+					<div class="col-4 centered-content ">
 						<calendario-input [daterecive]="today" (dateSelectedChange)="changeDateBarberia($event)"></calendario-input>
 					</div>
 					<div class="col-2 centered-content clickable">
 						
+					</div>-->
+					<div class="col-6">
+						<p>Cliente</p>
+						<input type="text" name="cliente" class="ancho" (ngModelChange)="buscaClienteChanged()" [(ngModel)]="buscaCliente"  placeholder="Buscar">
+					
 					</div>
 				</div>
-				<div class="row justify-content-center" *ngIf="displayCitasBarberia">
+				<div class="row justify-content-center" *ngIf="displayCitasBarberia && busquedaXNom==false">
 					<div class="col-10">
 						<ul class="reservas row">
 							<li *ngFor="let barberoCita of barberosCitasSucursal" class="col-12 barbero-cita">
@@ -103,7 +117,27 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-xs-12 col-md-6 item" *ngIf="(authService.isBarberoUser() && authService.isAdminUser()) || authService.isBarberoUser() || authService.isAdminSucursalUser()">
+
+
+				<div class="row justify-content-center" *ngIf="displayCitasBarberia && busquedaXNom">
+					<div class="col-10">
+						<ul class="reservas row">
+							<li *ngFor="let cita of clienteCitas" class="col-4 cita">
+								<div (click)="obtieneInfo(cita);selectedCita = Object.assign({}, cita);openModal(citaModal)">
+									{{cita.horaInicialFormat}}
+								</div>
+							</li>
+							<p *ngIf="clienteCitas.length == 0" class="col-12">
+								No tiene citas registradas para este día.
+							</p>
+						</ul>
+					</div>
+				</div>
+
+
+
+
+				<div class="col-12 item" *ngIf="(authService.isBarberoUser() && authService.isAdminUser()) || authService.isBarberoUser() || authService.isAdminSucursalUser()">
 					<div class="row">
 						<div class="col-5" (click)="displayResumen = !displayResumen">
 							<p class="heading">Resumen <span *ngIf="!displayResumen">></span> <span *ngIf="displayResumen"><</span></p>
@@ -245,12 +279,13 @@
 				<li class="col-5"><span>Tipo Pago : </span></li>
 				<li class="col-7">
 					<select [(ngModel)]="selectedCita.tipoPago" [disabled]="selectedCita.estadoFactura=='P' || authService.isRegularUser() ">
-						<option value="E">Efectivo</option>
-						<option value="T">Tarjeta</option>
+						<option value="01">Efectivo</option>
+						<option value="02">Tarjeta</option>
+						<option value="04">Transferencia</option>
 					</select>
 				</li>
-				<li class="col-5"  *ngIf="selectedCita.tipoPago=='T'"><span>Comprobante : </span></li>
-				<li class="col-7" *ngIf="selectedCita.tipoPago=='T'">
+				<li class="col-5"  *ngIf="selectedCita.tipoPago=='02'"><span>Comprobante : </span></li>
+				<li class="col-7" *ngIf="selectedCita.tipoPago=='02'">
 					<input type="text" name="comprobanteFactura" [(ngModel)]="selectedCita.comprobantePago">
 				</li>
 				<li class="col-5"><span>Detalle Factura : </span></li>

@@ -1,3 +1,4 @@
+
 <div class="header-space">
 </div>
 
@@ -9,7 +10,7 @@
 	    			  <h5>Inventario</h5>
 	    			</div>
 	    			<div class="col-2">
-	    				<button (click)="openModalPrint(inventarioModal)" class="btn btn-success">
+	    				<button (click)=" encontroInventario = true; varVer = false; openModalPrint(inventarioModal)" class="btn btn-success">
 							<i class="fa fa-print" aria-hidden="true"></i> Agregar
 						</button>
 	    			</div>
@@ -89,7 +90,8 @@
 							<div class="col-sm-2 col-4 text-center" style="padding-top: 4px;">
 								<div class="row">
 									<div class="col-4 text-center">
-										<button (click)="nuevoProducto = producto; encontroInventario = true;  openModal(inventarioModal)" class="btn btn-info">
+										<button (click)="nuevoProducto = producto; encontroInventario = true; varVer = true;
+										 openModal(inventarioModal)" class="btn btn-info">
 											<i class="fa fa-expand" aria-hidden="true"></i> 
 										</button>
 									</div>
@@ -172,8 +174,8 @@
 						<input type="text"  type="number" name="cantidadMinima" class="form-control" [(ngModel)]="nuevoProducto.cantMinima">
 					</div>
 					<div class="form-group col-4">
-						<label>Descuento</label>
-						<input type="text" type="number" name="descuento" class="form-control" [(ngModel)]="nuevoProducto.descuento">
+						<label>Marca<span class="required"></span></label>
+						<input type="text" name="marca" class="form-control" [(ngModel)]="nuevoProducto.marca">
 					</div>
 				</div>
 				<div class="row">
@@ -214,13 +216,33 @@
 				</div>
 				<div class="row">
 					<div class="form-group col-4">
-						<label>Marca<span class="required"></span></label>
-						<input type="text" name="marca" class="form-control" [(ngModel)]="nuevoProducto.marca">
+						<label>Descuento</label>
+						<input type="text" type="number" name="descuento" class="form-control" [(ngModel)]="nuevoProducto.descuento">
+					</div>
+					<div class="form-group col-4">
+						<label>Tipo Descuento</label>
+						<select [(ngModel)]="nuevoProducto.tipoDescuento"  class="form-control"  >
+				          		<option value="C">Colones</option>
+				          		<option value="P">Porcentual</option>
+					    </select>
+					</div>
+					<div class="col-4">
+						<p>Unidad</p>
+						<select [(ngModel)]="nuevoProducto.unidad" name="unidad"  class="form-control"  >
+			          		<option value="Unid">Unidad</option>
+			          		<option value="Sp">Servicio Profesional</option>
+		          			<option value="m">Metro</option>
+		          			<option value="kg">Kilogramo</option>
+		          			<option value="L">Litro</option>
+		          			<option value="g">Gramo</option>
+		          			<option value="cm">Centímetro</option>
+		          			<option value="Oz">Onza</option>
+			          	</select>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-12">
-						<button type="button" *ngIf="encontroInventario"  class="btn btn-primary"  (click)="newInventario()">
+						<button type="button" *ngIf="encontroInventario && !varVer"  class="btn btn-primary"  (click)="newInventario()">
 							Registrar
 						</button>
 						<button type="button" *ngIf="!encontroInventario"  class="btn btn-primary"  (click)="updateInventario()">

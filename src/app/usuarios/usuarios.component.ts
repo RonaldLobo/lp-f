@@ -11,6 +11,8 @@ import { SharedService } from '../services/shared.service';
 import * as _ from "lodash";
 import { BsModalRef } from 'ngx-bootstrap/modal/modal-options.class';
 import { BsModalService } from 'ngx-bootstrap/modal';
+import { DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 
 @Component({
@@ -45,7 +47,14 @@ export class UsuariosComponent implements OnInit {
 	public posiblesClientes : any = [];
 	public printRefCompletar: BsModalRef;
 
-  constructor(private router:Router,private dataService:DataService, public authService:AuthService, public validatorService:ValidatorService, public sharedService:SharedService,private modalService: BsModalService) { }
+  constructor(
+  	private router:Router,
+  	private dataService:DataService,
+  	public authService:AuthService, 
+  	public validatorService:ValidatorService,
+    public sharedService:SharedService,
+    private modalService: BsModalService,
+	private datePipe:DatePipe) { }
 
   ngOnInit() {
   		this.sharedService.get("/api/ubicacion").then((data) =>{
@@ -53,6 +62,7 @@ export class UsuariosComponent implements OnInit {
   			this.selectedProvincia = this.provincias[0];
   			this.selectedCanton = this.selectedProvincia.cantones[0];
   			this.nuevoUsuario.distrito = this.selectedCanton.distritos[0].codigo;
+  			this.nuevoUsuario.tipoCedula = '01';
   		});
   }
  	openModalPrint(template: TemplateRef<any>) {
@@ -75,7 +85,10 @@ export class UsuariosComponent implements OnInit {
 		this.nuevoUsuario.idProvincia = this.selectedProvincia.codigo ;
 		this.nuevoUsuario.idCanton = this.selectedCanton.codigo ;
 		this.nuevoUsuario.barrio = '01';
+		console.log('usuario ',this.nuevoUsuario);
 		this.usuarioErrores = this.validatorService.validaUsuario(this.nuevoUsuario);
+
+		console.log('usuarioErrores ',this.usuarioErrores);
 		if(this.usuarioErrores.length == 0){
 			this.cargando = true;
 			this.authService.nuevoUsuarioNoLogin(this.nuevoUsuario);
@@ -86,13 +99,18 @@ export class UsuariosComponent implements OnInit {
 				    	this.nuevoUsuarioError = false;
 				    	alert('Nuevo cliente guardado.');
 				    	this.nuevoUsuario = new Usuario();
+				    	this.nuevoUsuario.tipoCedula = '01';
 				    }
 				    else{
+
+						console.log('error ',value);
 				    	this.nuevoUsuarioError = true;
 				    }
 				}
 				sub.unsubscribe();
 			});
+		}else{
+			alert(this.usuarioErrores);
 		}
 	}
 
@@ -181,13 +199,21 @@ export class UsuariosComponent implements OnInit {
 	}, 400);
 
 	public seleccionaUsuarioCita(usuario){
+		this.encontroUsuario = true;
 		this.nuevoUsuario = usuario;
-		this.selectedProvincia = this.provincias[Number(this.nuevoUsuario.idProvincia) - 1];
-		this.selectedCanton = this.selectedProvincia.cantones[Number(this.nuevoUsuario.idCanton) - 1];
+		this.selectedProvincia = this.provincias[Number(this.nuevoUsuario.idProvincia) ];//-1
+		this.selectedCanton = this.selectedProvincia.cantones[Number(this.nuevoUsuario.idCanton) ];//-1
 		this.encontroUsuario=true;
 		this.usuarioCita = [];
-		this.fecha= new Date(this.nuevoUsuario.fechaNacimiento);
-		console.log(usuario);
+		if (this.nuevoUsuario.fechaNacimiento.toString() != '0000-00-00 00:00:00' && this.nuevoUsuario.fechaNacimiento.toString() != ''){
+			this.fecha= new Date(this.nuevoUsuario.fechaNacimiento);
+		}
+
+	}
+
+
+	formatDateShort(date:Date){
+		return this.datePipe.transform(date, 'yyyy-MM-dd')
 	}
 
 	public zerofill(i,add) {
