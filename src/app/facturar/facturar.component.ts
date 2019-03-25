@@ -460,9 +460,7 @@ export class FacturarComponent implements OnInit {
 //	}
 
 	public async agregarFactura(){
-		console.log('kim1');
 		await this.facturacionHacienda();
-		console.log('kim');
 		this.factura.detalleFactura =[...this.detalleFactura];
 		console.log('factura',this.factura);
 		console.log('factura hacienda',this.facturaHacienda);
@@ -506,6 +504,7 @@ export class FacturarComponent implements OnInit {
 							that.factura.refresh = res.refreshToken;
 							that.factura.xml = res.xml;
 							that.factura.estado = 'E';
+							that.factura.base = base;
 						    this.dataService.post('/factura/',{factura:this.factura})
 				             .then(response => {
 				             	alert('Información actualizada');
@@ -520,6 +519,17 @@ export class FacturarComponent implements OnInit {
 				        	});
 						} else {
 							that.enviandoMH = false;
+						 	that.factura.estado = 'R';
+						 	 this.dataService.post('/factura/',{factura:this.factura})
+				             .then(response => {
+				            	that.enviandoMH = false;
+				            	that.cargando = false;
+				            },
+				             error => {
+				             	that.enviandoMH = false;
+						 		that.factura.estado = 'R';
+						 		this.spinnerEmitiendoFactura = false;
+				        	});
  							alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
  							that.cargando = false;
 						}
@@ -528,6 +538,8 @@ export class FacturarComponent implements OnInit {
 						that.enviandoMH = false;
 						that.cargando = false;
 					})
+
+
 				});
 		    });
 		}, err =>{
@@ -697,11 +709,14 @@ export class FacturarComponent implements OnInit {
 
 
 
+
 	public async reenviarMH(){
 		var that = this;
 		await this.facturacionHacienda();
 		var fact = this.facturaHacienda;
 		console.log('fact reenviarMH',fact);
+		console.log('factura', that.factura);
+
 		that.enviandoMH = true;
 		fact.conrealizada = true;
 		that.genLetter(function(doc){
@@ -717,7 +732,7 @@ export class FacturarComponent implements OnInit {
 						that.factura.consecutivo = '';
 						that.factura.clave = '';
 						that.factura.estadoFactura = 'P';
-					    that.dataService.post('/reserva/?method=put', {'reserva':that.factura})
+					    that.dataService.post('/factura/?method=put', {'factura':that.factura})
 			             .then(response => {
 			             //	that.obtieneCitasBarberia(that);
 			             	alert('Información actualizada');
@@ -734,7 +749,9 @@ export class FacturarComponent implements OnInit {
 						that.factura.refresh = res.refreshToken;
 						that.factura.xml = res.xml;
 						that.factura.estadoFactura = 'E';
-					    that.dataService.post('/reserva/?method=put', {'reserva':that.factura})
+						that.factura.base = base;
+
+					    that.dataService.post('/factura/?method=put', {'factura':that.factura})
 			             .then(response => {
 			             	alert('Información actualizada');
 			            	that.enviandoMH = false;

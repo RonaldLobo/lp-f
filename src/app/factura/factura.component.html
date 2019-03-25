@@ -51,10 +51,10 @@
 							</div>
 							<div class="col-sm-3 d-none d-sm-block text-center">
 								<p *ngIf="factura.estado == 'R'">
-									Registrado
+									Rechazada
 								</p>
 								<p *ngIf="factura.estado == 'P'">
-									Pagado
+									Completada
 								</p>
                 <p *ngIf="factura.estado == 'E'">
                   Enviado
@@ -67,10 +67,10 @@
 								<button (click)="selectedFactura = factura; openModalPrint(print)" class="btn btn-success">
 									<i class="fa fa-print" aria-hidden="true"></i> Imprimir
 								</button>
-                <button (click)="obtenerInfoUsuario(factura.idUsuarioReserva)" *ngIf="factura.estado == 'E'" class="btn btn-warning">
+              <!--  <button (click)="obtenerInfoUsuario(factura.idUsuarioReserva)" *ngIf="factura.estado == 'E'" class="btn btn-warning">
                   <i class="fa fa-paper-plane" aria-hidden="true"></i> Reenviar
-                </button>
-                 <button (click)="obtenerInfoUsuario(factura.idUsuarioReserva)"  class="btn btn-danger">
+                </button>-->
+                 <button *ngIf="factura.estado == 'P'" (click)="obtenerInfoUsuario(factura.idUsuarioReserva)"  class="btn btn-danger">
                   <i class="fa fa-paper-plane" aria-hidden="true"></i> Eliminar
                 </button>
 							</div>
@@ -203,6 +203,12 @@
     				<img src="assets/a4.jpg" style="width: 131px;">
     			</p>
     		</div>
+
+         <!-- <div class="col-5 offset-2 card" (click)="actualizarBasePF()">
+            <p class="text-center">
+              revizar
+            </p>
+          </div>-->
     	</div>
     </div>
   </div>

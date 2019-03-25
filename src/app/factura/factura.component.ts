@@ -82,7 +82,7 @@ export class FacturaComponent implements OnInit {
 			error => {
 			});*/
 
-			that.dataService.get('/factura?idSucursal='+that.authService.loggedUser.idSucursal+'&estado=P')
+			that.dataService.get('/factura?idSucursal='+that.authService.loggedUser.idSucursal)//+'&estado=P'
 			.then(response => {
 				console.log('factura',response.factura);
 				that.facturas =  response.factura;//that.updateTimeToHora(response.factura);
@@ -439,7 +439,6 @@ export class FacturaComponent implements OnInit {
 //									 IMPRIMIR EN PUNTO DE VENTA
 //*************************************************************************************************************
 	imprimir(tipo){
-		console.log('imprimir KIM',tipo,this.selectedFactura);
 		var doc;
 		var that = this;
 		if(tipo == 'A4'){
@@ -1089,5 +1088,43 @@ export class FacturaComponent implements OnInit {
 //											FIN OBTENER INFORMACIÓN DEL USUARIO
 //*********************************************************************************************************************************
 
+
+
+public async actualizarBasePF(){
+
+        var that = this;
+		await this.facturacionHacienda();
+		var fact = this.facturaHacienda;
+		console.log('fact reenviarMH',fact);
+
+			console.log('that.selectedFactura',that.selectedFactura);
+		that.enviandoMH = true;
+		fact.conrealizada = true;
+		that.genLetter(function(doc){
+			var blob = doc.output("blob");
+			that.blobToBase64(blob,function(base){
+				fact.facturabase = {
+					base: base
+				};
+				that.factura.base = base;
+				that.factura.id = that.selectedFactura.id;
+
+				console.log('base: ',base);
+
+			    that.dataService.post('/factura/?method=modBase',{factura:that.factura})
+				             .then(response => {
+				             	alert('Información actualizada');
+				            	that.enviandoMH = false;
+				            	that.cargando = false;
+				             	console.log(response);
+				            },
+				             error => {
+				             	that.enviandoMH = false;
+						 		that.factura.estado = 'R';
+						 		this.spinnerEmitiendoFactura = false;
+				        	});
+			});
+		});
+	}
 
 }

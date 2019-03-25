@@ -183,6 +183,10 @@ export class InventarioComponent implements OnInit {
 	}, 400);
 
 
+	public totalGanadoProducto(){
+
+		
+	}
 
 	public seleccionarInventarios(inventario){
 		this.nuevoProducto = inventario;
