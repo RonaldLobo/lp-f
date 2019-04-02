@@ -35,6 +35,7 @@ export class InventarioComponent implements OnInit {
 	p: number = 1;
 	public varVer:boolean =true;
 
+
  constructor(private dataService:DataService,
 		public authService:AuthService,
 		private modalService: BsModalService, 
@@ -69,7 +70,7 @@ export class InventarioComponent implements OnInit {
     	var that = this;
     	that.cargando = true;
 		that.nuevoProducto.idSucursal = that.authService.loggedUser.idSucursal;
-		console.log('inventario ',that.nuevoProducto);
+		//console.log('inventario ',that.nuevoProducto);
         that.dataService.post('/inventario/', {'inventario':that.nuevoProducto})
          .then(response => {
          	alert('Información registrada');
@@ -127,7 +128,7 @@ export class InventarioComponent implements OnInit {
 	public cargandoInventario(){
 		this.dataService.get('/inventario?idSucursal='+this.authService.loggedUser.idSucursal)
 			.then(response => {
-				console.log('inventario ',response.inventario);
+			//	console.log('inventario ',response.inventario);
 				this.productos = response.inventario;
 			},
 		error => {
@@ -150,7 +151,7 @@ export class InventarioComponent implements OnInit {
 	    } else if(!this.buscaProducto){
 	    	this.dataService.get('/inventario?idSucursal='+this.authService.loggedUser.idSucursal)
 					.then(response => {
-						console.log('inventario ',response.inventario);
+					//	console.log('inventario ',response.inventario);
 						this.productos = response.inventario;
 					},
 					error => {
@@ -184,15 +185,15 @@ export class InventarioComponent implements OnInit {
 
 
 	public totalGanadoProducto(){
-
-		
+		var total = (Number(this.nuevoProducto.impuesto) / 100 + Number(this.nuevoProducto.costo)) * Number(this.nuevoProducto.cantDisponible);
+		return total.toFixed(2);
 	}
 
 	public seleccionarInventarios(inventario){
 		this.nuevoProducto = inventario;
 		this.encontroInventario=true;
 		this.productos = [];
-		console.log(inventario);
+	//	console.log(inventario);
 	}
 
 
