@@ -505,7 +505,7 @@ export class FacturarComponent implements OnInit {
 							that.factura.xml = res.xml;
 							that.factura.estado = 'E';
 							that.factura.base = base;
-						    this.dataService.post('/factura/',{factura:this.factura})
+						    that.dataService.post('/factura/',{factura:that.factura})
 				             .then(response => {
 				             	alert('Información actualizada');
 				            	that.enviandoMH = false;
@@ -515,12 +515,12 @@ export class FacturarComponent implements OnInit {
 				             error => {
 				             	that.enviandoMH = false;
 						 		that.factura.estado = 'R';
-						 		this.spinnerEmitiendoFactura = false;
+						 		that.cargando = false;
 				        	});
 						} else {
 							that.enviandoMH = false;
 						 	that.factura.estado = 'R';
-						 	 this.dataService.post('/factura/',{factura:this.factura})
+						 	 that.dataService.post('/factura/',{factura:that.factura})
 				             .then(response => {
 				            	that.enviandoMH = false;
 				            	that.cargando = false;
@@ -528,7 +528,7 @@ export class FacturarComponent implements OnInit {
 				             error => {
 				             	that.enviandoMH = false;
 						 		that.factura.estado = 'R';
-						 		this.spinnerEmitiendoFactura = false;
+						 		that.cargando = false;
 				        	});
  							alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
  							that.cargando = false;
@@ -568,7 +568,7 @@ export class FacturarComponent implements OnInit {
 	public async facturacionHacienda(){
 		var userCita;
 		var creadoPor;
-        if (this.factura){
+        if (!this.factura){
         	creadoPor = this.authService.loggedUser.id
 
         }else{
@@ -581,12 +581,12 @@ export class FacturarComponent implements OnInit {
 
 
 		console.log('idCliente',this.factura.idCliente, 'clienteSeleccionado', this.clienteSeleccionado);
-  		if (typeof this.clienteSeleccionado === "undefined" || this.clienteSeleccionado === null)
-		{
-			 userCita = await this.obtenerDatosUsuario(this.factura.idCliente);
-		}else{
-			userCita = this.clienteSeleccionado;
-		}
+  // 		if (typeof this.clienteSeleccionado === "undefined" || this.clienteSeleccionado === null)
+		// {
+			userCita = await this.obtenerDatosUsuario(this.factura.idCliente);
+		// } else{
+		// 	userCita = this.clienteSeleccionado;
+		// }
 		var barbero : Usuario = user.usuario;
 		var usuarioCita : Usuario = userCita.usuario;
 
@@ -621,9 +621,9 @@ export class FacturarComponent implements OnInit {
 		console.log('cedula', usuarioCita, 'barbero', barbero);
   	
 		if(userCita.nombre != 'generico' && (usuarioCita.cedula.length == 9  || usuarioCita.cedula.length == 10)  && ((barbero.nombre && barbero.apellido1 && barbero.apellido2) || barbero.cedula)){
-			this.facturaHacienda.factura.receptor.nombre = barbero.nombre + barbero.apellido1 + barbero.apellido2;
+			this.facturaHacienda.factura.receptor.nombre = userCita.usuario.nombre + ' ' + userCita.usuario.apellido1 + ' ' +userCita.usuario.apellido2;
 			
-			this.facturaHacienda.factura.receptor.tipoId = usuarioCita.tipoCedula; //(usuarioCita.cedula.length==9) ? '01' : '02';
+			this.facturaHacienda.factura.receptor.tipoId = userCita.usuario.tipoCedula; //(usuarioCita.cedula.length==9) ? '01' : '02';
 
 		//	if(!this.objReserva.cedulaBarbero && this.objReserva.nombreBarbero && this.objReserva.primerApellidoBarbero && this.objReserva.segundoApellidoBarbero){
 		//		var usuarios = await(this.sharedService.get('/api/personas?tipo=nombre&nombre='+this.objReserva.nombreBarbero+'&apellido1='+this.objReserva.primerApellidoBarbero+'&apellido2='+this.objReserva.segundoApellidoBarbero));
@@ -634,7 +634,7 @@ export class FacturarComponent implements OnInit {
 
 
 
-			this.facturaHacienda.factura.receptor.id =  this.usuarioCita.cedula;
+			this.facturaHacienda.factura.receptor.id = userCita.usuario.cedula;
 			if(this.usuarioCita.idProvincia && this.usuarioCita.idProvincia != 0){
 				this.facturaHacienda.factura.receptor.provincia = this.usuarioCita.idProvincia;
 			} else {
@@ -654,10 +654,10 @@ export class FacturarComponent implements OnInit {
 			this.facturaHacienda.factura.receptor.senas = 'senas';
 			this.facturaHacienda.factura.receptor.codigoPaisTel = '506';
 
-			this.facturaHacienda.factura.receptor.tel =  usuarioCita.telefono[0].telefono;
+			this.facturaHacienda.factura.receptor.tel =  userCita.usuario.telefono[0].telefono;
 			this.facturaHacienda.factura.receptor.codigoPaisFax = '';
 			this.facturaHacienda.factura.receptor.fax = '';
-			this.facturaHacienda.factura.receptor.email = usuarioCita.correo[0].correo;
+			this.facturaHacienda.factura.receptor.email = userCita.usuario.correo[0].correo;
 			this.facturaHacienda.factura.omitirReceptor = 'false';
 		} else {
 			this.facturaHacienda.factura.omitirReceptor = 'true';
@@ -686,7 +686,7 @@ export class FacturarComponent implements OnInit {
 			this.facturaHacienda.factura.detalles[''+(i + 1)] = {};
 			this.facturaHacienda.factura.detalles[''+(i + 1)].cantidad = this.detalleFactura[i].cantidad;
 			this.facturaHacienda.factura.detalles[''+(i + 1)].unidadMedida = this.detalleFactura[i].unidad;
-			this.facturaHacienda.factura.detalles[''+(i + 1)].detalle = this.detalleFactura[i].detalle;
+			this.facturaHacienda.factura.detalles[''+(i + 1)].detalle = this.detalleFactura[i].detalle || 'Cita';
 			this.facturaHacienda.factura.detalles[''+(i + 1)].precioUnitario = Number(this.detalleFactura[i].precio).toFixed(2);
 			this.facturaHacienda.factura.detalles[''+(i + 1)].montoTotal = Number(this.detalleFactura[i].total).toFixed(2);
 			this.facturaHacienda.factura.detalles[''+(i + 1)].subtotal = Number(this.detalleFactura[i].cantidad * this.detalleFactura[i].precio - this.descuentoPorProducto(this.detalleFactura[i])).toFixed(2);
@@ -1116,6 +1116,8 @@ export class FacturarComponent implements OnInit {
 			    doc.text(con, 100, 120);
 			    doc.text('Fecha', 25, 140);
 			    doc.text(that.formatDateShort(that.today) +': '+ that.formatTime(that.today), 100, 140);
+			    doc.text('Clave Fiscal', 25, 180);
+			    doc.text(that.factura.clave, 110, 180);
 			    // fin numero factura
 			    // cliente 
 			    // doc.setFillColor(191,191,191);
@@ -1135,7 +1137,7 @@ export class FacturarComponent implements OnInit {
 			    console.log('kim2',usuarioCita);
 			    }
 
-			    if(usuarioCita.nombre != 'generico' && !usuarioCita){//usuarioCita.nombre != '' || 
+			    if(usuarioCita.nombre != 'generico' && usuarioCita){//usuarioCita.nombre != '' || 
 			    	doc.text(usuarioCita.nombre + ' ' +
 			    			usuarioCita.apellido1 + ' ' +
 			    			usuarioCita.apellido2, 380, 130);
