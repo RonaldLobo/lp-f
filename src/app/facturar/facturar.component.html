@@ -7,8 +7,16 @@
 		<div class="col-12">
 			<div class="module white-back static row">
 				<div class="title reserva col-12 row">
-						<div class="col-6">
+						<div class="col-2">
 	    			    	<h2>Facturar</h2>
+						</div>
+						<div class="col-4">
+							<span *ngIf="!clienteSeleccionado.cedula">
+	    			    		factura sin cliente
+	    			    	</span>
+	    			    	<span *ngIf="clienteSeleccionado.cedula">
+	    			    		{{clienteSeleccionado.nombre}} {{clienteSeleccionado.apellido1}} {{clienteSeleccionado.apellido2}}
+	    			    	</span>
 						</div>
     			    	
 	    				<div class="col-2">
@@ -319,7 +327,7 @@
 				<div class="col-4">
 					<label>Buscar Clientes</label>
 				</div>
-				<div class="col-8">
+				<div class="col-5">
 					 <input class="auto-usuario tamComponent" type="text" name="" placeholder="Nombre Apellidos" [(ngModel)]="buscaUsuario" (ngModelChange)="buscaClienteChanged()">
 			          <ul>
 			            <li *ngFor="let usuario of usuarioCita"> 
@@ -327,6 +335,9 @@
 			              </span>
 			            </li>
 			          </ul>
+				</div>
+				<div class="col-3" *ngIf="clienteSeleccionado.cedula">
+					<input type="button" name="agregarafact" value="agregar a factura" class="btn btn-primary" (click)="printRefCompletar.hide()">
 				</div>
 
 			</div>
@@ -336,7 +347,7 @@
 					<div class="col-12 row form-group">
 						<label class="col-4 col-form-label">Usuario<span class="required" [class.reqerror]="validatorService.hasError('usuario',usuarioErrores)">*</span></label>
 						<div class="col-8">
-							<input type="text" name="usuario" class="form-control"  [(ngModel)]="nuevoUsuario.usuario" [class.error-input]="validatorService.hasError('usuario',usuarioErrores)" placeholder="juan1990">
+							<input type="text" name="usuario" class="form-control"  [(ngModel)]="nuevoUsuario.usuario" [class.error-input]="validatorService.hasError('usuario',usuarioErrores)" placeholder="juan1990" disabled="disabled">
 						</div>
 					</div>
 					<div class="col-12 row form-group">
@@ -475,13 +486,7 @@
 						<button type="button" *ngIf="encontroUsuario" class="btn btn-primary" (click)="updateUser()">
 							Modificar
 						</button>
-					</div>
-					<div class="col-10 entrar">
-						<button type="button" *ngIf="encontroUsuario" class="btn btn-danger" (click)="deleteUser()">
-							Eliminar
-						</button>
-					</div>
-						
+					</div>	
 					<div class="col-12" *ngIf="nuevoUsuarioError" style="color:red;">
 						{{authService.errorDisplay}}
 					</div>

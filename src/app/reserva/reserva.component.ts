@@ -92,7 +92,9 @@ export class ReservaComponent implements OnInit {
 		this.reservacion.local={id : 0};
 		var that = this;
 		let time = (that.authService.loggedUser) ? 0 : 2000;
+			this.nuevoUsuario.tipoCedula = '01';
 		setTimeout(function(){
+			
 	        if(that.authService.isAdminSucursalUser()){
 	        	that.dataService.get('/sucursal/?idSucursal='+that.authService.loggedUser.idSucursal)
 		            .then(response => {

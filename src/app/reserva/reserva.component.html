@@ -189,8 +189,8 @@
           </ul>
           <button type="button" class="btn btn-primary" style="margin-bottom: 30px;" (click)="nuevoUsuarioDisplay = !nuevoUsuarioDisplay">
             Nuevo Cliente 
-            <span *ngIf="!nuevoUsuarioDisplay">></span>
-            <span *ngIf="nuevoUsuarioDisplay"><</span>
+            <!--<span *ngIf="!nuevoUsuarioDisplay">></span>
+            <span *ngIf="nuevoUsuarioDisplay"><</span>-->
           </button>
           <div *ngIf="nuevoUsuarioDisplay">
             <div class="row login">
@@ -220,10 +220,23 @@
                 <input type="text" name="segundoApellido" [(ngModel)]="nuevoUsuario.apellido2" [class.error-input]="validatorService.hasError('apellido2',usuarioErrores)" placeholder="Lopez">
               </div>
               <div class="col-4">
+                  <label>Tipo Cédula<span class="required" [class.reqerror]="validatorService.hasError('cedula',usuarioErrores)">*</span></label>
+              </div>
+              <div class="col-8"> 
+                <select class="form-control" id="tipoCedula" required [(ngModel)]="nuevoUsuario.tipoCedula" >
+                  <option value="01">Fisico</option>
+                  <option value="02">Juridico</option>
+                  <option value="03">Dimex</option>
+                </select>
+              </div>
+              <div class="col-4">
                 <label>Cédula<span class="required" [class.reqerror]="validatorService.hasError('cedula',usuarioErrores)">*</span></label>
               </div>
+
               <div class="col-8">
-                <input type="text" name="cedula" [(ngModel)]="nuevoUsuario.cedula" [class.error-input]="validatorService.hasError('cedula',usuarioErrores)" >
+                <input class="form-control" type="text"  required pattern="[0-9]*" minlength="9" maxlength="15" name="cedula" [(ngModel)]="nuevoUsuario.cedula" [class.error-input]="validatorService.hasError('cedula',usuarioErrores)" >
+                <span *ngIf="validatorService.hasError('cedula',usuarioErrores)">{{validatorService.getError('cedula',usuarioErrores)}}</span>
+
               </div>
               <div class="col-4">
                 <label>Correo<span class="required" [class.reqerror]="validatorService.hasError('correo',usuarioErrores)">*</span></label>

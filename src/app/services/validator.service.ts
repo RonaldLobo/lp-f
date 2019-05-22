@@ -9,6 +9,7 @@ export class ValidatorService {
 
     public validaUsuario(usuario, requiereContrasenna = true){
     	var errors = [];
+
     	if(!this.isNotNull(usuario.nombre)){
     		errors.push({
     			error:'nombre',
@@ -18,7 +19,28 @@ export class ValidatorService {
         if(!this.isNotNull(usuario.cedula)){
             errors.push({
                 error:'cedula',
-                desc:'Por favor ingrese una cedula'
+                desc:'Por favor ingrese una cédula'
+            });
+        }
+
+        if((usuario.cedula.length < 9  || usuario.cedula.length > 9) && usuario.tipoCedula == '01'){
+             errors.push({
+                error:'cedula',
+                desc:'La cédula es de tipo Fisica, por lo que debe ser de 9 digitos'
+            });
+        }
+
+         if((usuario.cedula.length < 10  || usuario.cedula.length > 10) && usuario.tipoCedula == '02'){
+             errors.push({
+                error:'cedula',
+                desc:'La cédula es tipo Jurídica, por lo debe ser igual a 10 digitos'
+            });
+        }
+
+        if((usuario.cedula.length < 12  || usuario.cedula.length > 12) && usuario.tipoCedula == '03'){
+             errors.push({
+                error:'cedula',
+                desc:'La cédula es tipo Dimex, por lo que debe ser igual a 12 digitos'
             });
         }
        
@@ -183,5 +205,10 @@ export class ValidatorService {
 	public hasError(error,errors){
 		return (errors.find(o => o.error == error));
 	}
+
+    public getError(error,errors){
+        let errorMsg = errors.find(o => o.error == error);
+        return errorMsg.desc;
+    }
 }
 

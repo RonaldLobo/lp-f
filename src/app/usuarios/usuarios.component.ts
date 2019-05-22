@@ -85,10 +85,7 @@ export class UsuariosComponent implements OnInit {
 		this.nuevoUsuario.idProvincia = this.selectedProvincia.codigo ;
 		this.nuevoUsuario.idCanton = this.selectedCanton.codigo ;
 		this.nuevoUsuario.barrio = '01';
-		console.log('usuario ',this.nuevoUsuario);
 		this.usuarioErrores = this.validatorService.validaUsuario(this.nuevoUsuario);
-
-		console.log('usuarioErrores ',this.usuarioErrores);
 		if(this.usuarioErrores.length == 0){
 			this.cargando = true;
 			this.authService.nuevoUsuarioNoLogin(this.nuevoUsuario);
@@ -102,15 +99,13 @@ export class UsuariosComponent implements OnInit {
 				    	this.nuevoUsuario.tipoCedula = '01';
 				    }
 				    else{
-
-						console.log('error ',value);
 				    	this.nuevoUsuarioError = true;
 				    }
 				}
 				sub.unsubscribe();
 			});
 		}else{
-			alert(this.usuarioErrores);
+			alert('Campos requeridos');
 		}
 	}
 

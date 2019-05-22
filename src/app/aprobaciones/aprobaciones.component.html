@@ -1,0 +1,73 @@
+<div class="header-space">
+</div>
+
+
+<div class="container">
+	<div clas="col-12">
+		<div class="module white-back static row">
+			<div class="title reserva col-10">
+				<h5>Aprobaciones</h5>
+			</div>
+			<div class="title reserva col-2">
+				<h5><a href="/#/aprobar">Agregar</a></h5>
+			</div>
+			<div class="col-12 text-center">
+				<pagination-controls (pageChange)="p = $event" previousLabel="Previo" nextLabel="Siguiente"></pagination-controls>
+			</div>
+
+			<ul class="col-12 items-list">
+				<li class="item">
+					<div class="col-12 row">
+						<div class="col-sm-3 col-6">
+							<p>Emisor
+							</p>
+						</div>
+						<div class="col-sm-2 d-none d-sm-block text-center">
+							<p>Fecha</p>
+						</div>
+						<div class="col-sm-2 d-none d-sm-block text-center">
+							<p>Mensaje</p>
+						</div>
+						<div class="col-sm-2 d-none d-sm-block text-center">
+							<p>Estado</p>
+						</div>
+						<div class="col-sm-3 col-6 text-center">
+							<p>
+								Acciones
+							</p>
+						</div>
+					</div>
+				</li>
+				<li *ngFor="let aprobacion of aprobaciones | paginate: { itemsPerPage: 10, currentPage: p }; index as i;" class="item" [class.odd]="i%2==0">
+					<div class="col-12 row">
+						<div class="col-sm-3 col-6">
+							<p>
+								{{aprobacion.numero_cedula_emisor}}
+							</p>
+						</div>
+						<div class="col-sm-2 d-none d-sm-block text-center">
+							<p>
+								{{aprobacion.fecha_emision_doc | date: 'dd/MM/yyyy'}}
+							</p>
+						</div>
+						<div class="col-sm-2 d-none d-sm-block text-center">
+							<p>
+								{{aprobacion.mensaje}}
+							</p>
+						</div>
+						<div class="col-sm-2 d-none d-sm-block text-center">
+							<p>
+								{{aprobacion.estado}}
+							</p>
+						</div>
+						<div class="col-sm-3 col-6 text-center" style="padding-top: 4px;">
+							<button class="btn btn-info" (click)="verAceptacion(aprobacion.pkIdAprobacion)">
+								<i class="fa fa-expand" aria-hidden="true"></i> Ver
+							</button>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>

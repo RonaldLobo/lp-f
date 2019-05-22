@@ -275,6 +275,7 @@
 				<li class="col-7">
 					<span *ngIf="selectedCita.estadoFactura=='R'">Registrado</span> 
 					<span *ngIf="selectedCita.estadoFactura=='P'">Pagada</span>
+					<span *ngIf="selectedCita.estadoFactura=='N'">Rechazada</span>
 				</li>
 				<li class="col-5"><span>Tipo Pago : </span></li>
 				<li class="col-7">
@@ -317,7 +318,7 @@
 						Seleccionar Cliente
 					</button>
 				</li>
-				<li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && selectedCita.estadoFactura!='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
+			<!--	<li class="col-4 centered-content action-modal" *ngIf="selectedCita.estadoFactura!='P' && selectedCita.estadoFactura!='E' && (authService.isBarberoUser() || authService.isAdminSucursalUser())">
 					<button type="button" class="btn btn-info" (click)="updateReserva()">
 						Pagar
 					</button>
@@ -327,7 +328,7 @@
 					<button type="button" class="btn btn-info" (click)="reenviarMH()">
 						Reenviar
 					</button>
-				</li>
+				</li>-->
 			</ul>
 		</div>
 		<div class="container"  *ngIf="mostrarModificar">

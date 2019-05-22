@@ -485,18 +485,20 @@ export class CitasComponent implements OnInit {
         this.factura.detalleFactura =[...this.detalleFactura];
 	}
 
-	public async updateReserva(){
-		await this.facturacionHacienda();
-		if (isNaN(Number(this.nuevoUsuario.cedula))){
-			alert("Número de Cédula Incorrecta del Cliente " + this.selectedCita.nombreUserReserva + ' ' +
-			    		this.selectedCita.primerApellidoUserReserva + ' ' +
-			    	    this.selectedCita.segundoApellidoUserReserva);
+
+public async updateReserva(){
+		var that = this;
+		await that.facturacionHacienda();
+		if (isNaN(Number(that.nuevoUsuario.cedula))){
+			alert("Número de Cédula Incorrecta del Cliente " + that.selectedCita.nombreUserReserva + ' ' +
+			    		that.selectedCita.primerApellidoUserReserva + ' ' +
+			    	    that.selectedCita.segundoApellidoUserReserva);
 		}else{
-			this.crearFactura();
-			var fact = this.facturaHacienda;
-			var that = this;
+			that.crearFactura();
+			var fact = that.facturaHacienda;
+			
 			fact.con = true;
-			this.spinnerEmitiendoFactura = true;
+			that.spinnerEmitiendoFactura = true;
 			that.enviandoMH = true;
 			that.facturaService.post('',fact)
 			.then(res => {
@@ -518,12 +520,144 @@ export class CitasComponent implements OnInit {
 						.then(res => {
 							console.log('res',res);
 							if(res.respuesta == "aceptado"){
+								that.factura.consecutivo = '';
+								that.factura.clave = res.clave;
+								that.factura.estado = 'P';
+								that.factura.xml = res.xml;
+								//that.dataService.post('/factura/?method=put', {'factura':that.factura})
+
+						        that.dataService.post('/factura/',{factura:that.factura})
+					             .then(response => {
+					             //	that.obtieneCitasBarberia(that);
+					             	alert('Factura Emitida Satisfactoriamente');
+					             	that.enviandoMH = false;
+					             	console.log(response);
+									that.selectedCita.estadoFactura = 'P';
+								    that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita});
+					            },
+					             error => {
+					             	that.enviandoMH = false;
+					        	});
+
+
+							} else if(res.error == "recibido"){
+								alert('Su factura fue enviada pero el Ministerio de Hacienda esta tardando mucho tiempo en responder, por favor reintente el envío desde "Factura"');
+							
+								that.factura.refresh = res.refreshToken;
+								that.factura.xml = res.xml;
+								that.factura.estadoFactura = 'E';
+								that.factura.base = base;
+
+							  //  that.dataService.post('/factura/?method=put', {'factura':that.factura})
+					            that.dataService.post('/factura/',{factura:that.factura})
+					             .then(response => {
+					             	//alert('Información actualizada');
+					            	that.enviandoMH = false;
+									that.selectedCita.estadoFactura = 'E';
+								    that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita});
+					             	console.log(response);
+					            },
+					             error => {
+					             	that.enviandoMH = false;
+					        	});
+							} else if(res.respuesta == "rechazado"){
+								that.enviandoMH = false;
+	 							alert('Factura Rechazada por el Ministerio de Hacienda.');
+	 							that.factura.refresh = res.refreshToken;
+								that.factura.xml = res.xml;
+								that.factura.estadoFactura = 'R';
+								that.factura.base = base;
+
+							   // that.dataService.post('/factura/?method=put', {'factura':that.factura})
+					             that.dataService.post('/factura/',{factura:that.factura})
+					             .then(response => {
+									that.selectedCita.estadoFactura = 'N';
+								    that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita});
+					            	that.enviandoMH = false;
+					             	console.log(response);
+					            },
+					             error => {
+					             	that.enviandoMH = false;
+					        	});
+							}else {
+								alert('Lo sentimos pero su factura no fue aceptada por el Ministerio de Hacienda, por favor intentelo de nuevo.');
+								
+							}
+						}, err =>{
+							console.log('error',err);
+							that.enviandoMH = false;
+						})
+					});
+			    });
+			}, err =>{
+				console.log('error',err);
+				that.enviandoMH = false;
+				
+			});
+		}
+		that.spinnerEmitiendoFactura = false;
+		
+	
+	}
+	public async updateReserva_Vieja(){
+		var that = this;
+		await that.facturacionHacienda();
+		if (isNaN(Number(that.nuevoUsuario.cedula))){
+			alert("Número de Cédula Incorrecta del Cliente " + that.selectedCita.nombreUserReserva + ' ' +
+			    		that.selectedCita.primerApellidoUserReserva + ' ' +
+			    	    that.selectedCita.segundoApellidoUserReserva);
+		}else{
+			that.crearFactura();
+			var fact = that.facturaHacienda;
+			
+			fact.con = true;
+			that.spinnerEmitiendoFactura = true;
+			that.enviandoMH = true;
+			that.facturaService.post('',fact)
+			.then(res => {
+				fact.con = false;
+				that.selectedCita.consecutivo = res.resp.consecutivo;
+				that.selectedCita.clave = res.resp.clave;
+
+
+				that.factura.consecutivo = res.resp.consecutivo;
+				that.factura.clave = res.resp.clave;
+
+				that.genLetter(function(doc){
+					var blob = doc.output("blob");
+			    	that.blobToBase64(blob,function(base){
+						fact.facturabase = {
+							base: base
+						};
+						that.facturaService.post('',fact)
+						.then(res => {
+							console.log('res',res);
+							if(res.respuesta == "aceptado"){
+								that.factura.consecutivo = '';
+								that.factura.clave = res.clave;
+								that.factura.estado = 'P';
+								that.factura.xml = res.xml;
+								that.dataService.post('/factura/?method=put', {'factura':that.factura})
+					             .then(response => {
+					             //	that.obtieneCitasBarberia(that);
+					             alert('Factura Emitida Satisfactoriamente');
+					            that.enviandoMH = false;
+					            that.spinnerEmitiendoFactura = false;
+				             	console.log(response);
+				            },
+				             error => {
+				             	that.enviandoMH = false;
+				             	that.spinnerEmitiendoFactura = false;
+						 		that.factura.estado = 'R';
+				        	});
+
+
+
+
+
+
 								//that.selectedCita.consecutivo = '';
-								//that.selectedCita.clave = '';
-
-							console.log('that.selectedCita',that.selectedCita);
-
-							console.log('that.factura',that.factura);
+								
 								that.factura.estado =  'P';
 
 								that.selectedCita.estadoFactura = 'P';
@@ -583,7 +717,7 @@ export class CitasComponent implements OnInit {
 							 		that.selectedCita.estadoFactura = 'R';
 
 							 		that.factura.estado =  'R';
-							 		this.spinnerEmitiendoFactura = false;
+							 		that.spinnerEmitiendoFactura = false;
 					        	});
 
 
@@ -597,7 +731,7 @@ export class CitasComponent implements OnInit {
 							 		that.selectedCita.estadoFactura = 'R';
 
 							 		that.factura.estado =  'R';
-							 		this.spinnerEmitiendoFactura = false;
+							 		that.spinnerEmitiendoFactura = false;
 					        	});
 							} else {
 								that.enviandoMH = false;
@@ -622,7 +756,104 @@ export class CitasComponent implements OnInit {
 	
 	}
 
+
+
+
 	public async reenviarMH(){
+		var that = this;
+		await this.facturacionHacienda();
+		var fact = this.facturaHacienda;
+		console.log('fact reenviarMH',fact);
+		console.log('factura', that.factura);
+	    if (isNaN(Number(this.nuevoUsuario.cedula))){
+			alert("Número de Cédula Incorrecta del Cliente " + this.selectedCita.nombreUserReserva + ' ' +
+			    		this.selectedCita.primerApellidoUserReserva + ' ' +
+			    	    this.selectedCita.segundoApellidoUserReserva);
+		}else{
+			that.enviandoMH = true;
+			fact.conrealizada = true;
+			that.genLetter(function(doc){
+				var blob = doc.output("blob");
+				that.blobToBase64(blob,function(base){
+					fact.facturabase = {
+						base: base
+					};
+					that.facturaService.post('',fact)
+					.then(res => {
+						console.log('res',res);
+						if(res.respuesta == "aceptado"){
+							that.factura.consecutivo = '';
+							that.factura.clave = '';
+							that.factura.estadoFactura = 'P';
+							that.factura.xml = res.xml;
+						    that.dataService.post('/factura/?method=put', {'factura':that.factura})
+				             .then(response => {
+				             //	that.obtieneCitasBarberia(that);
+				             	alert('Información actualizada');
+				             	that.enviandoMH = false;
+				             	that.selectedCita.estadoFactura = 'P';
+								that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita});
+				             	console.log(response);
+				            },
+				             error => {
+				             	that.enviandoMH = false;
+						 		that.factura.estado = 'R';
+				        	});
+						} else if(res.error == "recibido"){
+							//that.obtieneCitasBarberia(that);
+							alert('Su factura fue enviada pero el Ministerio de Hacienda esta tardando mucho tiempo en responder, por favor reintente el envío desde "Factura"');
+							that.factura.refresh = res.refreshToken;
+							that.factura.xml = res.xml;
+							that.factura.estadoFactura = 'E';
+							that.factura.base = base;
+
+						    that.dataService.post('/factura/?method=put', {'factura':that.factura})
+				             .then(response => {
+				             	//alert('Información actualizada');
+				            	that.enviandoMH = false;
+				            	that.selectedCita.estadoFactura = 'E';
+								that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita});
+				             	console.log(response);
+				            },
+				             error => {
+				             	that.enviandoMH = false;
+						 		that.factura.estadoFactura = 'R';
+				        	});
+						} else if(res.respuesta == "rechazado"){
+							that.enviandoMH = false;
+							alert('Factura Rechazada por el Ministerio de Hacienda.');
+							that.factura.refresh = res.refreshToken;
+							that.factura.xml = res.xml;
+							that.factura.estadoFactura = 'R';
+							that.factura.base = base;
+
+						    that.dataService.post('/factura/?method=put', {'factura':that.factura})
+				             .then(response => {
+				            	that.enviandoMH = false;
+				            	that.selectedCita.estadoFactura = 'N';
+								that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita});
+				             	console.log(response);
+				            },
+				             error => {
+				             	that.enviandoMH = false;
+						 		that.factura.estadoFactura = 'R';
+				        	});
+						}else {
+							alert('Lo sentimos pero su factura no fue aceptada por el Ministerio de Hacienda, por favor intentelo de nuevo.');
+						}
+					}, err =>{
+						console.log('error',err);
+						that.enviandoMH = false;
+						// that.reenviarRefCompletar.hide();
+					})
+				});
+			});
+	    }
+	}
+		
+
+
+	public async reenviarMH_Vieja(){
 		var that = this;
 		await this.facturacionHacienda();
 		var fact = this.facturaHacienda;
@@ -646,10 +877,12 @@ export class CitasComponent implements OnInit {
 							console.log('that.selectedCita',that.selectedCita);
 							that.selectedCita.estadoFactura = 'P';
 							that.factura.estado = 'P';
-						    that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita})
+
+					        that.dataService.post('/factura/?method=put', {'factura':that.selectedCita})
+						   // that.dataService.post('/reserva/?method=put', {'reserva':that.selectedCita})
 				             .then(response => {
-				             	that.obtieneCitasBarberia(that);
-				             	//alert('Información actualizada');
+				             	//that.obtieneCitasBarberia(that);
+				             	alert('Información actualizada');
 				             	that.enviandoMH = false;
 				             	console.log(response);
 				            },
@@ -751,102 +984,105 @@ export class CitasComponent implements OnInit {
 	public async facturacionHacienda(){
 		var user = await this.obtenerDatosUsuario(this.selectedCita.idUsuarioBarbero);
 		var barbero : Usuario = user.usuario;
+		var that = this;
 		console.log('barbero',barbero);
-		this.facturaHacienda.factura  = {};
-		this.facturaHacienda.cliente  = {};
-		this.facturaHacienda.factura.emisor  = {};
-		this.facturaHacienda.factura.receptor  = {};
-		this.facturaHacienda.factura.detalles  = {};
 
-		this.facturaHacienda.factura.fecha = this.formatDate(new Date());
-		this.facturaHacienda.factura.nombreComercial = this.sucursal.nombreNegocio; //nombre barberia
-		this.facturaHacienda.factura.situacion = 'normal';
+		console.log('nuevoUsuario',that.nuevoUsuario);
+		that.facturaHacienda.factura  = {};
+		that.facturaHacienda.cliente  = {};
+		that.facturaHacienda.factura.emisor  = {};
+		that.facturaHacienda.factura.receptor  = {};
+		that.facturaHacienda.factura.detalles  = {};
 
-		this.facturaHacienda.factura.emisor.nombre = barbero.nombre+ ' ' + barbero.apellido1 + ' ' +barbero.apellido2;// nombre del negocio
-		this.facturaHacienda.factura.emisor.tipoId = '01';
-		this.facturaHacienda.factura.emisor.id = barbero.cedula;
-		this.facturaHacienda.factura.emisor.provincia = barbero.idProvincia;
-		this.facturaHacienda.factura.emisor.canton = this.pad(barbero.idCanton,2,0);
-		this.facturaHacienda.factura.emisor.distrito = this.pad(barbero.distrito,2,0);
-		this.facturaHacienda.factura.emisor.barrio = '01';
-		this.facturaHacienda.factura.emisor.senas = barbero.detalleDireccion;
-		this.facturaHacienda.factura.emisor.codigoPaisTel = '506';
-		this.facturaHacienda.factura.emisor.tel = barbero.telefono[0].telefono;
-		this.facturaHacienda.factura.emisor.codigoPaisFax = '';
-		this.facturaHacienda.factura.emisor.fax = '';
-		this.facturaHacienda.factura.emisor.email = barbero.correo[0].correo;
-		if(this.nuevoUsuario.nombre != 'generico' && (this.nuevoUsuario.cedula.length == 9  || this.nuevoUsuario.cedula.length == 10) && ((this.nuevoUsuario.nombre && this.nuevoUsuario.apellido1 && this.nuevoUsuario.apellido2) || this.nuevoUsuario.cedula)){
-			this.facturaHacienda.factura.receptor.nombre = this.nuevoUsuario.nombre + this.nuevoUsuario.apellido1 + this.nuevoUsuario.apellido2;
+		that.facturaHacienda.factura.fecha = that.formatDate(new Date());
+		that.facturaHacienda.factura.nombreComercial = that.sucursal.nombreNegocio; //nombre barberia
+		that.facturaHacienda.factura.situacion = 'normal';
+
+		that.facturaHacienda.factura.emisor.nombre = barbero.nombre+ ' ' + barbero.apellido1 + ' ' +barbero.apellido2;// nombre del negocio
+		that.facturaHacienda.factura.emisor.tipoId = '01';
+		that.facturaHacienda.factura.emisor.id = barbero.cedula;
+		that.facturaHacienda.factura.emisor.provincia = barbero.idProvincia;
+		that.facturaHacienda.factura.emisor.canton = that.pad(barbero.idCanton,2,0);
+		that.facturaHacienda.factura.emisor.distrito = that.pad(barbero.distrito,2,0);
+		that.facturaHacienda.factura.emisor.barrio = '01';
+		that.facturaHacienda.factura.emisor.senas = barbero.detalleDireccion;
+		that.facturaHacienda.factura.emisor.codigoPaisTel = '506';
+		that.facturaHacienda.factura.emisor.tel = barbero.telefono[0].telefono;
+		that.facturaHacienda.factura.emisor.codigoPaisFax = '';
+		that.facturaHacienda.factura.emisor.fax = '';
+		that.facturaHacienda.factura.emisor.email = barbero.correo[0].correo;
+		if(that.nuevoUsuario.nombre != 'generico' && (that.nuevoUsuario.cedula.length == 9  || that.nuevoUsuario.cedula.length == 10) && ((that.nuevoUsuario.nombre && that.nuevoUsuario.apellido1 && that.nuevoUsuario.apellido2) || that.nuevoUsuario.cedula)){
+			that.facturaHacienda.factura.receptor.nombre = that.nuevoUsuario.nombre + that.nuevoUsuario.apellido1 + that.nuevoUsuario.apellido2;
 			
-			this.facturaHacienda.factura.receptor.tipoId = (this.nuevoUsuario.cedula.length==9) ? '01' : '02';
+			that.facturaHacienda.factura.receptor.tipoId = (that.nuevoUsuario.cedula.length==9) ? '01' : '02';
 			
-			if(!this.nuevoUsuario.cedula && this.nuevoUsuario.nombre && this.nuevoUsuario.apellido1 && this.nuevoUsuario.apellido2){
-				var usuarios = await(this.sharedService.get('/api/personas?tipo=nombre&nombre='+this.nuevoUsuario.nombre+'&apellido1='+this.nuevoUsuario.apellido1+'&apellido2='+this.nuevoUsuario.apellido2));
+			if(!that.nuevoUsuario.cedula && that.nuevoUsuario.nombre && that.nuevoUsuario.apellido1 && that.nuevoUsuario.apellido2){
+				var usuarios = await(that.sharedService.get('/api/personas?tipo=nombre&nombre='+that.nuevoUsuario.nombre+'&apellido1='+that.nuevoUsuario.apellido1+'&apellido2='+that.nuevoUsuario.apellido2));
 				if(usuarios.persona[0].length == 1){
-					this.nuevoUsuario.cedula == usuarios.persona[0].cedula;
+					that.nuevoUsuario.cedula == usuarios.persona[0].cedula;
 				}
 			}
-			this.facturaHacienda.factura.receptor.id =  this.nuevoUsuario.cedula;
-			if(this.nuevoUsuario.idProvincia && this.nuevoUsuario.idProvincia != 0){
-				this.facturaHacienda.factura.receptor.provincia = this.nuevoUsuario.idProvincia;
+			that.facturaHacienda.factura.receptor.id =  that.nuevoUsuario.cedula;
+			if(that.nuevoUsuario.idProvincia && that.nuevoUsuario.idProvincia != 0){
+				that.facturaHacienda.factura.receptor.provincia = that.nuevoUsuario.idProvincia;
 			} else {
-				this.facturaHacienda.factura.receptor.provincia = 1;
+				that.facturaHacienda.factura.receptor.provincia = 1;
 			}
-			if(this.nuevoUsuario.idCanton && this.nuevoUsuario.idCanton != 0){
-				this.facturaHacienda.factura.receptor.canton = this.pad(this.nuevoUsuario.idCanton,2,0);
+			if(that.nuevoUsuario.idCanton && that.nuevoUsuario.idCanton != 0){
+				that.facturaHacienda.factura.receptor.canton = that.pad(that.nuevoUsuario.idCanton,2,0);
 			} else {
-				this.facturaHacienda.factura.receptor.canton = '01';
+				that.facturaHacienda.factura.receptor.canton = '01';
 			}
-			if(this.nuevoUsuario.distrito && this.nuevoUsuario.distrito != '0'){
-				this.facturaHacienda.factura.receptor.distrito = this.pad(this.nuevoUsuario.distrito,2,0);
+			if(that.nuevoUsuario.distrito && that.nuevoUsuario.distrito != '0'){
+				that.facturaHacienda.factura.receptor.distrito = that.pad(that.nuevoUsuario.distrito,2,0);
 			} else {
-				this.facturaHacienda.factura.receptor.distrito = '01';
+				that.facturaHacienda.factura.receptor.distrito = '01';
 			}
-			this.facturaHacienda.factura.receptor.barrio = '01';
-			this.facturaHacienda.factura.receptor.senas = 'senas';
-			this.facturaHacienda.factura.receptor.codigoPaisTel = '506';
-			this.facturaHacienda.factura.receptor.tel =  this.nuevoUsuario.telefono[0].telefono;
-			this.facturaHacienda.factura.receptor.codigoPaisFax = '';
-			this.facturaHacienda.factura.receptor.fax = '';
-			this.facturaHacienda.factura.receptor.email = this.nuevoUsuario.correo[0].correo;
-			this.facturaHacienda.factura.omitirReceptor = 'false';
+			that.facturaHacienda.factura.receptor.barrio = '01';
+			that.facturaHacienda.factura.receptor.senas = 'senas';
+			that.facturaHacienda.factura.receptor.codigoPaisTel = '506';
+			that.facturaHacienda.factura.receptor.tel =  that.nuevoUsuario.telefono[0].telefono;
+			that.facturaHacienda.factura.receptor.codigoPaisFax = '';
+			that.facturaHacienda.factura.receptor.fax = '';
+			that.facturaHacienda.factura.receptor.email = this.nuevoUsuario.correo[0].correo;//'kimberlyporras@gmail.com';// 
+			that.facturaHacienda.factura.omitirReceptor = 'false';
 		} else {
-			this.facturaHacienda.factura.omitirReceptor = 'true';
+			that.facturaHacienda.factura.omitirReceptor = 'true';
 		}
 
-		this.facturaHacienda.factura.condicionVenta = '01';// contado (01) - credito(02)
-		this.facturaHacienda.factura.plazoCredito = '0';
-		this.facturaHacienda.factura.medioPago = this.selectedCita.tipoPago;
-		this.facturaHacienda.factura.codMoneda = 'CRC';
-		this.facturaHacienda.factura.tipoCambio = '1';
-		this.facturaHacienda.factura.totalServGravados = '0';
-		this.facturaHacienda.factura.totalServExentos = this.selectedCita.precio;//total del servicio
-		this.facturaHacienda.factura.totalMercGravada = '0';
-		this.facturaHacienda.factura.totalMercExenta = '0';
-		this.facturaHacienda.factura.totalGravados = '0';
-		this.facturaHacienda.factura.totalExentos = this.selectedCita.precio;//total del servicio
-		this.facturaHacienda.factura.totalVentas = this.selectedCita.precio;//total del servicio
-		this.facturaHacienda.factura.totalDescuentos = '0';
-		this.facturaHacienda.factura.totalVentasNeta = this.selectedCita.precio;//total del servicio
-		this.facturaHacienda.factura.totalImpuestos = '0';
-		this.facturaHacienda.factura.totalComprobante = this.selectedCita.precio;//total del servicio
-		this.facturaHacienda.factura.otros = 'Gracias.';
+		that.facturaHacienda.factura.condicionVenta = '01';// contado (01) - credito(02)
+		that.facturaHacienda.factura.plazoCredito = '0';
+		that.facturaHacienda.factura.medioPago = that.selectedCita.tipoPago;
+		that.facturaHacienda.factura.codMoneda = 'CRC';
+		that.facturaHacienda.factura.tipoCambio = '1';
+		that.facturaHacienda.factura.totalServGravados = '0';
+		that.facturaHacienda.factura.totalServExentos = that.selectedCita.precio;//total del servicio
+		that.facturaHacienda.factura.totalMercGravada = '0';
+		that.facturaHacienda.factura.totalMercExenta = '0';
+		that.facturaHacienda.factura.totalGravados = '0';
+		that.facturaHacienda.factura.totalExentos = that.selectedCita.precio;//total del servicio
+		that.facturaHacienda.factura.totalVentas = that.selectedCita.precio;//total del servicio
+		that.facturaHacienda.factura.totalDescuentos = '0';
+		that.facturaHacienda.factura.totalVentasNeta = that.selectedCita.precio;//total del servicio
+		that.facturaHacienda.factura.totalImpuestos = '0';
+		that.facturaHacienda.factura.totalComprobante = that.selectedCita.precio;//total del servicio
+		that.facturaHacienda.factura.otros = 'Gracias.';
 
-		this.facturaHacienda.factura.detalles['1'] = {};
-		this.facturaHacienda.factura.detalles['1'].cantidad = '1';
-		this.facturaHacienda.factura.detalles['1'].unidadMedida = 'Sp';
-		this.facturaHacienda.factura.detalles['1'].detalle = this.selectedCita.servicio;
-		this.facturaHacienda.factura.detalles['1'].precioUnitario = this.selectedCita.precio;
-		this.facturaHacienda.factura.detalles['1'].montoTotal = this.selectedCita.precio;
-		this.facturaHacienda.factura.detalles['1'].subtotal = this.selectedCita.precio;
-		this.facturaHacienda.factura.detalles['1'].montoTotalLinea = this.selectedCita.precio;
+		that.facturaHacienda.factura.detalles['1'] = {};
+		that.facturaHacienda.factura.detalles['1'].cantidad = '1';
+		that.facturaHacienda.factura.detalles['1'].unidadMedida = 'Sp';
+		that.facturaHacienda.factura.detalles['1'].detalle = that.selectedCita.servicio;
+		that.facturaHacienda.factura.detalles['1'].precioUnitario = that.selectedCita.precio;
+		that.facturaHacienda.factura.detalles['1'].montoTotal = that.selectedCita.precio;
+		that.facturaHacienda.factura.detalles['1'].subtotal = that.selectedCita.precio;
+		that.facturaHacienda.factura.detalles['1'].montoTotalLinea = that.selectedCita.precio;
 
-		this.facturaHacienda.factura.refreshToken = this.facturaHacienda.factura.refresh || '';
-		this.facturaHacienda.factura.clave = this.facturaHacienda.factura.clave || '';
-		this.facturaHacienda.factura.xml = this.facturaHacienda.factura.xml || '';
-		this.facturaHacienda.factura.consecutivo = this.facturaHacienda.factura.consecutivo || '';
+		that.facturaHacienda.factura.refreshToken = that.facturaHacienda.factura.refresh || '';
+		that.facturaHacienda.factura.clave = that.facturaHacienda.factura.clave || '';
+		that.facturaHacienda.factura.xml = that.facturaHacienda.factura.xml || '';
+		that.facturaHacienda.factura.consecutivo = that.facturaHacienda.factura.consecutivo || '';
 
-		this.facturaHacienda.cliente.id = barbero.idFacturador;
+		that.facturaHacienda.cliente.id = barbero.idFacturador;
 	
 	}
 
@@ -915,7 +1151,6 @@ genLetter(cb,tipo = 0){
 				doc.setFontType("bold");
 				doc.setFontSize("12");
 				var splitNombre = doc.splitTextToSize(that.sucursal.nombreNegocio, 300);
-			    console.log('split',splitNombre);
 			    var altoHeader = 20;
 			    doc.text(splitNombre, ancho+20, altoHeader);
 			    if(splitNombre.length > 1){
@@ -931,7 +1166,7 @@ genLetter(cb,tipo = 0){
 				//if(that.authService.loggedEmpresa.paginaWeb){
 				//	doc.text(that.authService.loggedEmpresa.paginaWeb, ancho+20, altoHeader + 60);
 				//}
-				img.width = ancho;
+				img.width = 80;
 				img.height = 80;
 			    doc.addImage(img, 'png', 25, 20);
 			    // fin header
@@ -1327,25 +1562,25 @@ genLetter(cb,tipo = 0){
 		var doc;
 		var that = this;
 		if(tipo == 'A4'){
-			this.genLetter(that.printDoc);
+			that.genLetter(that.printDoc);
 		} else {
 			var height = 60;
-			var user = await this.obtenerDatosUsuario(this.selectedCita.idUsuarioBarbero);
+			var user = await that.obtenerDatosUsuario(that.selectedCita.idUsuarioBarbero);
 			var barbero : Usuario = user.usuario;
-			console.log(this.sucursal);
-			that.selectedProvincia = that.ubicacion[Number(this.sucursal.provincia) - 1];
-			that.selectedCanton = that.selectedProvincia.cantones[Number(this.sucursal.idCanton) - 1];
+			console.log(that.sucursal);
+			that.selectedProvincia = that.ubicacion[Number(that.sucursal.provincia) - 1];
+			that.selectedCanton = that.selectedProvincia.cantones[Number(that.sucursal.idCanton) - 1];
 			height += 1 * 4;
 			doc = new window.jsPDF('p','mm',[60,height]);
 			doc.setFontSize("10");
 			doc.setFontType("bold");
-			doc.text(this.sucursal.nombreNegocio, 30, 8,"center");
+			doc.text(that.sucursal.nombreNegocio, 30, 8,"center");
 			doc.setFontSize("7");
 			doc.setFontType("normal");
 			doc.text(that.selectedCita.consecutivo, 30, 12,"center");
 			doc.text(that.selectedCanton.nombre +', '+that.selectedProvincia.nombre, 30, 16,"center");
-			doc.text('Tel. '+this.sucursal.telefono[0].telefono, 30, 20,"center");
-			doc.text(this.sucursal.correo[0].correo, 30, 24,"center");
+			doc.text('Tel. '+that.sucursal.telefono[0].telefono, 30, 20,"center");
+			doc.text(that.sucursal.correo[0].correo, 30, 24,"center");
 			// if(that.factura.vendedor.paginaWeb){
 			// 	doc.text(that.factura.vendedor.paginaWeb, 30, 28,"center");
 			// } else {

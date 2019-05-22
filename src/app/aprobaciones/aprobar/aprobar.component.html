@@ -1,0 +1,168 @@
+<div class="header-space">
+</div>
+
+
+<div class="container">
+	<div clas="col-12">
+		<div class="module white-back static row">
+			<div class="title reserva col-12">
+				<h5>Aprobar</h5>
+			</div>
+			<div class="col-12">
+			<div class="row" *ngIf="aceptacion.estado != 'completada'">
+				<div class="col-12 col-md-6">
+					Arrastrar archivo
+					<input type="file" (change)="updated($event);" class="form-control">
+				</div>
+				<div class="col-12 col-md-6">
+					<div class="row">
+						<div class="col-8">
+							Buscar factura
+							<input type="text" class="form-control" placeholder="Clave" [(ngModel)]="clave" >
+						</div>
+						<div class="col-4 buscar">
+							<span class="heading">Solo para Clave</span>
+							<button class="form-control btn btn-success" (click)="buscar(clave)" [disabled]="buscando">
+								<span *ngIf="!buscando">Buscar</span>
+								<span *ngIf="buscando">Buscando...</span>
+							</button>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			<span *ngIf="procesando" class="procesando">Procesando ...</span>
+			<br>
+			<form #aprobarForm="ngForm" novalidate *ngIf="aprobacion.datos.tipo_cedula_emisor" class="col-12">
+				<div class="form-row row">
+					<div class="form-group col-md-4">
+						<label for="cedula">Fecha emisión</label>
+						<input type="text" name="fecha" class="form-control" id="fecha" placeholder="Fecha Emisión" [ngModel]="aprobacion.datos.fecha_emision_doc | date : 'dd/MM/yy, h:mm a'" disabled="" />
+					</div>
+					<div class="form-group col-md-4">
+						<label for="tipo">Tipo Identificación Emisor</label>
+						<select [(ngModel)]="aprobacion.datos.tipo_cedula_emisor" name="tipo_cedula_emisor" class="form-control" disabled="">
+							<option value="01">Fisica</option>
+							<option value="02">Juridica</option>
+							<option value="03">DIMEX</option>
+							<option value="04">NITE</option>
+						</select>
+					</div>
+					<div class="form-group col-md-4">
+						<label for="cedula">Identificación Emisor</label>
+						<input type="number" name="numero_cedula_emisor" class="form-control" id="numero_cedula_emisor" placeholder="Cedula Emisor" [(ngModel)]="aprobacion.datos.numero_cedula_emisor" disabled="" />
+					</div>
+				</div>
+				<div class="form-row row">
+					<div class="form-group col-md-4">
+						<label for="tipo">Tipo Identificación Receptor</label>
+						<select [(ngModel)]="aprobacion.datos.tipo_cedula_receptor" name="tipo_cedula_receptor" class="form-control" disabled="">
+							<option value="01">Fisica</option>
+							<option value="02">Juridica</option>
+							<option value="03">DIMEX</option>
+							<option value="04">NITE</option>
+						</select>
+					</div>
+					<div class="form-group col-md-4">
+						<label for="cedula">Identificación Receptor</label>
+						<input type="number" name="numero_cedula_receptor" class="form-control" id="numero_cedula_receptor" placeholder="Cedula" [(ngModel)]="aprobacion.datos.numero_cedula_receptor" disabled="" />
+					</div>
+					<div class="form-group col-md-4">
+						<label for="cedula">Total Impuestos</label>
+						<input type="number" name="monto_total_impuesto" class="form-control" placeholder="Total Impuestos" [(ngModel)]="aprobacion.datos.monto_total_impuesto" disabled="" />
+					</div>
+				</div>
+				<div class="form-row row">
+					<div class="form-group col-md-4">
+						<label for="cedula">Total Factura</label>
+						<input type="number" name="total_factura" class="form-control" placeholder="Total Factura" [(ngModel)]="aprobacion.datos.total_factura" disabled="" />
+					</div>
+
+					<div class="form-group col-md-4">
+						<label for="cedula">Detalle</label>
+						<input type="text" name="detalle" class="form-control" id="detalle" placeholder="Detalle" [(ngModel)]="aprobacion.datos.detalle_mensaje" [disabled]="aceptacion.estado != 'pendiente'" />
+					</div>
+
+					<div class="form-group col-md-4">
+						<label for="cedula">Clave Factura</label>
+						<input type="text" name="clave" class="form-control" id="clave" placeholder="Clave" [(ngModel)]="aprobacion.datos.clave" [disabled]="true" />
+					</div>
+
+				</div>
+				<div class="form-row row">
+					<div class="form-group col-md-4">
+						<label for="nombre_emisor">Nombre de Emisor</label>
+						<input type="text" name="nombre_emisor" class="form-control" id="nombre_emisor" placeholder="nombre emisor" [(ngModel)]="aprobacion.datos.nombre_emisor " [disabled]="true" />
+					</div>
+				</div>
+				<br>
+				<div class="form-row row" *ngIf="aceptacion.estado == 'pendiente'">
+					<div class="form-group col-md-4" style="text-align: center;">
+						<input type="button" class="btn btn-success" value="Aceptar" (click)="enviarMH('CCE',completarPop)"/>
+					</div>
+					<div class="form-group col-md-4" style="text-align: center;">
+						<input type="button" class="btn btn-warning" value="Aceptar Parciamente" (click)="enviarMH('CPCE',completarPop)"/>
+					</div>
+					<div class="form-group col-md-4" style="text-align: center;">
+						<input type="button" class="btn btn-danger" value="Rechazar" (click)="enviarMH('RCE',completarPop)"/>
+					</div>
+				</div>
+				<div class="form-row" *ngIf="aceptacion.estado == 'rechazada'">
+					<div class="form-group col-md-4 offset-4" style="text-align: center;">
+						<p class="rechazada">
+							Lo sentimos pero su aprobación fue rechazada por hacienda.
+						</p>
+					</div>
+				</div>
+				<div class="form-row" *ngIf="aceptacion.estado == 'enviada'">
+					<div class="form-group col-md-4 offset-4" style="text-align: center;">
+						<p class="aceptada-parcial">
+							Su aprobación fue enviada y el estado se actualizará cuando hacienda nos de una respuesta.
+						</p>
+					</div>
+				</div>
+				<div class="form-row" *ngIf="aceptacion.estado == 'completada'">
+					<div class="form-group col-md-4 offset-4" style="text-align: center;">
+						<!-- <input type="button" class="btn btn-success" value="Esta factura fue acceptada" /> -->
+						<p class="aceptada" *ngIf="aceptacion.mensaje == '1'">
+							Esta aprobación fue aceptada
+						</p>
+						<p class="aceptada-parcial" *ngIf="aceptacion.mensaje == '2'">
+							Esta aprobación fue aceptada parcialmente
+						</p>
+						<p class="rechazada" *ngIf="aceptacion.mensaje == '3'">
+							Esta aprobación fue rechazada
+						</p>
+					</div>
+				</div>
+			</form>
+		</div>
+		</div>
+	</div>
+</div>
+
+
+<ng-template #completarPop>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left" style="text-transform: capitalize;">Confirmando Factura</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRefCompletar.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="col-12 confirmar-items">
+    	<p *ngIf="errorDisplay" class="error">{{errorDisplay}}</p>
+		<div *ngIf="enviandoMH" class="enviando">
+			<div class="comp">
+				<i class="fa fa-laptop" aria-hidden="true"></i>
+			</div>
+			<div class="fact">
+				<i class="fa fa-file-code-o" aria-hidden="true"></i>
+			</div>
+			<div class="mh">
+				<i class="fa fa-university" aria-hidden="true"></i>
+			</div>
+		</div>
+    </div>
+  </div>
+</ng-template>

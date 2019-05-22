@@ -1,0 +1,81 @@
+.enviando{
+	position: relative;
+    margin-top: 20px;
+    height: 60px;
+}
+
+.comp{
+	font-size: 25px;
+	position: absolute;
+    left: 8%;
+    /*top: 20px;*/
+}
+
+.fact{
+	font-size: 19px;
+	position: absolute;
+    left: 50%;
+    /*top: 20px;*/
+    -webkit-animation: run 7s infinite; /* Safari 4+ */
+	-moz-animation:    run 7s infinite; /* Fx 5+ */
+	-o-animation:      run 7s infinite; /* Opera 12+ */
+	animation:         run 7s infinite; /* IE 10+, Fx 29+ */
+}
+
+.mh{
+	font-size: 25px;
+	position: absolute;
+    right: 8%;
+    /*top: 20px;*/
+}
+
+@keyframes run {
+    0%  { left: 15%;}
+    50% { left : 82%;}
+    100%{ left: 15%;}
+}
+
+.open{
+	color:#d98a7d;
+	text-decoration: underline;
+}
+
+.aceptada{
+	padding: 10px;
+	color: #fff;
+    background-color: #28a745;
+    border: 1px solid #28a745;
+    border-radius: 10px;
+}
+
+.aceptada-parcial{
+	padding: 10px;
+	color: #212529;
+    background-color: #ffc107;
+    border: 1px solid #ffc107;
+    border-radius: 10px;
+}
+
+.rechazada{
+	padding: 10px;
+	color: #fff;
+    background-color: #dc3545;
+    border: 1px solid #dc3545;
+    border-radius: 10px;
+}
+
+.buscar .heading{
+    visibility: hidden;
+}
+
+.procesando{
+    color: #CE8D80;
+    font-size: 18px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+
+
+
+

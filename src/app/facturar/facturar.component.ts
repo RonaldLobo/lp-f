@@ -467,15 +467,15 @@ export class FacturarComponent implements OnInit {
 		var fact = this.facturaHacienda;
 		var that = this;
 		fact.con = true;
-		this.cargando = true;
+		that.cargando = true;
 		that.enviandoMH = true;
 		console.log(fact);
 		that.facturaService.post('',fact)
 		.then(res => {
 			console.log('res',res);
 			fact.con = false;
-			this.factura.consecutivo = res.resp.consecutivo;
-			this.factura.clave = res.resp.clave;
+			that.factura.consecutivo = res.resp.consecutivo;
+			that.factura.clave = res.resp.clave;
 			that.genLetter(function(doc){
 				var blob = doc.output("blob");
 		    	that.blobToBase64(blob,function(base){
@@ -487,7 +487,7 @@ export class FacturarComponent implements OnInit {
 						console.log('res',res);
 						if(res.respuesta == "aceptado"){
 							that.factura.estado= 'P';
-						   	this.dataService.post('/factura/',{factura:this.factura})
+						   	that.dataService.post('/factura/',{factura:that.factura})
 				             .then(response => {
 				             	alert('Factura Emitida Satisfactoriamente');
 				             	that.enviandoMH = false;
@@ -581,12 +581,12 @@ export class FacturarComponent implements OnInit {
 
 
 		console.log('idCliente',this.factura.idCliente, 'clienteSeleccionado', this.clienteSeleccionado);
-  // 		if (typeof this.clienteSeleccionado === "undefined" || this.clienteSeleccionado === null)
-		// {
+   		if (!this.clienteSeleccionado.cedula)
+		{
 			userCita = await this.obtenerDatosUsuario(this.factura.idCliente);
-		// } else{
-		// 	userCita = this.clienteSeleccionado;
-		// }
+		} else{
+		 	userCita = {usuario:this.clienteSeleccionado};
+		}
 		var barbero : Usuario = user.usuario;
 		var usuarioCita : Usuario = userCita.usuario;
 
@@ -761,9 +761,26 @@ export class FacturarComponent implements OnInit {
 			             	that.enviandoMH = false;
 					 		that.factura.estadoFactura = 'R';
 			        	});
-					} else {
+					} else if(res.respuesta == "rechazado"){
 						that.enviandoMH = false;
-							alert('Factura Rechazada por el Ministerio de Hacienda, volver a intentar.');
+						alert('Factura Rechazada por el Ministerio de Hacienda.');
+						that.factura.refresh = res.refreshToken;
+						that.factura.xml = res.xml;
+						that.factura.estadoFactura = 'R';
+						that.factura.base = base;
+
+					    that.dataService.post('/factura/?method=put', {'factura':that.factura})
+			             .then(response => {
+			             	alert('Información actualizada');
+			            	that.enviandoMH = false;
+			             	console.log(response);
+			            },
+			             error => {
+			             	that.enviandoMH = false;
+					 		that.factura.estadoFactura = 'R';
+			        	});
+					}else {
+						alert('Lo sentimos pero su factura no fue aceptada por el Ministerio de Hacienda, por favor intentelo de nuevo.');		
 					}
 				}, err =>{
 					console.log('error',err);

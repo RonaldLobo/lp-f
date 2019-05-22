@@ -190,3 +190,16 @@ ul.pausas-edit li {
 .error-input{
   border: 1px solid red !important;
 }
+
+.colorLetra{
+  color: red;
+}
+
+
+input:invalid {
+  border: 1px solid red;
+}
+
+input:valid {
+  outline: none;
+}

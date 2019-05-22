@@ -53,7 +53,10 @@ import { WindowRefService } from './services/window.service';
 import { InventarioComponent } from './inventario/inventario.component';
 import { FacturarComponent } from './facturar/facturar.component';
 
-import {NgxPaginationModule} from 'ngx-pagination'; 
+import { NgxPaginationModule } from 'ngx-pagination'; 
+
+import { AprobacionesComponent } from './aprobaciones/aprobaciones.component';
+import { AprobarComponent } from './aprobaciones/aprobar/aprobar.component';
 
 
 export const ROUTES: Routes = [
@@ -81,6 +84,18 @@ export const ROUTES: Routes = [
     { 
         path: 'citas',
         component: CitasComponent
+    },
+    { 
+        path: 'aprobaciones',
+        component: AprobacionesComponent
+    },
+    { 
+        path: 'aprobar',
+        component: AprobarComponent
+    },
+    { 
+        path: 'aprobar/:id',
+        component: AprobarComponent
     },
     { 
         path: 'factura',
@@ -127,7 +142,9 @@ defineLocale(es.abbr, es);
     CitasComponent,
     FacturaComponent,
     InventarioComponent,
-    FacturarComponent
+    FacturarComponent,
+    AprobacionesComponent,
+    AprobarComponent
   ],
   imports: [
     NgxPaginationModule,
