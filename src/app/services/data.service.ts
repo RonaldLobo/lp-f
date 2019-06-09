@@ -19,7 +19,7 @@ export class DataService {
     public token:any = '';
     // public server:string = "http://localhost:82/API/index.php"
     //public server:string = "/API/index.php"
-    public server:string = "http://www.lospeluqueros.com/API/index.php";
+    public server:string = "http://lp.kyrapps.com/API/index.php";
 
 
     constructor(
@@ -27,7 +27,7 @@ export class DataService {
     ) {
         var app = document.URL.indexOf( 'http://' ) === -1 && document.URL.indexOf( 'https://' ) === -1;
         if ( app ) {
-            this.server = "http://los-peluqueros.herokuapp.com/API/index.php";
+            this.server = "http://lp.kyrapps.com/API/index.php";
         }
     }
 
